@@ -3,13 +3,15 @@
     "declaration": true,
     "sourceMap": true,
     "noImplicitAny": false,
-    // "noResolve": true,
-    "target": "es5",
+    "noResolve": false,
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "build"
+    "outDir": "build",
+    "types" : ["node", "mocha"]
   },
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "compileOnSave": false
 }
