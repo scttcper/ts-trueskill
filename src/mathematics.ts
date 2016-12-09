@@ -7,7 +7,7 @@ export class Gaussian {
   /** Precision adjusted mean, the precision multiplied by the mean. */
   tau = 0;
   constructor(mu: number = null, sigma: number = null, pi = 0, tau = 0) {
-    console.log(mu, sigma);
+    console.log('Gaussian', mu, sigma);
     if (mu !== null) {
       if (sigma === null) {
         throw new TypeError('sigma argument is needed');

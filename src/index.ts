@@ -34,10 +34,11 @@ export function calc_draw_margin(draw_probability, size: number, env: TrueSkill 
  * Makes a size map of each teams.
  */
 function _teamSizes(ratingGroups) {
-  const team_sizes = [];
+  const team_sizes = [0];
   for (let group of ratingGroups) {
-    team_sizes.push(group.length + _.last(team_sizes) || 0);
+    team_sizes.push(group.length + _.last(team_sizes));
   }
+  team_sizes.shift();
   return team_sizes;
 }
 
@@ -264,6 +265,7 @@ export class TrueSkill {
    */
   factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: any[]) {
     const flattenRatings = _.flatten(ratingGroups);
+    console.log('flattenRatings', flattenRatings)
     const flattenWeights = _.flatten(weights);
     const size = flattenRatings.length;
     const groupSize = ratingGroups.length;
@@ -275,20 +277,25 @@ export class TrueSkill {
     const team_sizes = _teamSizes(ratingGroups);
     // layer builders
     const _that: TrueSkill = this;
-    function* build_rating_layer() {
-      for (let [rating_var, rating] of _.zip(ratingVars, flattenRatings)) {
-        yield new PriorFactor(rating_var, rating, _that.tau);
-      }
+    function build_rating_layer() {
+      return _.map(_.zip(ratingVars, flattenRatings), (n) => {
+        console.log('build_rating_layer')
+        let [rating_var, rating] = n;
+        return new PriorFactor(rating_var, rating, _that.tau);
+      });
     }
-    function* build_perf_layer() {
-      for (let [rating_var, perf_var] of _.zip(ratingVars, perfVars)) {
-        yield new LikelihoodFactor(rating_var, perf_var, _that.beta ** 2)
-      }
+    function build_perf_layer() {
+      return _.map(_.zip(ratingVars, perfVars), (n) => {
+        let [rating_var, perf_var] = n;
+        return new LikelihoodFactor(rating_var, perf_var, _that.beta ** 2)
+      })
     }
-    function* build_team_perf_layer() {
+    function build_team_perf_layer() {
       let team = 0;
-      for (let team_perf_var of teamPerfVars) {
+      _.map(teamPerfVars, (team_perf_var) => {
         let start;
+        console.log('team_sizes', team_sizes)
+        console.log('team', team)
         if (team > 0) {
           start = team_sizes[team - 1];
         } else {
@@ -298,19 +305,21 @@ export class TrueSkill {
         const child_perf_vars = _.slice(perfVars, start, end);
         const coeffs = _.slice(flattenWeights, start, end);
         team = team + 1;
-        yield new SumFactor(team_perf_var, child_perf_vars, coeffs);
-      }
+        console.log('SUMFACTOR')
+        return new SumFactor(team_perf_var, child_perf_vars, coeffs);
+      });
     }
-    function* build_team_diff_layer() {
+    function build_team_diff_layer() {
       let team = 0;
-      for (let team_diff_var of teamDiffVars) {
-        yield new SumFactor(team_diff_var, _.slice(teamPerfVars, team, team + 2), [+1, -1])
+      _.map(teamDiffVars, (team_diff_var) => {
+        const res = new SumFactor(team_diff_var, _.slice(teamPerfVars, team, team + 2), [+1, -1])
         team = team + 1;
-      }
+        return res;
+      });
     }
-    function* build_trunc_layer() {
+    function build_trunc_layer() {
       let x = 0;
-      for (let team_diff_var of teamDiffVars) {
+      _.map(teamDiffVars, (team_diff_var) => {
         // static draw probability
         const draw_probability = _that.drawProbability;
         const lengths = _.slice(ratingGroups, x, x + 2).map((n) => n.length);
@@ -322,9 +331,10 @@ export class TrueSkill {
         } else {
           [v_func, w_func] = [_that.v_win, _that.w_win];
         }
-        yield new TruncateFactor(team_diff_var, v_func, w_func, draw_margin);
+        const res = new TruncateFactor(team_diff_var, v_func, w_func, draw_margin);
         x = x + 1;
-      }
+        return res;
+      });
     }
     return [
       build_rating_layer,
@@ -339,11 +349,11 @@ export class TrueSkill {
    * until the result is reliable.
    */
   run_schedule(
-    build_rating_layer: () => IterableIterator<any>,
-    build_perf_layer: () => IterableIterator<any>,
-    build_team_perf_layer: () => IterableIterator<any>,
-    build_team_diff_layer: () => IterableIterator<any>,
-    build_trunc_layer: () => IterableIterator<any>,
+    build_rating_layer: Function,
+    build_perf_layer: Function,
+    build_team_perf_layer: Function,
+    build_team_diff_layer: Function,
+    build_trunc_layer: Function,
     min_delta=DELTA,
   ) {
     if (min_delta <= 0) {
@@ -351,10 +361,12 @@ export class TrueSkill {
     }
     const layers = []
     function build(builders) {
-      const layers_built = _.map(builders, (build: () => IterableIterator<any>) => {
-        let val = [build().next().value];
-        return val;
-      });
+      const layers_built = [];
+      for (const builder of builders) {
+        const res = builder();
+        layers_built.push(res);
+      }
+      console.log(layers_built);
       layers.concat(layers_built);
       return layers_built;
     }
