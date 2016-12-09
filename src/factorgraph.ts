@@ -27,7 +27,7 @@ export class Variable extends Gaussian {
     [old_message, this.messages[factor.toString()]] = [this.messages[factor.toString()], message];
     return this.set(this.div(old_message.mul(message)));
   }
-  updateValue(factor:Gaussian, pi=0, tau=0, value?: Gaussian) {
+  updateValue(factor:TruncateFactor | PriorFactor, pi=0, tau=0, value?: Gaussian) {
     value = value || new Gaussian(pi=pi, tau=tau);
     const old_message = this[factor.toString()];
     this.messages[factor.toString()] = value.mul(old_message).div(this);
@@ -42,8 +42,8 @@ export class Variable extends Gaussian {
 }
 
 export class Factor {
-  vars: any[];
-  constructor(vars: Object[]) {
+  vars: Variable[];
+  constructor(vars: Variable[]) {
     this.vars = vars;
     for (let v of vars) {
       v[this.toString()] = new Gaussian();
@@ -76,7 +76,7 @@ export class PriorFactor extends Factor {
   down() {
     const sigma = Math.sqrt(this.val.sigma ** 2 + this.dynamic ** 2);
     const value = new Gaussian(this.val.mu, sigma);
-    return this.v.updateValue(value)
+    return this.v.updateValue(this, undefined, undefined, value)
   }
 }
 
@@ -138,6 +138,7 @@ export class SumFactor extends Factor {
   update(v: Variable, vals: Variable[], msgs: Gaussian[], coeffs: number[]) {
     let pi_inv = 0;
     let mu = 0;
+    // not sure why _.zip types were so angry
     const zipped: any[][] = vals.map((n, index) => [n, msgs[index], coeffs[index]])
     let val: Variable, msg: Gaussian, coeff: number;
     for ([val, msg, coeff] of zipped) {
@@ -150,6 +151,30 @@ export class SumFactor extends Factor {
     }
     const pi = 1 / pi_inv;
     const tau = pi * mu;
-    return v.updateMessage(pi, tau);
+    return v.updateMessage(this, pi, tau);
+  }
+}
+
+export class TruncateFactor extends Factor {
+  v_func;
+  w_func;
+  draw_margin;
+  constructor(v, v_func, w_func, draw_margin) {
+    super([v]);
+    this.v_func = v_func;
+    this.w_func = w_func;
+    this.draw_margin = draw_margin;
+  }
+  up() {
+    const val = this.v;
+    const msg = this.v[this.toString()];
+    const div = val.div(msg);
+    const sqrt_pi = Math.sqrt(div.pi);
+    const v = this.v_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
+    const w = this.w_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
+    const denom = (1.0 - w);
+    const pi = div.pi / denom;
+    const tau = (div.tau + sqrt_pi * v) / denom;
+    return val.updateValue(this, pi, tau);
   }
 }

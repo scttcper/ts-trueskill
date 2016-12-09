@@ -11,6 +11,7 @@
     "coverage": "nyc npm test"
   },
   "dependencies": {
+    "gaussian": "^1.1.0",
     "mathjs": "^3.8.0",
     "node-matrices": "^1.0.0"
   },

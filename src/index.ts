@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+const gaussian = require('gaussian');
 
 import { Gaussian } from './mathematics';
 import {
@@ -6,6 +7,7 @@ import {
   PriorFactor,
   LikelihoodFactor,
   SumFactor,
+  TruncateFactor,
 } from './factorgraph';
 
 // Default initial mean of ratings.
@@ -20,6 +22,13 @@ const TAU = SIGMA / 100;
 const DRAW_PROBABILITY = 0.10;
 // A basis to check reliability of the result.
 const DELTA = 0.0001;
+
+/**
+ * Calculates a draw-margin from the given ``draw_probability``
+ */
+export function calc_draw_margin(draw_probability, size: number, env: TrueSkill = global_env()) {
+  return env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta;
+}
 
 /**
  * Makes a size map of each teams.
@@ -55,12 +64,15 @@ export class Rating extends Gaussian {
 }
 
 export class TrueSkill {
-  private mu: number;
-  private sigma: number;
-  private beta: number;
-  private tau: number;
-  private drawProbability: number;
-  private backend: any;
+  mu: number;
+  sigma: number;
+  beta: number;
+  tau: number;
+  drawProbability: number;
+  backend: any;
+  ppf = gaussian.ppf;
+  pdf = gaussian.pdf;
+  cdf = gaussian.cdf;
 
   constructor(
     mu = MU,
@@ -126,6 +138,43 @@ export class TrueSkill {
     }
     // build factor graph
     const builders = this.factorGraphBuilders(sortedRatingGroups, sortedRanks, sortedWeights);
+    const layers = this.run_schedule(
+      builders[0],
+      builders[1],
+      builders[2],
+      builders[3],
+      builders[4],
+      min_delta
+    )
+    const rating_layer: any[] = layers[0];
+    const team_sizes = _teamSizes(sortedRatingGroups);
+    const transformed_groups = [];
+    const trimmed = _.slice(team_sizes, 0, team_sizes.length - 1);
+    for (let [start, end] of _.zip([0], trimmed, team_sizes)) {
+      const group = [];
+      for (let f of _.slice(rating_layer, start, end)) {
+        group.push(new Rating(f.var.mu, f.var.sigma))
+      }
+      transformed_groups.push(group);
+    }
+    const pulled = [];
+    for (let [x, zz] of sorting) {
+      pulled.push(x);
+    }
+    const zipped = _.zip(pulled, transformed_groups);
+    const unsorting = _.sortBy(zipped, (n) => n[0]);
+    if (!keys) {
+      const res = [];
+      for (let [x, g] of unsorting) {
+        res.push(x);
+      }
+      return res;
+    }
+    const res = [];
+    for (let [x, g] of unsorting) {
+      res.push(_.fromPairs(_.zip(keys[x], g)));
+    }
+    return res;
   }
 
   /**
@@ -198,10 +247,118 @@ export class TrueSkill {
         yield new SumFactor(team_perf_var, child_perf_vars, coeffs);
       }
     }
+    function *build_team_diff_layer() {
+      let team = 0;
+      for (let team_diff_var of teamDiffVars) {
+        yield new SumFactor(team_diff_var, _.slice(teamPerfVars, team, team + 2), [+1, -1])
+        team = team + 1;
+      }
+    }
+    function *build_trunc_layer() {
+      let x = 0;
+      for (let team_diff_var of teamDiffVars) {
+        // static draw probability
+        const draw_probability = this.draw_probability;
+        const lengths = _.slice(ratingGroups, x, x + 2).map((n) => n.length);
+        const size = _.sum(lengths)
+        const draw_margin = calc_draw_margin(draw_probability, size, this);
+        let v_func, w_func;
+        if (ranks[x] === ranks[x+1]) {
+          [v_func, w_func] = [this.v_draw, this.w_draw];
+        } else {
+          [v_func, w_func] = [this.v_win, this.w_win];
+        }
+        yield new TruncateFactor(team_diff_var, v_func, w_func, draw_margin);
+        x = x + 1;
+      }
+    }
+    return [
+      build_rating_layer,
+      build_perf_layer,
+      build_team_perf_layer,
+      build_team_diff_layer,
+      build_trunc_layer,
+    ]
+  }
+  /**
+   * Sends messages within every nodes of the factor graph
+   * until the result is reliable.
+   */
+  run_schedule(
+    build_rating_layer,
+    build_perf_layer,
+    build_team_perf_layer,
+    build_team_diff_layer,
+    build_trunc_layer,
+    min_delta=DELTA,
+  ) {
+    if (min_delta <= 0) {
+      throw new Error('min_delta must be greater than 0');
+    }
+    const layers = []
+    function build(builders) {
+      const layers_built = [];
+      for (let build of builders) {
+        layers_built.push(build());
+      }
+      layers.concat(layers_built);
+      return layers_built;
+    }
+    const layers_built = build([
+      build_rating_layer,
+      build_perf_layer,
+      build_team_perf_layer,
+    ]);
+    const [rating_layer, perf_layer, team_perf_layer] = layers_built;
+    for (let f of _.concat(layers_built)) {
+      f.down();
+    }
+    // arrow #1, #2, #3
+    const [team_diff_layer, trunc_layer] = build([
+      build_team_diff_layer,
+      build_trunc_layer,
+    ]);
+    const team_diff_len = team_diff_layer.length;
+    for (let x of _.range(10)) {
+      let delta;
+      if (team_diff_len === 1) {
+        // only two teams
+        team_diff_layer[0].down();
+        delta = trunc_layer[0].up();
+      } else {
+        // multiple teams
+        delta = 0;
+        for (let z of _.range(team_diff_len - 1)) {
+          team_diff_layer[z].down();
+          delta = _.max([delta, trunc_layer[z].up()]);
+        }
+        for (let z of _.range(team_diff_len - 1, 0, -1)) {
+          team_diff_layer[z].down();
+          delta = _.max([delta, trunc_layer[z].up()]);
+          team_diff_layer[z].up(0);
+        }
+      }
+      if (delta <= min_delta) {
+        break;
+      }
+    }
+    // up both ends
+    team_diff_layer[0].up(0);
+    team_diff_layer[team_diff_len - 1].up(1);
+    // up the remainder of the black arrows
+    for (let f of team_perf_layer) {
+      for (let x of _.range(f.vars.length - 1)) {
+        f.up(x);
+      }
+    }
+    for (let f of perf_layer) {
+      f.up();
+    }
+    return layers;
   }
 }
 
-export let __trueskill__;
+export let __trueskill__: TrueSkill;
 /**
  * Gets the :class:`TrueSkill` object which is the global environment.
  */
