@@ -359,15 +359,15 @@ export class TrueSkill {
     if (min_delta <= 0) {
       throw new Error('min_delta must be greater than 0');
     }
-    const layers = []
+    const layers = [];
     function build(builders) {
       const layers_built = [];
       for (const builder of builders) {
         const res = builder();
         layers_built.push(res);
       }
-      console.log(layers_built);
       layers.concat(layers_built);
+      console.log('layers_built', JSON.stringify(layers_built));
       return layers_built;
     }
     const layers_built = build([
@@ -377,6 +377,7 @@ export class TrueSkill {
     ]);
     const [rating_layer, perf_layer, team_perf_layer] = layers_built;
     for (let f of _.flatten(layers_built)) {
+      // console.log(f);
       f.down();
     }
     // arrow #1, #2, #3

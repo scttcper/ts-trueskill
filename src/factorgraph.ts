@@ -53,7 +53,7 @@ export class Factor {
   constructor(vars: Variable[]) {
     this.vars = vars;
     for (let v of vars) {
-      v[this.toString()] = new Gaussian();
+      v.messages[this.toString()] = new Gaussian();
     }
   }
   down() {
@@ -88,22 +88,23 @@ export class PriorFactor extends Factor {
 }
 
 export class LikelihoodFactor extends Factor {
-  mean:Variable;
+  mean: Variable;
   value: Variable;
   variance;
-  constructor(mean_var:Variable, value_var: Variable, variance) {
+  constructor(mean_var: Variable, value_var: Variable, variance) {
     super([mean_var, value_var]);
     this.mean = mean_var;
     this.value = value_var;
     this.variance = variance;
   }
   calc_a(v) {
-    return 1. / (1. + this.variance * v.pi);
+    return 1.0 / (1.0 + this.variance * v.pi);
   }
   down() {
     const msg = this.mean.div(this.mean[this.toString()]);
     const a = this.calc_a(msg);
     console.log('A!!!!', a * msg.tau)
+    console.log('value', this.value)
     return this.value.updateMessage(this, a * msg.pi, a * msg.tau);
   }
   up() {
