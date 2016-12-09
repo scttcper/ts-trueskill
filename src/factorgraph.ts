@@ -21,10 +21,17 @@ export class Variable extends Gaussian {
     }
     return _.max([Math.abs(this.tau - other.tau), Math.sqrt(pi_delta)]);
   }
-  updateMessage(factor:LikelihoodFactor | SumFactor, pi=0, tau=0, message?: Gaussian) {
+  updateMessage(
+    factor:LikelihoodFactor | SumFactor | PriorFactor,
+    pi=0,
+    tau=0,
+    message?: Gaussian
+  ) {
     message = message || new Gaussian(pi=pi, tau=tau);
-    let old_message: Gaussian;
-    [old_message, this.messages[factor.toString()]] = [this.messages[factor.toString()], message];
+    let old_message = this.messages[factor.toString()];
+    this.messages[factor.toString()] = message;
+    console.log('old_message', old_message);
+    console.log('this.messages', this.messages);
     return this.set(this.div(old_message.mul(message)));
   }
   updateValue(factor:TruncateFactor | PriorFactor, pi=0, tau=0, value?: Gaussian) {
@@ -61,7 +68,7 @@ export class Factor {
   }
   toString() {
     const s = this.vars.length === 1 ? '' : 's';
-    return `<Factor with ${this.vars.length} connection${s}>`
+    return `<${this.constructor.name} with ${this.vars.length} connection${s}>`
   }
 }
 
@@ -82,21 +89,22 @@ export class PriorFactor extends Factor {
 
 export class LikelihoodFactor extends Factor {
   mean:Variable;
-  value;
+  value: Variable;
   variance;
-  constructor(mean_var:Variable, value_var, variance) {
+  constructor(mean_var:Variable, value_var: Variable, variance) {
     super([mean_var, value_var]);
     this.mean = mean_var;
     this.value = value_var;
     this.variance = variance;
   }
   calc_a(v) {
-    return 1.0 / (1.0 + this.variance * v.pi);
+    return 1. / (1. + this.variance * v.pi);
   }
   down() {
     const msg = this.mean.div(this.mean[this.toString()]);
     const a = this.calc_a(msg);
-    return this.value.updateMessage(a * msg.pi, a * msg.tau);
+    console.log('A!!!!', a * msg.tau)
+    return this.value.updateMessage(this, a * msg.pi, a * msg.tau);
   }
   up() {
     const msg = this.value.div(this.value[this.toString()]);
