@@ -49,12 +49,17 @@ function _teamSizes(ratingGroups) {
  * :param sigma: the standard deviation.
  */
 export class Rating extends Gaussian {
-  constructor(mu?, tuple?) {
-    let sigma;
+  constructor(mu=null, sigma=null) {
     if (Array.isArray(mu)) {
       [mu, sigma] = mu;
     } else if (mu instanceof Gaussian) {
       [mu, sigma] = [mu.mu, mu.sigma];
+    }
+    if (mu === null) {
+      mu = global_env().mu;
+    }
+    if (sigma === null) {
+      sigma = global_env().sigma;
     }
     super(mu, sigma);
   }
@@ -108,6 +113,50 @@ export class TrueSkill {
   }
 
   /**
+   * The non-draw version of "V" function.
+   * "V" calculates a variation of a mean.
+   */
+  v_win(diff, draw_margin) {
+    const x = diff - draw_margin;
+    const denom = this.cdf(x);
+    return denom ? (this.pdf(x) / denom) : -x;
+  }
+  v_draw(diff, draw_margin) {
+    const abs_diff = Math.abs(diff);
+    const [a, b] = [draw_margin - abs_diff, -draw_margin - abs_diff];
+    const denom = this.cdf(a) - this.cdf(b);
+    const numer = this.pdf(b) - this.pdf(a);
+    return (denom ? (numer / denom) : a) * (diff < 0 ? -1 : +1)
+  }
+  /**
+   * The non-draw version of "W" function.
+   * "W" calculates a variation of a standard deviation.
+   */
+  w_win(diff, draw_margin) {
+    const x = diff - draw_margin;
+    const v = this.v_win(diff, draw_margin);
+    const w = v * (v + x);
+    if (0 < w && w < 1) {
+      return w;
+    }
+    throw new Error('floating point error');
+  }
+  /**
+   * The draw version of "W" function.
+   */
+  w_draw(diff, draw_margin) {
+    const abs_diff = Math.abs(diff);
+    const a = draw_margin - abs_diff;
+    const b = -draw_margin - abs_diff;
+    const denom = this.cdf(a) - this.cdf(b);
+    if (!denom) {
+      throw new Error('Floating point error');
+    }
+    const v = this.v_draw(abs_diff, draw_margin);
+    return (v ** 2) + (a * this.pdf(a) - b * this.pdf(b)) / denom;
+  }
+
+  /**
    * Recalculates ratings by the ranking table
    */
   rate(ratingGroups: any[][], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
@@ -128,7 +177,9 @@ export class TrueSkill {
       return y;
     });
     const sorting = _.sortBy(zip, (x) => x[1][1]);
-    let [sortedRatingGroups, sortedRanks, sortedWeights] = [[], [], []];
+    const sortedRatingGroups = []
+    const sortedRanks = []
+    const sortedWeights = []
     for (let [x, [g, r, w]] of sorting) {
       sortedRatingGroups.push(g)
       sortedRanks.push(r)
@@ -177,6 +228,8 @@ export class TrueSkill {
     return res;
   }
 
+
+
   /**
    * Validates a ``rating_groups`` argument.  It should contain more than
    * 2 groups and all groups must not be empty.
@@ -209,7 +262,7 @@ export class TrueSkill {
   /**
    * Makes nodes for the TrueSkill factor graph.
    */
-  factorGraphBuilders(ratingGroups: any[][], ranks: any[], weights: any[]) {
+  factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: any[]) {
     const flattenRatings = _.flatten(ratingGroups);
     const flattenWeights = _.flatten(weights);
     const size = flattenRatings.length;
@@ -221,17 +274,18 @@ export class TrueSkill {
     const teamDiffVars: Variable[] = _.range(groupSize - 1).map(() => new Variable());
     const team_sizes = _teamSizes(ratingGroups);
     // layer builders
-    function *build_rating_layer() {
+    const _that: TrueSkill = this;
+    function* build_rating_layer() {
       for (let [rating_var, rating] of _.zip(ratingVars, flattenRatings)) {
-        yield new PriorFactor(rating_var, rating, this.tau);
+        yield new PriorFactor(rating_var, rating, _that.tau);
       }
     }
-    function *build_perf_layer() {
+    function* build_perf_layer() {
       for (let [rating_var, perf_var] of _.zip(ratingVars, perfVars)) {
-        yield new LikelihoodFactor(rating_var, perf_var, this.beta ** 2)
+        yield new LikelihoodFactor(rating_var, perf_var, _that.beta ** 2)
       }
     }
-    function *build_team_perf_layer() {
+    function* build_team_perf_layer() {
       let team = 0;
       for (let team_perf_var of teamPerfVars) {
         let start;
@@ -247,26 +301,26 @@ export class TrueSkill {
         yield new SumFactor(team_perf_var, child_perf_vars, coeffs);
       }
     }
-    function *build_team_diff_layer() {
+    function* build_team_diff_layer() {
       let team = 0;
       for (let team_diff_var of teamDiffVars) {
         yield new SumFactor(team_diff_var, _.slice(teamPerfVars, team, team + 2), [+1, -1])
         team = team + 1;
       }
     }
-    function *build_trunc_layer() {
+    function* build_trunc_layer() {
       let x = 0;
       for (let team_diff_var of teamDiffVars) {
         // static draw probability
-        const draw_probability = this.draw_probability;
+        const draw_probability = _that.drawProbability;
         const lengths = _.slice(ratingGroups, x, x + 2).map((n) => n.length);
         const size = _.sum(lengths)
-        const draw_margin = calc_draw_margin(draw_probability, size, this);
+        const draw_margin = calc_draw_margin(draw_probability, size, _that);
         let v_func, w_func;
         if (ranks[x] === ranks[x+1]) {
-          [v_func, w_func] = [this.v_draw, this.w_draw];
+          [v_func, w_func] = [_that.v_draw, _that.w_draw];
         } else {
-          [v_func, w_func] = [this.v_win, this.w_win];
+          [v_func, w_func] = [_that.v_win, _that.w_win];
         }
         yield new TruncateFactor(team_diff_var, v_func, w_func, draw_margin);
         x = x + 1;
@@ -285,11 +339,11 @@ export class TrueSkill {
    * until the result is reliable.
    */
   run_schedule(
-    build_rating_layer,
-    build_perf_layer,
-    build_team_perf_layer,
-    build_team_diff_layer,
-    build_trunc_layer,
+    build_rating_layer: () => IterableIterator<any>,
+    build_perf_layer: () => IterableIterator<any>,
+    build_team_perf_layer: () => IterableIterator<any>,
+    build_team_diff_layer: () => IterableIterator<any>,
+    build_trunc_layer: () => IterableIterator<any>,
     min_delta=DELTA,
   ) {
     if (min_delta <= 0) {
@@ -297,10 +351,10 @@ export class TrueSkill {
     }
     const layers = []
     function build(builders) {
-      const layers_built = [];
-      for (let build of builders) {
-        layers_built.push(build());
-      }
+      const layers_built = _.map(builders, (build: () => IterableIterator<any>) => {
+        let val = [build().next().value];
+        return val;
+      });
       layers.concat(layers_built);
       return layers_built;
     }
@@ -310,7 +364,7 @@ export class TrueSkill {
       build_team_perf_layer,
     ]);
     const [rating_layer, perf_layer, team_perf_layer] = layers_built;
-    for (let f of _.concat(layers_built)) {
+    for (let f of _.flatten(layers_built)) {
       f.down();
     }
     // arrow #1, #2, #3

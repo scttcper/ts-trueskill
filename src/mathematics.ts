@@ -7,6 +7,7 @@ export class Gaussian {
   /** Precision adjusted mean, the precision multiplied by the mean. */
   tau = 0;
   constructor(mu: number = null, sigma: number = null, pi = 0, tau = 0) {
+    console.log(mu, sigma);
     if (mu !== null) {
       if (sigma === null) {
         throw new TypeError('sigma argument is needed');
@@ -20,8 +21,8 @@ export class Gaussian {
     this.tau = tau;
   }
 
+  /** A property which returns the mean. */
   get mu() {
-    /** A property which returns the mean. */
     return this.pi && this.tau / this.pi;
   }
   get sigma() {

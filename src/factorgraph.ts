@@ -22,7 +22,7 @@ export class Variable extends Gaussian {
     return _.max([Math.abs(this.tau - other.tau), Math.sqrt(pi_delta)]);
   }
   updateMessage(factor:LikelihoodFactor | SumFactor, pi=0, tau=0, message?: Gaussian) {
-    message = message || new Gaussian(pi=pi, tau=tau)
+    message = message || new Gaussian(pi=pi, tau=tau);
     let old_message: Gaussian;
     [old_message, this.messages[factor.toString()]] = [this.messages[factor.toString()], message];
     return this.set(this.div(old_message.mul(message)));
@@ -96,7 +96,12 @@ export class LikelihoodFactor extends Factor {
   down() {
     const msg = this.mean.div(this.mean[this.toString()]);
     const a = this.calc_a(msg);
-    return this.value.update_message(a * msg.pi, a * msg.tau);
+    return this.value.updateMessage(a * msg.pi, a * msg.tau);
+  }
+  up() {
+    const msg = this.value.div(this.value[this.toString()]);
+    const a = this.calc_a(msg);
+    return this.mean.updateMessage(this, a * msg.pi, a * msg.tau);
   }
 }
 
