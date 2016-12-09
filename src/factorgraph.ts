@@ -21,7 +21,7 @@ export class Variable extends Gaussian {
     }
     return _.max([Math.abs(this.tau - other.tau), Math.sqrt(pi_delta)]);
   }
-  updateMessage(factor:Gaussian, pi=0, tau=0, message?: Gaussian) {
+  updateMessage(factor:LikelihoodFactor | SumFactor, pi=0, tau=0, message?: Gaussian) {
     message = message || new Gaussian(pi=pi, tau=tau)
     let old_message: Gaussian;
     [old_message, this.messages[factor.toString()]] = [this.messages[factor.toString()], message];
@@ -103,9 +103,9 @@ export class LikelihoodFactor extends Factor {
 export class SumFactor extends Factor {
   sum: Variable;
   terms: Variable[];
-  coeffs;
+  coeffs: number[];
 
-  constructor(sum_var: Variable, term_vars: Variable[], coeffs) {
+  constructor(sum_var: Variable, term_vars: Variable[], coeffs: number[]) {
     super([sum_var].concat(term_vars));
     this.sum = sum_var;
     this.terms = term_vars;
@@ -135,12 +135,14 @@ export class SumFactor extends Factor {
     const msgs = _.map(vals, (v) => v[this.toString()]);
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
-  update(v: Variable, vals: Variable[], msgs, coeffs) {
+  update(v: Variable, vals: Variable[], msgs: Gaussian[], coeffs: number[]) {
     let pi_inv = 0;
     let mu = 0;
-    for (let [val, msg, coeff] of _.zip(vals, msgs, coeffs)) {
+    const zipped: any[][] = vals.map((n, index) => [n, msgs[index], coeffs[index]])
+    let val: Variable, msg: Gaussian, coeff: number;
+    for ([val, msg, coeff] of zipped) {
       const div = val.div(msg);
-      mu = mu + (coeff.mul(div));
+      mu += coeff * div.mu;
       if (!_.isFinite(pi_inv)) {
         continue;
       }
@@ -148,6 +150,6 @@ export class SumFactor extends Factor {
     }
     const pi = 1 / pi_inv;
     const tau = pi * mu;
-    return v.update_message(pi, tau);
+    return v.updateMessage(pi, tau);
   }
 }
