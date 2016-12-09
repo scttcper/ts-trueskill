@@ -292,7 +292,7 @@ export class TrueSkill {
     }
     function build_team_perf_layer() {
       let team = 0;
-      _.map(teamPerfVars, (team_perf_var) => {
+      return _.map(teamPerfVars, (team_perf_var) => {
         let start;
         console.log('team_sizes', team_sizes)
         console.log('team', team)
@@ -311,7 +311,7 @@ export class TrueSkill {
     }
     function build_team_diff_layer() {
       let team = 0;
-      _.map(teamDiffVars, (team_diff_var) => {
+      return _.map(teamDiffVars, (team_diff_var) => {
         const res = new SumFactor(team_diff_var, _.slice(teamPerfVars, team, team + 2), [+1, -1])
         team = team + 1;
         return res;
@@ -319,7 +319,7 @@ export class TrueSkill {
     }
     function build_trunc_layer() {
       let x = 0;
-      _.map(teamDiffVars, (team_diff_var) => {
+      return _.map(teamDiffVars, (team_diff_var) => {
         // static draw probability
         const draw_probability = _that.drawProbability;
         const lengths = _.slice(ratingGroups, x, x + 2).map((n) => n.length);
