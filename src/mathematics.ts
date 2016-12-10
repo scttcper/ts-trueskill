@@ -9,7 +9,7 @@ export class Gaussian {
   /** Precision adjusted mean, the precision multiplied by the mean. */
   tau = 0;
   constructor(mu: number = null, sigma: number = null, pi = 0, tau = 0) {
-    console.log(mu, sigma, pi, tau)
+    console.log('Gaussian', mu, sigma, pi, tau)
     if (mu !== null) {
       if (sigma === null) {
         throw new TypeError('sigma argument is needed');
@@ -47,19 +47,21 @@ export class Gaussian {
   }
 
   mul(other: Gaussian) {
-    console.log('MUL', this.pi, other.pi)
     const pi = this.pi + other.pi;
     const tau = this.tau + other.tau;
+    if (pi === 0 && tau === 0) {
+      throw new Error('NOPE')
+    }
+    console.log('mul', pi, tau)
     return new Gaussian(null, null, pi, tau);
   }
   div(other: Gaussian) {
-    console.log('DIVY', this.pi, other.pi)
+    console.log('div')
     if (this.pi === 0 && other.pi !== 0) {
       throw new Error('wtffff')
     }
     const pi = this.pi - other.pi;
     const tau = this.tau - other.tau;
-    console.log('div', pi, tau)
     return new Gaussian(null, null, pi, tau);
   }
   eq(other: Gaussian) {

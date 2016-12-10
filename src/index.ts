@@ -391,6 +391,7 @@ export class TrueSkill {
     ]);
     const [rating_layer, perf_layer, team_perf_layer] = layers_built;
     for (let f of _.flatten(layers_built)) {
+      console.log(f.toString())
       f.down();
     }
     // arrow #1, #2, #3
