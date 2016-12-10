@@ -383,7 +383,7 @@ diff@1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-1.4.0.tgz#7f28d2eb9ee7b15a97efd89ce63dcfdaa3ccbabf"
 
-diff@^3.0.1:
+diff@^3.0.1, diff@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/diff/-/diff-3.1.0.tgz#9406c73a401e6c2b3ba901c5e2c44eb6a60c5385"
 
@@ -1431,12 +1431,13 @@ to-fast-properties@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-1.0.2.tgz#f3f5c0c3ba7299a7ef99427e44633257ade43320"
 
-ts-node@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-1.7.0.tgz#18be2d80508008a3a4640e17982df73a402b7416"
+ts-node@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-1.7.2.tgz#d67bbc5c48fde16c244debbfe81b020587369a02"
   dependencies:
     arrify "^1.0.0"
     chalk "^1.1.1"
+    diff "^3.1.0"
     make-error "^1.1.1"
     minimist "^1.2.0"
     mkdirp "^0.5.1"

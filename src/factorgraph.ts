@@ -148,16 +148,19 @@ export class SumFactor extends Factor {
     }
     const vals = _.clone(this.terms);
     vals[index] = this.sum;
-    const msgs = _.map(vals, (v) => v[this.toString()]);
+    const msgs = _.map(vals, (v) => v.messages[this.toString()]);
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
   update(v: Variable, vals: Variable[], msgs: Gaussian[], coeffs: number[]) {
     let pi_inv = 0;
     let mu = 0;
     // not sure why _.zip types were so angry
-    const zipped: any[][] = vals.map((n, index) => [n, msgs[index], coeffs[index]]);
+    const zipped: any[][] = _.zip<Variable|Gaussian|number>(vals, msgs, coeffs);
+    console.log('msgs', msgs)
+    // TODO: find out why msgs is blank??
     let val: Variable, msg: Gaussian, coeff: number;
     for ([val, msg, coeff] of zipped) {
+      console.log(val, msg)
       const div = val.div(msg);
       mu += coeff * div.mu;
       if (!_.isFinite(pi_inv)) {
