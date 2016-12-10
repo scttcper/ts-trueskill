@@ -5,10 +5,11 @@ import * as _ from 'lodash';
  */
 export class Gaussian {
   /** Precision, the inverse of the variance. */
-  pi = 0;
+  _pi = 0;
   /** Precision adjusted mean, the precision multiplied by the mean. */
   tau = 0;
   constructor(mu: number = null, sigma: number = null, pi = 0, tau = 0) {
+    console.log(mu, sigma, pi, tau)
     if (mu !== null) {
       if (sigma === null) {
         throw new TypeError('sigma argument is needed');
@@ -27,6 +28,12 @@ export class Gaussian {
       throw new Error('NAN');
     }
   }
+  get pi() {
+    return this._pi;
+  }
+  set pi(value) {
+    this._pi = value;
+  }
 
   /** A property which returns the mean. */
   get mu() {
@@ -40,14 +47,20 @@ export class Gaussian {
   }
 
   mul(other: Gaussian) {
+    console.log('MUL', this.pi, other.pi)
     const pi = this.pi + other.pi;
     const tau = this.tau + other.tau;
-    return new Gaussian(pi, tau);
+    return new Gaussian(null, null, pi, tau);
   }
   div(other: Gaussian) {
+    console.log('DIVY', this.pi, other.pi)
+    if (this.pi === 0 && other.pi !== 0) {
+      throw new Error('wtffff')
+    }
     const pi = this.pi - other.pi;
     const tau = this.tau - other.tau;
-    return new Gaussian(pi, tau);
+    console.log('div', pi, tau)
+    return new Gaussian(null, null, pi, tau);
   }
   eq(other: Gaussian) {
     return this.pi === other.pi && this.tau === other.tau;
@@ -65,7 +78,7 @@ export class Gaussian {
     return this.mu >= other.mu
   }
   toString() {
-    return `N(mu=%{this.mu}, sigma=${this.sigma})`;
+    return `N(mu=${this.mu}, sigma=${this.sigma})`;
   }
 }
 

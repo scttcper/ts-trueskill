@@ -27,6 +27,7 @@ const DELTA = 0.0001;
  * Calculates a draw-margin from the given ``draw_probability``
  */
 export function calc_draw_margin(draw_probability, size: number, env: TrueSkill = global_env()) {
+  console.log('calc_draw_margin',draw_probability, size);
   return env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta;
 }
 
@@ -134,6 +135,10 @@ export class TrueSkill {
    * "W" calculates a variation of a standard deviation.
    */
   w_win(diff, draw_margin) {
+    console.log('w_win', diff, draw_margin)
+    if (diff !== 1.5491313744672435) {
+      throw new Error('wtf')
+    }
     const x = diff - draw_margin;
     const v = this.v_win(diff, draw_margin);
     const w = v * (v + x);

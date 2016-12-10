@@ -28,14 +28,12 @@ export class Variable extends Gaussian {
     tau=0,
     message?: Gaussian
   ) {
-    if (!message) {
-      message = new Gaussian(null, null, pi, tau);
-    }
-    let old_message = this.messages[factor.toString()];
+    message = message || new Gaussian(null, null, pi, tau);
+    const old_message = this.messages[factor.toString()];
     this.messages[factor.toString()] = message;
-    const a = old_message.mul(message);
-    const b = this.div(a);
-    return this.set(b);
+    const a = this.div(old_message);
+    const b = old_message.mul(a);
+    return this.set(a);
   }
   updateValue(factor:TruncateFactor | PriorFactor, pi=0, tau=0, value?: Gaussian) {
     if (!value) {
@@ -108,6 +106,7 @@ export class LikelihoodFactor extends Factor {
   down() {
     const msg = this.mean.div(this.mean.messages[this.toString()]);
     const a = this.calc_a(msg);
+    console.log('AAA', a, msg.pi, msg.tau)
     return this.value.updateMessage(this, a * msg.pi, a * msg.tau);
   }
   up() {
@@ -192,6 +191,7 @@ export class TruncateFactor extends Factor {
     const val = this.v;
     const msg = this.v.messages[this.toString()];
     const div = val.div(msg);
+    console.log(div.toString())
     const sqrt_pi = Math.sqrt(div.pi);
     const v = this.v_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
     const w = this.w_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
