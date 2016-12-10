@@ -33,8 +33,6 @@ export class Variable extends Gaussian {
     }
     let old_message = this.messages[factor.toString()];
     this.messages[factor.toString()] = message;
-    console.log('old_message', old_message);
-    console.log('this.messages', this.messages);
     const a = old_message.mul(message);
     const b = this.div(a);
     return this.set(b);
@@ -110,8 +108,6 @@ export class LikelihoodFactor extends Factor {
   down() {
     const msg = this.mean.div(this.mean.messages[this.toString()]);
     const a = this.calc_a(msg);
-    console.log('A!!!!', a * msg.tau)
-    console.log('value', this.value)
     return this.value.updateMessage(this, a * msg.pi, a * msg.tau);
   }
   up() {
@@ -165,7 +161,6 @@ export class SumFactor extends Factor {
     // not sure why _.zip types were so angry
     console.log('msgs', msgs)
     const zipped: any[][] = vals.map((n, index) => [n, msgs[index], coeffs[index]]);
-    console.log(zipped)
     let val: Variable, msg: Gaussian, coeff: number;
     for ([val, msg, coeff] of zipped) {
       const div = val.div(msg);
@@ -200,8 +195,6 @@ export class TruncateFactor extends Factor {
     const div = val.div(msg);
     const sqrt_pi = Math.sqrt(div.pi);
     const v = this.v_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
-    console.log('this.draw_margin', this.draw_margin)
-    console.log(div.tau / sqrt_pi, this.draw_margin * sqrt_pi)
     const w = this.w_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
     const denom = (1.0 - w);
     const pi = div.pi / denom;

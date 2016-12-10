@@ -144,7 +144,9 @@ export class TrueSkill {
     console.log('draw_margin', diff, draw_margin)
     const x = diff - draw_margin;
     const v = this.v_win(diff, draw_margin);
+    console.log(v, x)
     const w = v * (v + x);
+    console.log(w)
     if (0 < w && w < 1) {
       return w;
     }
@@ -171,9 +173,7 @@ export class TrueSkill {
   rate(ratingGroups: any[][], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
     let keys;
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    console.log('weights', weights)
     weights = this.validate_weights(weights, ratingGroups, keys)
-    console.log('weights', weights)
     const groupSize = ratingGroups.length;
     if (ranks === null) {
       ranks = _.range(groupSize)
@@ -182,7 +182,6 @@ export class TrueSkill {
     }
     // sort rating groups by rank
     let zip = _.zip(ratingGroups, ranks, weights);
-    console.log('ZIPPED', zip);
     let n = 0;
     zip = zip.map((el) => {
       const y = [n, el];
@@ -190,7 +189,6 @@ export class TrueSkill {
       return y;
     });
     const sorting = _.orderBy(zip, (x) => {
-      console.log('XXX', x[1][1])
       return x[1][1]
     });
     const sortedRatingGroups = []
