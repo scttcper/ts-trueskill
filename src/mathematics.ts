@@ -1,3 +1,5 @@
+import * as _ from 'lodash';
+
 /**
  * A model for the normal distribution.
  */
@@ -19,6 +21,12 @@ export class Gaussian {
     }
     this.pi = pi;
     this.tau = tau;
+    if (_.isNaN(this.pi)) {
+      throw new Error('NAN');
+    }
+    if (_.isNaN(this.tau)) {
+      throw new Error('NAN');
+    }
   }
 
   /** A property which returns the mean. */
@@ -33,6 +41,7 @@ export class Gaussian {
   }
 
   mul(other: Gaussian) {
+    console.log(this.pi, other.pi)
     const pi = this.pi + other.pi;
     const tau = this.tau + other.tau;
     return new Gaussian(pi, tau);

@@ -27,6 +27,7 @@ const DELTA = 0.0001;
  * Calculates a draw-margin from the given ``draw_probability``
  */
 export function calc_draw_margin(draw_probability, size: number, env: TrueSkill = global_env()) {
+  console.log('gaussian.ppf', gaussian.ppf)
   return env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta;
 }
 
@@ -76,9 +77,9 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
-  ppf = gaussian.ppf;
-  pdf = gaussian.pdf;
-  cdf = gaussian.cdf;
+  ppf = gaussian(0, 1).ppf;
+  pdf = gaussian(0, 1).pdf;
+  cdf = gaussian(0, 1).cdf;
 
   constructor(
     mu = MU,
@@ -137,6 +138,7 @@ export class TrueSkill {
     const x = diff - draw_margin;
     const v = this.v_win(diff, draw_margin);
     const w = v * (v + x);
+    console.log(w)
     if (0 < w && w < 1) {
       return w;
     }
@@ -163,6 +165,9 @@ export class TrueSkill {
   rate(ratingGroups: any[][], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
     let keys;
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
+    console.log('weights', weights)
+    weights = this.validate_weights(weights, ratingGroups, keys)
+    console.log('weights', weights)
     const groupSize = ratingGroups.length;
     if (ranks === null) {
       ranks = _.range(groupSize)
@@ -170,25 +175,32 @@ export class TrueSkill {
       throw new Error('Wrong ranks');
     }
     // sort rating groups by rank
-    let zip = _.zip(ratingGroups, ranks, weights)
+    let zip = _.zip(ratingGroups, ranks, weights);
+    console.log('ZIPPED', zip);
     let n = 0;
     zip = zip.map((el) => {
       const y = [n, el];
       n = n + 1;
       return y;
     });
-    const sorting = _.sortBy(zip, (x) => x[1][1]);
+    const sorting = _.orderBy(zip, (x) => {
+      console.log('XXX', x[1][1])
+      return x[1][1]
+    });
     const sortedRatingGroups = []
     const sortedRanks = []
     const sortedWeights = []
-    for (let [x, [g, r, w]] of sorting) {
+    console.log('sorting0', sorting[0])
+    for (const [x, [g, r, w]] of zip) {
       sortedRatingGroups.push(g)
       sortedRanks.push(r)
       // make weights to be greater than 0
-      const max = _.max([min_delta, _.max(w)]);
+      const max = _.map(w, (_w) => _.max([min_delta, _w]));
+      console.log('PUSHING', max)
       sortedWeights.push(max);
     }
     // build factor graph
+    console.log('sorted_weights', sortedWeights)
     const builders = this.factorGraphBuilders(sortedRatingGroups, sortedRanks, sortedWeights);
     const layers = this.run_schedule(
       builders[0],
@@ -260,13 +272,25 @@ export class TrueSkill {
     return [ratingGroups, keys]
   }
 
+  validate_weights(weights: any[] = null, ratingGroups: any[][], keys) {
+    if (weights === null) {
+      weights = _.map(ratingGroups, (n) => {
+        return new Array(n.length).fill(1);
+      });
+    }
+    // TODO: weights is dict?
+    return weights;
+  }
+
   /**
    * Makes nodes for the TrueSkill factor graph.
    */
   factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: any[]) {
     const flattenRatings = _.flatten(ratingGroups);
     console.log('flattenRatings', flattenRatings)
+    console.log('weights', weights)
     const flattenWeights = _.flatten(weights);
+    console.log('flattenWeights1', flattenWeights)
     const size = flattenRatings.length;
     const groupSize = ratingGroups.length;
     // create variables
@@ -303,9 +327,11 @@ export class TrueSkill {
         }
         const end = team_sizes[team];
         const child_perf_vars = _.slice(perfVars, start, end);
+        console.log(start, end)
+        console.log('flattenWeights', flattenWeights)
         const coeffs = _.slice(flattenWeights, start, end);
         team = team + 1;
-        console.log('SUMFACTOR')
+        console.log('coeffs', coeffs.length)
         return new SumFactor(team_perf_var, child_perf_vars, coeffs);
       });
     }
@@ -327,9 +353,11 @@ export class TrueSkill {
         const draw_margin = calc_draw_margin(draw_probability, size, _that);
         let v_func, w_func;
         if (ranks[x] === ranks[x+1]) {
-          [v_func, w_func] = [_that.v_draw, _that.w_draw];
+          v_func = (a, b) => _that.v_draw(a, b);
+          w_func = (a, b) => _that.w_draw(a, b);
         } else {
-          [v_func, w_func] = [_that.v_win, _that.w_win];
+          v_func = (a, b) => _that.v_win(a, b);
+          w_func = (a, b) => _that.w_win(a, b);
         }
         const res = new TruncateFactor(team_diff_var, v_func, w_func, draw_margin);
         x = x + 1;

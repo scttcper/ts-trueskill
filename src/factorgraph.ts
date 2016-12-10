@@ -35,7 +35,9 @@ export class Variable extends Gaussian {
     this.messages[factor.toString()] = message;
     console.log('old_message', old_message);
     console.log('this.messages', this.messages);
-    return this.set(this.div(old_message.mul(message)));
+    const a = old_message.mul(message);
+    const b = this.div(a);
+    return this.set(b);
   }
   updateValue(factor:TruncateFactor | PriorFactor, pi=0, tau=0, value?: Gaussian) {
     if (!value) {
@@ -126,6 +128,9 @@ export class SumFactor extends Factor {
 
   constructor(sum_var: Variable, term_vars: Variable[], coeffs: number[]) {
     super([sum_var].concat(term_vars));
+    if (term_vars.length !== coeffs.length) {
+      throw new Error('NOT EQUAL')
+    }
     this.sum = sum_var;
     this.terms = term_vars;
     this.coeffs = coeffs;
@@ -188,7 +193,7 @@ export class TruncateFactor extends Factor {
   }
   up() {
     const val = this.v;
-    const msg = this.v[this.toString()];
+    const msg = this.v.messages[this.toString()];
     const div = val.div(msg);
     const sqrt_pi = Math.sqrt(div.pi);
     const v = this.v_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
