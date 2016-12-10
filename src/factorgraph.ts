@@ -159,7 +159,6 @@ export class SumFactor extends Factor {
     let pi_inv = 0;
     let mu = 0;
     // not sure why _.zip types were so angry
-    console.log('msgs', msgs)
     const zipped: any[][] = vals.map((n, index) => [n, msgs[index], coeffs[index]]);
     let val: Variable, msg: Gaussian, coeff: number;
     for ([val, msg, coeff] of zipped) {

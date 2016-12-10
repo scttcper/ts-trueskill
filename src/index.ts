@@ -27,13 +27,6 @@ const DELTA = 0.0001;
  * Calculates a draw-margin from the given ``draw_probability``
  */
 export function calc_draw_margin(draw_probability, size: number, env: TrueSkill = global_env()) {
-  console.log('env.ppf', env.ppf)
-  console.log(draw_probability)
-  console.log(size)
-  console.log(env.beta)
-  console.log('ppf', env.ppf((draw_probability + 1) / 2))
-  console.log('Math.sqrt(size)', Math.sqrt(size))
-  console.log('wtf', env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta)
   return env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta;
 }
 
@@ -141,12 +134,9 @@ export class TrueSkill {
    * "W" calculates a variation of a standard deviation.
    */
   w_win(diff, draw_margin) {
-    console.log('draw_margin', diff, draw_margin)
     const x = diff - draw_margin;
     const v = this.v_win(diff, draw_margin);
-    console.log(v, x)
     const w = v * (v + x);
-    console.log(w)
     if (0 < w && w < 1) {
       return w;
     }
@@ -194,17 +184,14 @@ export class TrueSkill {
     const sortedRatingGroups = []
     const sortedRanks = []
     const sortedWeights = []
-    console.log('sorting0', sorting[0])
     for (const [x, [g, r, w]] of zip) {
       sortedRatingGroups.push(g)
       sortedRanks.push(r)
       // make weights to be greater than 0
       const max = _.map(w, (_w) => _.max([min_delta, _w]));
-      console.log('PUSHING', max)
       sortedWeights.push(max);
     }
     // build factor graph
-    console.log('sorted_weights', sortedWeights)
     const builders = this.factorGraphBuilders(sortedRatingGroups, sortedRanks, sortedWeights);
     const layers = this.run_schedule(
       builders[0],
@@ -291,10 +278,7 @@ export class TrueSkill {
    */
   factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: any[]) {
     const flattenRatings = _.flatten(ratingGroups);
-    console.log('flattenRatings', flattenRatings)
-    console.log('weights', weights)
     const flattenWeights = _.flatten(weights);
-    console.log('flattenWeights1', flattenWeights)
     const size = flattenRatings.length;
     const groupSize = ratingGroups.length;
     // create variables
@@ -307,7 +291,6 @@ export class TrueSkill {
     const _that: TrueSkill = this;
     function build_rating_layer() {
       return _.map(_.zip(ratingVars, flattenRatings), (n) => {
-        console.log('build_rating_layer')
         let [rating_var, rating] = n;
         return new PriorFactor(rating_var, rating, _that.tau);
       });
@@ -322,8 +305,6 @@ export class TrueSkill {
       let team = 0;
       return _.map(teamPerfVars, (team_perf_var) => {
         let start;
-        console.log('team_sizes', team_sizes)
-        console.log('team', team)
         if (team > 0) {
           start = team_sizes[team - 1];
         } else {
@@ -331,11 +312,8 @@ export class TrueSkill {
         }
         const end = team_sizes[team];
         const child_perf_vars = _.slice(perfVars, start, end);
-        console.log(start, end)
-        console.log('flattenWeights', flattenWeights)
         const coeffs = _.slice(flattenWeights, start, end);
         team = team + 1;
-        console.log('coeffs', coeffs.length)
         return new SumFactor(team_perf_var, child_perf_vars, coeffs);
       });
     }
@@ -355,7 +333,6 @@ export class TrueSkill {
         const lengths = _.slice(ratingGroups, x, x + 2).map((n) => n.length);
         const size = _.sum(lengths)
         const draw_margin = calc_draw_margin(draw_probability, size, _that);
-        console.log('draw_margin1', draw_margin)
         let v_func, w_func;
         if (ranks[x] === ranks[x+1]) {
           v_func = (a, b) => _that.v_draw(a, b);
@@ -400,7 +377,6 @@ export class TrueSkill {
         layers_built.push(res);
       }
       layers.concat(layers_built);
-      console.log('layers_built', JSON.stringify(layers_built));
       return layers_built;
     }
     const layers_built = build([
@@ -410,7 +386,6 @@ export class TrueSkill {
     ]);
     const [rating_layer, perf_layer, team_perf_layer] = layers_built;
     for (let f of _.flatten(layers_built)) {
-      // console.log(f);
       f.down();
     }
     // arrow #1, #2, #3
