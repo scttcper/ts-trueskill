@@ -27,7 +27,13 @@ const DELTA = 0.0001;
  * Calculates a draw-margin from the given ``draw_probability``
  */
 export function calc_draw_margin(draw_probability, size: number, env: TrueSkill = global_env()) {
-  console.log('gaussian.ppf', gaussian.ppf)
+  console.log('env.ppf', env.ppf)
+  console.log(draw_probability)
+  console.log(size)
+  console.log(env.beta)
+  console.log('ppf', env.ppf((draw_probability + 1) / 2))
+  console.log('Math.sqrt(size)', Math.sqrt(size))
+  console.log('wtf', env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta)
   return env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta;
 }
 
@@ -77,9 +83,9 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
-  ppf = gaussian(0, 1).ppf;
-  pdf = gaussian(0, 1).pdf;
-  cdf = gaussian(0, 1).cdf;
+  ppf = (x) => gaussian(0, 1).ppf(x);
+  pdf = (x) => gaussian(0, 1).pdf(x);
+  cdf = (x) => gaussian(0, 1).cdf(x);
 
   constructor(
     mu = MU,
@@ -135,10 +141,10 @@ export class TrueSkill {
    * "W" calculates a variation of a standard deviation.
    */
   w_win(diff, draw_margin) {
+    console.log('draw_margin', diff, draw_margin)
     const x = diff - draw_margin;
     const v = this.v_win(diff, draw_margin);
     const w = v * (v + x);
-    console.log(w)
     if (0 < w && w < 1) {
       return w;
     }
@@ -351,6 +357,7 @@ export class TrueSkill {
         const lengths = _.slice(ratingGroups, x, x + 2).map((n) => n.length);
         const size = _.sum(lengths)
         const draw_margin = calc_draw_margin(draw_probability, size, _that);
+        console.log('draw_margin1', draw_margin)
         let v_func, w_func;
         if (ranks[x] === ranks[x+1]) {
           v_func = (a, b) => _that.v_draw(a, b);

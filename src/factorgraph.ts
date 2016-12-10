@@ -185,10 +185,13 @@ export class TruncateFactor extends Factor {
   v_func;
   w_func;
   draw_margin;
-  constructor(v, v_func, w_func, draw_margin) {
+  constructor(v, v_func, w_func, draw_margin: number) {
     super([v]);
     this.v_func = v_func;
     this.w_func = w_func;
+    if (_.isNaN(draw_margin)) {
+      throw new Error('NAN')
+    }
     this.draw_margin = draw_margin;
   }
   up() {
@@ -197,6 +200,8 @@ export class TruncateFactor extends Factor {
     const div = val.div(msg);
     const sqrt_pi = Math.sqrt(div.pi);
     const v = this.v_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
+    console.log('this.draw_margin', this.draw_margin)
+    console.log(div.tau / sqrt_pi, this.draw_margin * sqrt_pi)
     const w = this.w_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
     const denom = (1.0 - w);
     const pi = div.pi / denom;
