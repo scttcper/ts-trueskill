@@ -33,11 +33,14 @@ export class Gaussian {
   }
 
   mul(other: Gaussian) {
-    const [pi, tau] = [this.pi + other.pi, this.tau + other.tau];
+    const pi = this.pi + other.pi;
+    const tau = this.tau + other.tau;
     return new Gaussian(pi, tau);
   }
   div(other: Gaussian) {
-    const [pi, tau] = [this.pi - other.pi, this.tau - other.tau];
+    console.log(other)
+    const pi = this.pi - other.pi;
+    const tau = this.tau - other.tau;
     return new Gaussian(pi, tau);
   }
   eq(other: Gaussian) {

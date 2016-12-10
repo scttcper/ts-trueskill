@@ -11,7 +11,8 @@ export class Variable extends Gaussian {
   }
   set(val) {
     const delta = this.delta(val);
-    [this.pi, this.tau] = [val.pi, val.tau]
+    this.pi = val.pi;
+    this.tau = val.tau;
     return delta;
   }
   delta(other) {
@@ -27,7 +28,9 @@ export class Variable extends Gaussian {
     tau=0,
     message?: Gaussian
   ) {
-    message = message || new Gaussian(pi=pi, tau=tau);
+    if (!message) {
+      message = new Gaussian(null, null, pi, tau);
+    }
     let old_message = this.messages[factor.toString()];
     this.messages[factor.toString()] = message;
     console.log('old_message', old_message);
@@ -35,8 +38,10 @@ export class Variable extends Gaussian {
     return this.set(this.div(old_message.mul(message)));
   }
   updateValue(factor:TruncateFactor | PriorFactor, pi=0, tau=0, value?: Gaussian) {
-    value = value || new Gaussian(pi=pi, tau=tau);
-    const old_message = this[factor.toString()];
+    if (!value) {
+      value = new Gaussian(null, null, pi, tau);
+    }
+    const old_message = this.messages[factor.toString()];
     this.messages[factor.toString()] = value.mul(old_message).div(this);
     return this.set(value);
   }
@@ -101,14 +106,14 @@ export class LikelihoodFactor extends Factor {
     return 1.0 / (1.0 + this.variance * v.pi);
   }
   down() {
-    const msg = this.mean.div(this.mean[this.toString()]);
+    const msg = this.mean.div(this.mean.messages[this.toString()]);
     const a = this.calc_a(msg);
     console.log('A!!!!', a * msg.tau)
     console.log('value', this.value)
     return this.value.updateMessage(this, a * msg.pi, a * msg.tau);
   }
   up() {
-    const msg = this.value.div(this.value[this.toString()]);
+    const msg = this.value.div(this.value.messages[this.toString()]);
     const a = this.calc_a(msg);
     return this.mean.updateMessage(this, a * msg.pi, a * msg.tau);
   }
@@ -127,7 +132,7 @@ export class SumFactor extends Factor {
   }
   down() {
     const vals = this.terms;
-    const msgs = _.map(vals, (v) => v[this.toString()]);
+    const msgs = _.map(vals, (v) => v.messages[this.toString()]);
     return this.update(this.sum, vals, msgs, this.coeffs);
   }
   up(index = 0) {
@@ -153,7 +158,9 @@ export class SumFactor extends Factor {
     let pi_inv = 0;
     let mu = 0;
     // not sure why _.zip types were so angry
-    const zipped: any[][] = vals.map((n, index) => [n, msgs[index], coeffs[index]])
+    console.log('msgs', msgs)
+    const zipped: any[][] = vals.map((n, index) => [n, msgs[index], coeffs[index]]);
+    console.log(zipped)
     let val: Variable, msg: Gaussian, coeff: number;
     for ([val, msg, coeff] of zipped) {
       const div = val.div(msg);
