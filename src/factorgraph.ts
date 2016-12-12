@@ -24,10 +24,10 @@ export class Variable extends Gaussian {
     return _.max([Math.abs(this.tau - other.tau), Math.sqrt(pi_delta)]);
   }
   updateMessage(
-    factor:LikelihoodFactor | SumFactor | PriorFactor,
-    pi=0,
-    tau=0,
-    message?: Gaussian
+    factor: LikelihoodFactor | SumFactor | PriorFactor,
+    pi = 0,
+    tau = 0,
+    message?: Gaussian,
   ) {
     message = message || new Gaussian(null, null, pi, tau);
     const old_message = this.messages[factor.toString()];
@@ -35,7 +35,7 @@ export class Variable extends Gaussian {
     const res = this.set(this.div(old_message).mul(message));
     return res;
   }
-  updateValue(factor:TruncateFactor | PriorFactor, pi=0, tau=0, value?: Gaussian) {
+  updateValue(factor: TruncateFactor | PriorFactor, pi = 0, tau = 0, value?: Gaussian) {
     if (!value) {
       value = new Gaussian(null, null, pi, tau);
     }
@@ -67,19 +67,19 @@ export class Factor {
     return 0;
   }
   get v() {
-    assert(this.vars.length == 1);
+    assert(this.vars.length === 1);
     return this.vars[0];
   }
   toString() {
     const s = this.vars.length === 1 ? '' : 's';
-    return `<${this.constructor.name} with ${this.vars.length} connection${s} ${this.uuid}>`
+    return `<${this.constructor.name} with ${this.vars.length} connection${s} ${this.uuid}>`;
   }
 }
 
 export class PriorFactor extends Factor {
   val;
   dynamic;
-  constructor(v, val, dynamic=0) {
+  constructor(v, val, dynamic = 0) {
     super([v]);
     this.val = val;
     this.dynamic = dynamic;
@@ -87,7 +87,7 @@ export class PriorFactor extends Factor {
   down() {
     const sigma = Math.sqrt(this.val.sigma ** 2 + this.dynamic ** 2);
     const value = new Gaussian(this.val.mu, sigma);
-    return this.v.updateValue(this, undefined, undefined, value)
+    return this.v.updateValue(this, undefined, undefined, value);
   }
 }
 
@@ -123,12 +123,6 @@ export class SumFactor extends Factor {
 
   constructor(sum_var: Variable, term_vars: Variable[], coeffs: number[]) {
     super([sum_var].concat(term_vars));
-    if (term_vars.length !== coeffs.length) {
-      throw new Error('NOT EQUAL')
-    }
-    if (sum_var.mu === 59.88041923351631) {
-      throw new Error('AGAIN?? 59.88041923351631')
-    }
     this.sum = sum_var;
     this.terms = term_vars;
     this.coeffs = coeffs;
@@ -165,7 +159,9 @@ export class SumFactor extends Factor {
     let mu = 0;
     // not sure why _.zip types were so angry
     const zipped: any[][] = _.zip<Variable|Gaussian|number>(vals, msgs, coeffs);
-    let val: Variable, msg: Gaussian, coeff: number;
+    let val: Variable;
+    let msg: Gaussian;
+    let coeff: number;
     for ([val, msg, coeff] of zipped) {
       const div = val.div(msg);
       mu += coeff * div.mu;
@@ -188,9 +184,6 @@ export class TruncateFactor extends Factor {
     super([v]);
     this.v_func = v_func;
     this.w_func = w_func;
-    if (_.isNaN(draw_margin)) {
-      throw new Error('NAN')
-    }
     this.draw_margin = draw_margin;
   }
   up() {

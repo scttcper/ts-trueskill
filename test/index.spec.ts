@@ -23,13 +23,28 @@ import { Gaussian, Matrix } from '../src/mathematics';
 //
 describe('TrueSkill', function () {
   it('should create rating', function (done) {
-    const [r1, r2, r3] = [new Rating(),  new Rating(), new Rating()];
-    const rated = rate([[r1, r2], [r3]]);
+    const [team1, team2] = [[
+      new Rating(),
+      new Rating(),
+      new Rating(),
+      new Rating(),
+      new Rating(),
+    ], [
+      new Rating(),
+      new Rating(),
+      new Rating(),
+      new Rating(),
+      new Rating(),
+    ]];
+    const rated = rate([team1, team2]);
+    console.log("RESULT", rated[0][0].toString())
+    console.log("RESULT", rated[1][0].toString())
     expect(rated.length).to.eq(2);
     expect(rated[0]).to.be.instanceof(Array);
     expect(rated[1]).to.be.instanceof(Array);
-    expect(rated[0]).length.to.eq(2);
-    expect(rated[1]).length.to.eq(1);
+    expect(rated[0].length).to.eq(5);
+    expect(rated[1].length).to.eq(5);
+    done();
   });
 });
 

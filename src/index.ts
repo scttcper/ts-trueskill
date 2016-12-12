@@ -205,7 +205,7 @@ export class TrueSkill {
     const team_sizes = _teamSizes(sortedRatingGroups);
     const transformed_groups = [];
     const trimmed = _.slice(team_sizes, 0, team_sizes.length - 1);
-    for (let [start, end] of _.zip([0], trimmed, team_sizes)) {
+    for (let [start, end] of _.zip([0].concat(trimmed), team_sizes)) {
       const group = [];
       let f: PriorFactor;
       for (f of _.slice(rating_layer, start, end)) {
@@ -222,7 +222,7 @@ export class TrueSkill {
     if (!keys) {
       const res = [];
       for (let [x, g] of unsorting) {
-        res.push(x);
+        res.push(g);
       }
       return res;
     }

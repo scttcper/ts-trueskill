@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha --require ts-node/register test/*.spec.ts",
-    "coverage": "nyc npm test"
+    "coverage": "nyc npm test",
+    "lint": "tslint \"src/**/*.ts\""
   },
   "dependencies": {
     "@types/uuid": "^2.0.29",
