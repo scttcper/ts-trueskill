@@ -44,6 +44,9 @@ describe('TrueSkill', function () {
     expect(rated[1]).to.be.instanceof(Array);
     expect(rated[0].length).to.eq(5);
     expect(rated[1].length).to.eq(5);
+    const rated2 = rate([rated[1], rated[0]]);
+    console.log("RESULT", rated2[0][0].toString())
+    console.log("RESULT", rated2[1][0].toString())
     done();
   });
 });

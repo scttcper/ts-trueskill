@@ -46,8 +46,6 @@ function _teamSizes(ratingGroups) {
  * The default mu and sigma value follows the global environment's settings.
  * If you don't want to use the global, use :meth:`TrueSkill.create_rating` to
  * create the rating object.
- * :param mu: the mean.
- * :param sigma: the standard deviation.
  */
 export class Rating extends Gaussian {
   constructor(mu = null, sigma = null) {
@@ -69,6 +67,21 @@ export class Rating extends Gaussian {
   }
 }
 
+/**
+ * Implements a TrueSkill environment.  An environment could have
+ * customized constants.  Every games have not same design and may need to
+ * customize TrueSkill constants.
+ *
+ * For example, 60% of matches in your game have finished as draw then you
+ * should set ``draw_probability`` to 0.60::
+ *
+ * env = TrueSkill(draw_probability=0.60)
+ *
+ * For more details of the constants, see `The Math Behind TrueSkill`_ by
+ * Jeff Moser.
+ *
+ * .. _The Math Behind TrueSkill:: http://bit.ly/trueskill-math
+ */
 export class TrueSkill {
   mu: number;
   sigma: number;
