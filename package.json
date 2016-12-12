@@ -11,9 +11,11 @@
     "coverage": "nyc npm test"
   },
   "dependencies": {
+    "@types/uuid": "^2.0.29",
     "gaussian": "^1.1.0",
     "mathjs": "^3.8.0",
-    "node-matrices": "^1.0.0"
+    "node-matrices": "^1.0.0",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "@types/chai": "^3.4.34",

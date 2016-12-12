@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import * as _ from 'lodash';
+const uuid = require('uuid/v4');
 
 import { Gaussian } from './mathematics';
 
@@ -15,7 +16,7 @@ export class Variable extends Gaussian {
     this.tau = val.tau;
     return delta;
   }
-  delta(other) {
+  delta(other: Variable) {
     const pi_delta = Math.abs(this.pi - other.pi);
     if (pi_delta === Infinity) {
       return 0;
@@ -31,7 +32,8 @@ export class Variable extends Gaussian {
     message = message || new Gaussian(null, null, pi, tau);
     const old_message = this.messages[factor.toString()];
     this.messages[factor.toString()] = message;
-    return this.set(this.div(old_message).mul(message));
+    const res = this.set(this.div(old_message).mul(message));
+    return res;
   }
   updateValue(factor:TruncateFactor | PriorFactor, pi=0, tau=0, value?: Gaussian) {
     if (!value) {
@@ -50,6 +52,7 @@ export class Variable extends Gaussian {
 }
 
 export class Factor {
+  uuid = uuid();
   vars: Variable[];
   constructor(vars: Variable[]) {
     this.vars = vars;
@@ -69,7 +72,7 @@ export class Factor {
   }
   toString() {
     const s = this.vars.length === 1 ? '' : 's';
-    return `<${this.constructor.name} with ${this.vars.length} connection${s}>`
+    return `<${this.constructor.name} with ${this.vars.length} connection${s} ${this.uuid}>`
   }
 }
 
@@ -123,14 +126,17 @@ export class SumFactor extends Factor {
     if (term_vars.length !== coeffs.length) {
       throw new Error('NOT EQUAL')
     }
+    if (sum_var.mu === 59.88041923351631) {
+      throw new Error('AGAIN?? 59.88041923351631')
+    }
     this.sum = sum_var;
     this.terms = term_vars;
     this.coeffs = coeffs;
   }
   down() {
-    const vals = this.terms;
-    const msgs = _.map(vals, (v) => v.messages[this.toString()]);
-    return this.update(this.sum, vals, msgs, this.coeffs);
+    const msgs: Gaussian[] = _.map(this.terms, (v) => v.messages[this.toString()]);
+    const res = this.update(this.sum, this.terms, msgs, this.coeffs);
+    return res;
   }
   up(index = 0) {
     const coeff = this.coeffs[index];
@@ -144,11 +150,14 @@ export class SumFactor extends Factor {
         p = -c / coeff;
       }
       p = _.isFinite(p) ? p : 0;
+      if (coeff === 0) {
+        p = 0;
+      }
       coeffs.push(p);
     }
-    const vals = _.clone(this.terms);
+    const vals = _.cloneDeep(this.terms);
     vals[index] = this.sum;
-    const msgs = _.map(vals, (v) => v.messages[this.toString()]);
+    const msgs: Gaussian[] = _.map(vals, (v) => v.messages[this.toString()]);
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
   update(v: Variable, vals: Variable[], msgs: Gaussian[], coeffs: number[]) {
@@ -156,19 +165,16 @@ export class SumFactor extends Factor {
     let mu = 0;
     // not sure why _.zip types were so angry
     const zipped: any[][] = _.zip<Variable|Gaussian|number>(vals, msgs, coeffs);
-    console.log('msgs', msgs)
-    // TODO: find out why msgs is blank??
     let val: Variable, msg: Gaussian, coeff: number;
     for ([val, msg, coeff] of zipped) {
-      console.log(val, msg)
       const div = val.div(msg);
       mu += coeff * div.mu;
       if (!_.isFinite(pi_inv)) {
         continue;
       }
-      pi_inv = pi_inv + (coeff ** 2 / div.pi);
+      pi_inv += coeff ** 2 / div.pi;
     }
-    const pi = 1 / pi_inv;
+    const pi = 1.0 / pi_inv;
     const tau = pi * mu;
     return v.updateMessage(this, pi, tau);
   }

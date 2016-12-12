@@ -5,11 +5,11 @@ import * as _ from 'lodash';
  */
 export class Gaussian {
   /** Precision, the inverse of the variance. */
-  _pi = 0;
+  pi = 0;
   /** Precision adjusted mean, the precision multiplied by the mean. */
   tau = 0;
   constructor(mu: number = null, sigma: number = null, pi = 0, tau = 0) {
-    console.log('Gaussian', mu, sigma, pi, tau)
+    // console.log('GAUSSIAN', mu, sigma, pi, tau)
     if (mu !== null) {
       if (sigma === null) {
         throw new TypeError('sigma argument is needed');
@@ -21,18 +21,9 @@ export class Gaussian {
     }
     this.pi = pi;
     this.tau = tau;
-    if (_.isNaN(this.pi)) {
+    if (_.isNaN(this.pi) || _.isNaN(this.tau)) {
       throw new Error('NAN');
     }
-    if (_.isNaN(this.tau)) {
-      throw new Error('NAN');
-    }
-  }
-  get pi() {
-    return this._pi;
-  }
-  set pi(value) {
-    this._pi = value;
   }
 
   /** A property which returns the mean. */
@@ -49,17 +40,9 @@ export class Gaussian {
   mul(other: Gaussian) {
     const pi = this.pi + other.pi;
     const tau = this.tau + other.tau;
-    if (pi === 0 && tau === 0) {
-      throw new Error('NOPE')
-    }
-    console.log('mul', pi, tau)
     return new Gaussian(null, null, pi, tau);
   }
   div(other: Gaussian) {
-    console.log('div')
-    if (this.pi === 0 && other.pi !== 0) {
-      throw new Error('wtffff')
-    }
     const pi = this.pi - other.pi;
     const tau = this.tau - other.tau;
     return new Gaussian(null, null, pi, tau);
@@ -77,16 +60,19 @@ export class Gaussian {
     return this.mu > other.mu;
   }
   ge(other: Gaussian) {
-    return this.mu >= other.mu
+    return this.mu >= other.mu;
   }
   toString() {
-    return `N(mu=${this.mu}, sigma=${this.sigma})`;
+    const mu = _.round(this.mu, 3);
+    let sigma = this.sigma;
+    if (sigma !== Infinity) {
+      sigma = _.round(this.sigma, 3);
+    }
+    return `N(mu=${mu}, sigma=${sigma})`;
   }
 }
 
 export class Matrix {
   matrix: number[][];
-  constructor(src, height = 0, width = 0) {
-
-  }
+  constructor(src, height = 0, width = 0) {}
 }

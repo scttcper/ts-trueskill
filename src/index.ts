@@ -1,14 +1,14 @@
 import * as _ from 'lodash';
-const gaussian = require('gaussian');
+const gaus = require('gaussian');
 
-import { Gaussian } from './mathematics';
 import {
-  Variable,
-  PriorFactor,
   LikelihoodFactor,
+  PriorFactor,
   SumFactor,
   TruncateFactor,
+  Variable,
 } from './factorgraph';
+import { Gaussian } from './mathematics';
 
 // Default initial mean of ratings.
 const MU = 25;
@@ -27,7 +27,6 @@ const DELTA = 0.0001;
  * Calculates a draw-margin from the given ``draw_probability``
  */
 export function calc_draw_margin(draw_probability, size: number, env: TrueSkill = global_env()) {
-  console.log('calc_draw_margin',draw_probability, size);
   return env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta;
 }
 
@@ -51,7 +50,7 @@ function _teamSizes(ratingGroups) {
  * :param sigma: the standard deviation.
  */
 export class Rating extends Gaussian {
-  constructor(mu=null, sigma=null) {
+  constructor(mu = null, sigma = null) {
     if (Array.isArray(mu)) {
       [mu, sigma] = mu;
     } else if (mu instanceof Gaussian) {
@@ -77,9 +76,9 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
-  ppf = (x) => gaussian(0, 1).ppf(x);
-  pdf = (x) => gaussian(0, 1).pdf(x);
-  cdf = (x) => gaussian(0, 1).cdf(x);
+  ppf: Function;
+  pdf: Function;
+  cdf: Function;
 
   constructor(
     mu = MU,
@@ -95,6 +94,9 @@ export class TrueSkill {
     this.tau = tau;
     this.drawProbability = drawProbability;
     this.backend = backend;
+    this.ppf = (x) => gaus(0, 1).ppf(x);
+    this.pdf = (x) => gaus(0, 1).pdf(x);
+    this.cdf = (x) => gaus(0, 1).cdf(x);
   }
 
   /**
@@ -104,13 +106,7 @@ export class TrueSkill {
    * >>> env.createRating()
    * trueskill.Rating(mu=0.000, sigma=1.000)
    */
-  createRating(mu?, sigma?) {
-    if (!mu) {
-        mu = this.mu;
-    }
-    if (!sigma) {
-      sigma = this.sigma;
-    }
+  createRating(mu = this.mu, sigma = this.sigma) {
     return new Rating(mu, sigma);
   }
 
@@ -128,17 +124,16 @@ export class TrueSkill {
     const [a, b] = [draw_margin - abs_diff, -draw_margin - abs_diff];
     const denom = this.cdf(a) - this.cdf(b);
     const numer = this.pdf(b) - this.pdf(a);
-    return (denom ? (numer / denom) : a) * (diff < 0 ? -1 : +1)
+    return (denom ? (numer / denom) : a) * (diff < 0 ? -1 : +1);
   }
   /**
    * The non-draw version of "W" function.
    * "W" calculates a variation of a standard deviation.
    */
   w_win(diff, draw_margin) {
-    console.log('w_win', diff, draw_margin)
-    if (diff !== 1.5491313744672435) {
-      throw new Error('wtf')
-    }
+    // if (diff !== 1.5491313744672435) {
+    //   throw new Error('wtf')
+    // }
     const x = diff - draw_margin;
     const v = this.v_win(diff, draw_margin);
     const w = v * (v + x);
@@ -168,10 +163,10 @@ export class TrueSkill {
   rate(ratingGroups: any[][], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
     let keys;
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    weights = this.validate_weights(weights, ratingGroups, keys)
+    weights = this.validate_weights(weights, ratingGroups, keys);
     const groupSize = ratingGroups.length;
     if (ranks === null) {
-      ranks = _.range(groupSize)
+      ranks = _.range(groupSize);
     } else if (ranks.length !== groupSize) {
       throw new Error('Wrong ranks');
     }
@@ -184,14 +179,14 @@ export class TrueSkill {
       return y;
     });
     const sorting = _.orderBy(zip, (x) => {
-      return x[1][1]
+      return x[1][1];
     });
-    const sortedRatingGroups = []
-    const sortedRanks = []
-    const sortedWeights = []
+    const sortedRatingGroups = [];
+    const sortedRanks = [];
+    const sortedWeights = [];
     for (const [x, [g, r, w]] of zip) {
-      sortedRatingGroups.push(g)
-      sortedRanks.push(r)
+      sortedRatingGroups.push(g);
+      sortedRanks.push(r);
       // make weights to be greater than 0
       const max = _.map(w, (_w) => _.max([min_delta, _w]));
       sortedWeights.push(max);
@@ -204,16 +199,17 @@ export class TrueSkill {
       builders[2],
       builders[3],
       builders[4],
-      min_delta
-    )
+      min_delta,
+    );
     const rating_layer: any[] = layers[0];
     const team_sizes = _teamSizes(sortedRatingGroups);
     const transformed_groups = [];
     const trimmed = _.slice(team_sizes, 0, team_sizes.length - 1);
     for (let [start, end] of _.zip([0], trimmed, team_sizes)) {
       const group = [];
-      for (let f of _.slice(rating_layer, start, end)) {
-        group.push(new Rating(f.var.mu, f.var.sigma))
+      let f: PriorFactor;
+      for (f of _.slice(rating_layer, start, end)) {
+        group.push(new Rating(f.v.mu, f.v.sigma));
       }
       transformed_groups.push(group);
     }
@@ -222,7 +218,7 @@ export class TrueSkill {
       pulled.push(x);
     }
     const zipped = _.zip(pulled, transformed_groups);
-    const unsorting = _.sortBy(zipped, (n) => n[0]);
+    const unsorting = _.sortBy(zipped, (zi) => zi[0]);
     if (!keys) {
       const res = [];
       for (let [x, g] of unsorting) {
@@ -236,8 +232,6 @@ export class TrueSkill {
     }
     return res;
   }
-
-
 
   /**
    * Validates a ``rating_groups`` argument.  It should contain more than
@@ -265,7 +259,7 @@ export class TrueSkill {
     }
     ratingGroups = _.toArray(ratingGroups);
     const keys = null;
-    return [ratingGroups, keys]
+    return [ratingGroups, keys];
   }
 
   validate_weights(weights: any[] = null, ratingGroups: any[][], keys) {
@@ -294,19 +288,19 @@ export class TrueSkill {
     const team_sizes = _teamSizes(ratingGroups);
     // layer builders
     const _that: TrueSkill = this;
-    function build_rating_layer() {
+    function build_rating_layer(): PriorFactor[] {
       return _.map(_.zip(ratingVars, flattenRatings), (n) => {
         let [rating_var, rating] = n;
         return new PriorFactor(rating_var, rating, _that.tau);
       });
     }
-    function build_perf_layer() {
+    function build_perf_layer(): LikelihoodFactor[] {
       return _.map(_.zip(ratingVars, perfVars), (n) => {
         let [rating_var, perf_var] = n;
-        return new LikelihoodFactor(rating_var, perf_var, _that.beta ** 2)
-      })
+        return new LikelihoodFactor(rating_var, perf_var, _that.beta ** 2);
+      });
     }
-    function build_team_perf_layer() {
+    function build_team_perf_layer(): SumFactor[] {
       let team = 0;
       return _.map(teamPerfVars, (team_perf_var) => {
         let start;
@@ -322,24 +316,25 @@ export class TrueSkill {
         return new SumFactor(team_perf_var, child_perf_vars, coeffs);
       });
     }
-    function build_team_diff_layer() {
+    function build_team_diff_layer(): SumFactor[] {
       let team = 0;
       return _.map(teamDiffVars, (team_diff_var) => {
-        const res = new SumFactor(team_diff_var, _.slice(teamPerfVars, team, team + 2), [+1, -1])
+        const sl = _.slice(teamPerfVars, team, team + 2);
+        const res = new SumFactor(team_diff_var, sl, [1, -1]);
         team = team + 1;
         return res;
       });
     }
-    function build_trunc_layer() {
+    function build_trunc_layer(): TruncateFactor[] {
       let x = 0;
       return _.map(teamDiffVars, (team_diff_var) => {
         // static draw probability
         const draw_probability = _that.drawProbability;
         const lengths = _.slice(ratingGroups, x, x + 2).map((n) => n.length);
-        const size = _.sum(lengths)
-        const draw_margin = calc_draw_margin(draw_probability, size, _that);
-        let v_func, w_func;
-        if (ranks[x] === ranks[x+1]) {
+        const draw_margin = calc_draw_margin(draw_probability, _.sum(lengths), _that);
+        let v_func;
+        let w_func;
+        if (ranks[x] === ranks[x + 1]) {
           v_func = (a, b) => _that.v_draw(a, b);
           w_func = (a, b) => _that.w_draw(a, b);
         } else {
@@ -357,7 +352,7 @@ export class TrueSkill {
       build_team_perf_layer,
       build_team_diff_layer,
       build_trunc_layer,
-    ]
+    ];
   }
   /**
    * Sends messages within every nodes of the factor graph
@@ -369,7 +364,7 @@ export class TrueSkill {
     build_team_perf_layer: Function,
     build_team_diff_layer: Function,
     build_trunc_layer: Function,
-    min_delta=DELTA,
+    min_delta = DELTA,
   ) {
     if (min_delta <= 0) {
       throw new Error('min_delta must be greater than 0');
@@ -381,7 +376,7 @@ export class TrueSkill {
         const res = builder();
         layers_built.push(res);
       }
-      layers.concat(layers_built);
+      layers.push(layers_built);
       return layers_built;
     }
     const layers_built = build([
@@ -389,13 +384,19 @@ export class TrueSkill {
       build_perf_layer,
       build_team_perf_layer,
     ]);
-    const [rating_layer, perf_layer, team_perf_layer] = layers_built;
-    for (let f of _.flatten(layers_built)) {
-      console.log(f.toString())
-      f.down();
+    let rating_layer: Rating[];
+    let perf_layer: LikelihoodFactor[];
+    let team_perf_layer: SumFactor[];
+    [rating_layer, perf_layer, team_perf_layer] = layers_built;
+    for (let layer of layers_built) {
+      for (let f of layer) {
+        f.down();
+      }
     }
     // arrow #1, #2, #3
-    const [team_diff_layer, trunc_layer] = build([
+    let team_diff_layer: SumFactor[];
+    let trunc_layer: TruncateFactor[];
+    [team_diff_layer, trunc_layer] = build([
       build_team_diff_layer,
       build_trunc_layer,
     ]);
@@ -412,6 +413,7 @@ export class TrueSkill {
         for (let z of _.range(team_diff_len - 1)) {
           team_diff_layer[z].down();
           delta = _.max([delta, trunc_layer[z].up()]);
+          team_diff_layer[z].up(1);
         }
         for (let z of _.range(team_diff_len - 1, 0, -1)) {
           team_diff_layer[z].down();
@@ -419,6 +421,7 @@ export class TrueSkill {
           team_diff_layer[z].up(0);
         }
       }
+      // repeat until to small update
       if (delta <= min_delta) {
         break;
       }
@@ -435,7 +438,7 @@ export class TrueSkill {
     for (let f of perf_layer) {
       f.up();
     }
-    return layers;
+    return _.flatten(layers);
   }
 }
 
@@ -454,8 +457,8 @@ export function global_env() {
 /**
  * Setups the global environment.
  */
-function setup(mu=MU, sigma=SIGMA, beta=BETA, tau=TAU,
-               draw_probability=DRAW_PROBABILITY, backend?, env?) {
+function setup(mu = MU, sigma = SIGMA, beta = BETA, tau = TAU,
+               draw_probability = DRAW_PROBABILITY, backend?, env?) {
   if (!env) {
     env = new TrueSkill(mu, sigma, beta, tau, draw_probability, backend);
   }
@@ -466,6 +469,6 @@ function setup(mu=MU, sigma=SIGMA, beta=BETA, tau=TAU,
 /**
  * A proxy function for :meth:`TrueSkill.rate` of the global environment.
  */
-export function rate(rating_groups, ranks?, weights?, min_delta=DELTA) {
-  return global_env().rate(rating_groups, ranks, weights, min_delta)
+export function rate(rating_groups, ranks?, weights?, min_delta = DELTA) {
+  return global_env().rate(rating_groups, ranks, weights, min_delta);
 }

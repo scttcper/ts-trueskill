@@ -25,7 +25,7 @@ describe('TrueSkill', function () {
   it('should create rating', function (done) {
     const [r1, r2, r3] = [new Rating(),  new Rating(), new Rating()];
     const rated = rate([[r1, r2], [r3]]);
-    expect(rated).length.to.eq(2);
+    expect(rated.length).to.eq(2);
     expect(rated[0]).to.be.instanceof(Array);
     expect(rated[1]).to.be.instanceof(Array);
     expect(rated[0]).length.to.eq(2);
