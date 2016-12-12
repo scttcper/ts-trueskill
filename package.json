@@ -7,6 +7,8 @@
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "build": "tsc -p .",
+    "build:watch": "tsc -p . -w",
     "test": "mocha --require ts-node/register test/*.spec.ts",
     "coverage": "nyc npm test",
     "lint": "tslint \"src/**/*.ts\""

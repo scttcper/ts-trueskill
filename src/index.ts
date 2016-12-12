@@ -173,7 +173,7 @@ export class TrueSkill {
   /**
    * Recalculates ratings by the ranking table
    */
-  rate(ratingGroups: any[][], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
+  rate(ratingGroups: Rating[][], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
     let keys;
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
     weights = this.validate_weights(weights, ratingGroups, keys);
@@ -247,35 +247,40 @@ export class TrueSkill {
   }
 
   /**
-   * Validates a ``rating_groups`` argument.  It should contain more than
-   * 2 groups and all groups must not be empty.
-   * >>> env = TrueSkill()
-   * >>> env.validate_rating_groups([])
-   * Traceback (most recent call last):
-   *   ...
-   * ValueError: need multiple rating groups
-   * >>> env.validate_rating_groups([(Rating(),)])
-   * Traceback (most recent call last):
-   *   ...
-   * ValueError: need multiple rating groups
-   * >>> env.validate_rating_groups([(Rating(),), ()])
-   * Traceback (most recent call last):
-   *   ...
-   * ValueError: each group must contain multiple ratings
-   * >>> env.validate_rating_groups([(Rating(),), (Rating(),)])
-   * ... #doctest: +ELLIPSIS
-   * [(truekill.Rating(...),), (trueskill.Rating(...),)]
+   * Calculates the match quality of the given rating groups. Result
+   * is the draw probability in the association::
+   *
+   *   env = TrueSkill()
+   *   if env.quality([team1, team2, team3]) < 0.50:
+   *       print('This match seems to be not so fair')
    */
-  validateRatingGroups(ratingGroups) {
+  quality(rating_groups: Rating[][], weights: number[]) {
+    let keys;
+    [rating_groups, keys] = this.validateRatingGroups(rating_groups);
+    weights = this.validate_weights(weights, rating_groups, keys);
+  }
+
+  /**
+   * Validates a rating_groups argument. It should contain more than
+   * 2 groups and all groups must not be empty.
+   */
+  validateRatingGroups(ratingGroups: Rating[][]) {
     if (ratingGroups.length < 2) {
       throw new Error('Need multiple rating groups');
     }
-    ratingGroups = _.toArray(ratingGroups);
+    for (let group of ratingGroups) {
+      if (group.length === 0) {
+        throw new Error('Each group must contain multiple ratings');
+      }
+      if (group instanceof Rating) {
+        throw new Error('Rating cannot be a rating group');
+      }
+    }
     const keys = null;
     return [ratingGroups, keys];
   }
 
-  validate_weights(weights: any[] = null, ratingGroups: any[][], keys) {
+  validate_weights(weights: any[] = null, ratingGroups: Rating[][], keys) {
     if (weights === null) {
       weights = _.map(ratingGroups, (n) => {
         return new Array(n.length).fill(1);
@@ -288,7 +293,7 @@ export class TrueSkill {
   /**
    * Makes nodes for the TrueSkill factor graph.
    */
-  factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: any[]) {
+  factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: number[]) {
     const flattenRatings = _.flatten(ratingGroups);
     const flattenWeights = _.flatten(weights);
     const size = flattenRatings.length;
@@ -482,6 +487,6 @@ function setup(mu = MU, sigma = SIGMA, beta = BETA, tau = TAU,
 /**
  * A proxy function for :meth:`TrueSkill.rate` of the global environment.
  */
-export function rate(rating_groups, ranks?, weights?, min_delta = DELTA) {
+export function rate(rating_groups: Rating[][], ranks?, weights?, min_delta = DELTA) {
   return global_env().rate(rating_groups, ranks, weights, min_delta);
 }
