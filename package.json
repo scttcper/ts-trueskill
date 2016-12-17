@@ -2,7 +2,7 @@
   "name": "ts-trueskill",
   "version": "0.0.1",
   "description": "typescript trueskill port",
-  "main": "build/index.js",
+  "main": "build/src/index.js",
   "repository": "https://github.com/scttcper/ts-trueskill.git",
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",

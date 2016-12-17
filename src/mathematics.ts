@@ -62,6 +62,9 @@ export class Gaussian {
   ge(other: Gaussian) {
     return this.mu >= other.mu;
   }
+  val() {
+    return [this.mu, this.sigma];
+  }
   toString() {
     const mu = _.round(this.mu, 3);
     let sigma = this.sigma;

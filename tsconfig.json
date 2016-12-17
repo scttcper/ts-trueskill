@@ -12,8 +12,7 @@
   },
   "exclude": [
     "node_modules",
-    "build",
-    "test"
+    "build"
   ],
   "compileOnSave": false
 }

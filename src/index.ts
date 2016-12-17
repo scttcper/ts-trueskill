@@ -44,20 +44,20 @@ function _teamSizes(ratingGroups) {
 
 /**
  * The default mu and sigma value follows the global environment's settings.
- * If you don't want to use the global, use :meth:`TrueSkill.create_rating` to
+ * If you don't want to use the global, use :meth:`TrueSkill.createRating` to
  * create the rating object.
  */
 export class Rating extends Gaussian {
-  constructor(mu = null, sigma = null) {
+  constructor(mu?, sigma?) {
     if (Array.isArray(mu)) {
       [mu, sigma] = mu;
     } else if (mu instanceof Gaussian) {
       [mu, sigma] = [mu.mu, mu.sigma];
     }
-    if (mu === null) {
+    if (!mu) {
       mu = global_env().mu;
     }
-    if (sigma === null) {
+    if (!sigma) {
       sigma = global_env().sigma;
     }
     super(mu, sigma);
@@ -89,27 +89,14 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
-  ppf: Function;
-  pdf: Function;
-  cdf: Function;
 
-  constructor(
-    mu = MU,
-    sigma = SIGMA,
-    beta = BETA,
-    tau = TAU,
-    drawProbability = DRAW_PROBABILITY,
-    backend?,
-  ) {
-    this.mu = mu;
-    this.sigma = sigma;
-    this.beta = beta;
-    this.tau = tau;
-    this.drawProbability = drawProbability;
+  constructor(mu?, sigma?, beta?, tau?, drawProbability?, backend?) {
+    this.mu = mu || MU;
+    this.sigma = sigma || SIGMA;
+    this.beta = beta || BETA;
+    this.tau = tau || TAU;
+    this.drawProbability = drawProbability || DRAW_PROBABILITY;
     this.backend = backend;
-    this.ppf = (x) => gaus(0, 1).ppf(x);
-    this.pdf = (x) => gaus(0, 1).pdf(x);
-    this.cdf = (x) => gaus(0, 1).cdf(x);
   }
 
   /**
@@ -293,7 +280,7 @@ export class TrueSkill {
   /**
    * Makes nodes for the TrueSkill factor graph.
    */
-  factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: number[]) {
+  factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: any[]) {
     const flattenRatings = _.flatten(ratingGroups);
     const flattenWeights = _.flatten(weights);
     const size = flattenRatings.length;
@@ -458,6 +445,15 @@ export class TrueSkill {
     }
     return _.flatten(layers);
   }
+  ppf(x) {
+    return gaus(0, 1).ppf(x);
+  }
+  pdf(x) {
+    return gaus(0, 1).pdf(x);
+  }
+  cdf(x) {
+    return gaus(0, 1).cdf(x);
+  }
 }
 
 export let __trueskill__: TrueSkill;
@@ -475,8 +471,15 @@ export function global_env() {
 /**
  * Setups the global environment.
  */
-function setup(mu = MU, sigma = SIGMA, beta = BETA, tau = TAU,
-               draw_probability = DRAW_PROBABILITY, backend?, env?) {
+export function setup(
+  mu = MU,
+  sigma = SIGMA,
+  beta = BETA,
+  tau = TAU,
+  draw_probability = DRAW_PROBABILITY,
+  backend?,
+  env?,
+) {
   if (!env) {
     env = new TrueSkill(mu, sigma, beta, tau, draw_probability, backend);
   }
@@ -487,6 +490,6 @@ function setup(mu = MU, sigma = SIGMA, beta = BETA, tau = TAU,
 /**
  * A proxy function for :meth:`TrueSkill.rate` of the global environment.
  */
-export function rate(rating_groups: Rating[][], ranks?, weights?, min_delta = DELTA) {
+export function rate(rating_groups: Rating[][], ranks?, weights?, min_delta = DELTA): Rating[][] {
   return global_env().rate(rating_groups, ranks, weights, min_delta);
 }

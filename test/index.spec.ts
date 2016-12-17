@@ -1,52 +1,60 @@
 import { expect } from 'chai';
 import * as _ from 'lodash';
 
-import { Rating, TrueSkill, rate } from '../src/index';
+import { Rating, TrueSkill, rate, setup } from '../src/index';
 import { Gaussian, Matrix } from '../src/mathematics';
 
-// function generate_teams(sizes, env = null) {
-//   const ratingCls = env ? env.createRating : Rating;
-//   return sizes.map((size) => {
-//     const ratingGroups = _.range(size).map(() => ratingCls());
-//     return ratingGroups;
-//   });
-// }
-// def generate_teams(sizes, env=None):
-//     rating_cls = Rating if env is None else env.create_rating
-//     rating_groups = []
-//     for size in sizes:
-//         ratings = []
-//         for x in range(size):
-//             ratings.append(rating_cls())
-//         rating_groups.append(tuple(ratings))
-//     return rating_groups
-//
+function generateTeams(sizes: number[], env?) {
+  return sizes.map((size) => {
+    if (env) {
+      return _.range(size).map(() => env.createRating());
+    }
+    return _.range(size).map(() => new Rating());
+  });
+}
+
 describe('TrueSkill', function () {
   it('should create rating', function (done) {
-    const [team1, team2] = [[
-      new Rating(),
-      new Rating(),
-      new Rating(),
-      new Rating(),
-      new Rating(),
-    ], [
-      new Rating(),
-      new Rating(),
-      new Rating(),
-      new Rating(),
-      new Rating(),
-    ]];
+    const [team1, team2] = generateTeams([5, 5]);
     const rated = rate([team1, team2]);
-    console.log("RESULT", rated[0][0].toString())
-    console.log("RESULT", rated[1][0].toString())
     expect(rated.length).to.eq(2);
     expect(rated[0]).to.be.instanceof(Array);
     expect(rated[1]).to.be.instanceof(Array);
     expect(rated[0].length).to.eq(5);
     expect(rated[1].length).to.eq(5);
     const rated2 = rate([rated[1], rated[0]]);
-    console.log("RESULT", rated2[0][0].toString())
-    console.log("RESULT", rated2[1][0].toString())
+    done();
+  });
+  it('should rate unsorted groups', function(done) {
+    const [t1, t2, t3] = generateTeams([1, 1, 1]);
+    const rated = rate([t1, t2, t3], [2, 1, 0]);
+    expect(rated[0][0].val()[0]).to.be.closeTo(18.325, 0.001);
+    expect(rated[0][0].val()[1]).to.be.closeTo(6.656, 0.001);
+    expect(rated[1][0].val()[0]).to.be.closeTo(25.000, 0.001);
+    expect(rated[1][0].val()[1]).to.be.closeTo(6.208, 0.001);
+    expect(rated[2][0].val()[0]).to.be.closeTo(31.675, 0.001);
+    expect(rated[2][0].val()[1]).to.be.closeTo(6.656, 0.001);
+    done();
+  });
+  it('should use custom environment', function(done) {
+    const env = new TrueSkill(null, null, null, null, 0.50);
+    const [t1, t2] = generateTeams([1, 1], env);
+    const rated = env.rate([t1, t2]);
+    expect(rated[0][0].val()[0]).to.be.closeTo(30.267, 0.001);
+    expect(rated[0][0].val()[1]).to.be.closeTo(7.077, 0.001);
+    expect(rated[1][0].val()[0]).to.be.closeTo(19.733, 0.001);
+    expect(rated[1][0].val()[1]).to.be.closeTo(7.077, 0.001);
+    done();
+  });
+  it('should use global environment', function(done) {
+    setup(null, null, null, null, 0.50);
+    const [t1, t2] = generateTeams([1, 1]);
+    const rated = rate([t1, t2]);
+    expect(rated[0][0].val()[0]).to.be.closeTo(30.267, 0.001);
+    expect(rated[0][0].val()[1]).to.be.closeTo(7.077, 0.001);
+    expect(rated[1][0].val()[0]).to.be.closeTo(19.733, 0.001);
+    expect(rated[1][0].val()[1]).to.be.closeTo(7.077, 0.001);
+    setup();
     done();
   });
 });
