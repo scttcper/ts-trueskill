@@ -1,14 +1,11 @@
 # ts-trueskill
-[![Dependency Status][david-img]][david-url]
-[![build status][travis-img]][travis-url]
-[![coverage status][coveralls-img]][coveralls-url]
+[![build status][build-img]][build-url]
+[![coverage status][coverage-img]][coverage-url]
 
-[david-img]: https://img.shields.io/david/scttcper/ts-trueskill.svg
-[david-url]: https://david-dm.org/scttcper/ts-trueskill
-[travis-img]: https://img.shields.io/travis/scttcper/ts-trueskill.svg
-[travis-url]: https://travis-ci.org/scttcper/ts-trueskill
-[coveralls-img]: https://img.shields.io/coveralls/scttcper/ts-trueskill.svg
-[coveralls-url]: https://coveralls.io/github/scttcper/ts-trueskill?branch=master
+[build-img]: https://img.shields.io/travis/scttcper/ts-trueskill.svg
+[build-url]: https://travis-ci.org/scttcper/ts-trueskill
+[coverage-img]: https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg
+[coverage-url]: https://codecov.io/gh/scttcper/ts-trueskill
 
 TypeScript port of the python TrueSkill package by Heungsub Lee https://github.com/sublee/trueskill
 
