@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import * as math from 'mathjs';
 const gaus = require('gaussian');
 
 import {
@@ -8,7 +9,7 @@ import {
   TruncateFactor,
   Variable,
 } from './factorgraph';
-import { Gaussian } from './mathematics';
+import { Gaussian, Matrix } from './mathematics';
 
 // Default initial mean of ratings.
 const MU = 25;
@@ -238,13 +239,65 @@ export class TrueSkill {
    * is the draw probability in the association::
    *
    *   env = TrueSkill()
-   *   if env.quality([team1, team2, team3]) < 0.50:
-   *       print('This match seems to be not so fair')
+   *   if env.quality([team1, team2, team3]) < 0.50 {
+   *     console.log('This match seems to be not so fair')
+   *   }
    */
   quality(rating_groups: Rating[][], weights: number[]) {
     let keys;
     [rating_groups, keys] = this.validateRatingGroups(rating_groups);
     weights = this.validate_weights(weights, rating_groups, keys);
+    const flattenRatings = _.flatten(rating_groups);
+    const flattenWeights = _.flatten(weights);
+    const length = flattenRatings.length;
+    // a vector of all of the skill means
+    const mean_matrix = math.matrix(flattenRatings.map((r) => [r.mu]));
+    function fn_variance_matrix(height, width) {
+      const variances = flattenRatings.map((r) => r.sigma ** 2);
+      const matrix = math.matrix().resize([height, width]);
+      let i = 0;
+      for (let f of variances) {
+        matrix.set([i, i], f);
+        i++;
+      }
+      return matrix;
+    }
+    const variance_matrix = fn_variance_matrix(length, length);
+    function fn_rotated_a_matrix() {
+      let t = 0;
+      let r = 0;
+      let d;
+      const zipped = _.zip(
+        rating_groups.slice(0, rating_groups.length - 1),
+        rating_groups.slice(1),
+      );
+      const matrix = math.matrix();
+      for (const [cur, next] of zipped) {
+        let x;
+        for (x of _.range(t, t + cur.length)) {
+          matrix.set([r, x], flattenWeights[x]);
+          t += 1;
+        }
+        x += 1;
+        for (d of _.range(x, x + next.length)) {
+          matrix.set([r, d], -flattenWeights[d]);
+        }
+        r++;
+      }
+      return matrix;
+    }
+    const rotated_a_matrix = fn_rotated_a_matrix();
+    const a_matrix = math.transpose(rotated_a_matrix);
+    // match quality further derivation
+    const _ata = math.multiply([[this.beta ** 2]], math.multiply(rotated_a_matrix, a_matrix));
+    const _atsa = math.multiply(rotated_a_matrix, math.multiply(variance_matrix, a_matrix));
+    const start = math.multiply(math.transpose(mean_matrix), a_matrix);
+    const middle:any = math.add(_ata, _atsa);
+    const end = math.multiply(rotated_a_matrix, mean_matrix);
+    // make result
+    const e_arg = math.det(math.multiply(math.multiply([[-0.5]], start), end));
+    const s_arg = math.det(_ata) / math.det(middle);
+    return math.exp(e_arg) * math.sqrt(s_arg);
   }
 
   /**
@@ -492,4 +545,12 @@ export function setup(
  */
 export function rate(rating_groups: Rating[][], ranks?, weights?, min_delta = DELTA): Rating[][] {
   return global_env().rate(rating_groups, ranks, weights, min_delta);
+}
+
+/**
+ * A proxy function for :meth:`TrueSkill.quality` of the global
+ * environment.
+ */
+export function quality(rating_groups: Rating[][], weights?: number[]) {
+  return global_env().quality(rating_groups, weights);
 }

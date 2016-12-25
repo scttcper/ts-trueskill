@@ -15,24 +15,23 @@
   },
   "dependencies": {
     "gaussian": "^1.1.0",
-    "mathjs": "^3.8.0",
-    "node-matrices": "^1.0.0",
-    "uuid": "^3.0.1"
+    "mathjs": "^3.8.1",
+    "uuid": "^3.0.1",
+    "lodash": "^4.17.3"
   },
   "devDependencies": {
     "@types/chai": "^3.4.34",
-    "@types/lodash": "^4.14.43",
+    "@types/lodash": "^4.14.44",
     "@types/mathjs": "^0.0.31",
-    "@types/mocha": "^2.2.33",
-    "@types/node": "^0.0.2",
+    "@types/mocha": "^2.2.34",
+    "@types/node": "^6.0.53",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
     "coveralls": "^2.11.15",
-    "lodash": "^4.17.2",
     "mocha": "^3.2.0",
     "nyc": "^10.0.0",
     "ts-node": "^1.7.2",
-    "tslint": "^4.0.2",
+    "tslint": "^4.2.0",
     "typescript": "^2.1.4"
   },
   "nyc": {
