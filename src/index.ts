@@ -292,10 +292,16 @@ export class TrueSkill {
     const _ata = math.multiply([[this.beta ** 2]], math.multiply(rotated_a_matrix, a_matrix));
     const _atsa = math.multiply(rotated_a_matrix, math.multiply(variance_matrix, a_matrix));
     const start = math.multiply(math.transpose(mean_matrix), a_matrix);
-    const middle:any = math.add(_ata, _atsa);
+    const middle: any = math.add(_ata, _atsa);
     const end = math.multiply(rotated_a_matrix, mean_matrix);
     // make result
-    const e_arg = math.det(math.multiply(math.multiply([[-0.5]], start), end));
+    const e_arg = math.det(
+      math.multiply(
+        math.multiply([[-0.5]],
+          math.multiply(start, math.inv(middle))),
+          end,
+        ),
+      );
     const s_arg = math.det(_ata) / math.det(middle);
     return math.exp(e_arg) * math.sqrt(s_arg);
   }
