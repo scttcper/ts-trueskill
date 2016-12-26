@@ -118,8 +118,41 @@ describe('TrueSkill', function () {
   it('should test 1 vs n', function(done) {
     const [t1] = generateTeams([1]);
     // 1 vs 2
-    const [t2] = generateTeams([2]);
-    expect(quality([t1, t2])).to.closeTo(0.135, 0.01);
+    let [t2] = generateTeams([2]);
+    expect(quality([t1, t2])).to.be.closeTo(0.135, 0.01);
+    let [rt1, rt2] = rate([t1, t2]);
+    expect(rt1.length).to.eq(1);
+    expect(rt2.length).to.eq(2);
+    expect(rt1[0].mu).to.be.closeTo(33.730, 0.01);
+    expect(rt1[0].sigma).to.be.closeTo(7.317, 0.01);
+    for (let p of rt2) {
+      expect(p.mu).to.be.closeTo(16.270, 0.01);
+      expect(p.sigma).to.be.closeTo(7.317, 0.01);
+    }
+    // 1 vs 3
+    [t2] = generateTeams([3]);
+    expect(quality([t1, t2])).to.be.closeTo(0.012, 0.01);
+    [rt1, rt2] = rate([t1, t2]);
+    expect(rt1.length).to.eq(1);
+    expect(rt2.length).to.eq(3);
+    expect(rt1[0].mu).to.be.closeTo(36.337, 0.01);
+    expect(rt1[0].sigma).to.be.closeTo(7.527, 0.01);
+    for (let p of rt2) {
+      expect(p.mu).to.be.closeTo(13.663, 0.01);
+      expect(p.sigma).to.be.closeTo(7.527, 0.01);
+    }
+    // 1 vs 7
+    [t2] = generateTeams([7]);
+    expect(quality([t1, t2])).to.be.closeTo(0, 0.01);
+    [rt1, rt2] = rate([t1, t2]);
+    expect(rt1.length).to.eq(1);
+    expect(rt2.length).to.eq(7);
+    expect(rt1[0].mu).to.be.closeTo(40.582, 0.01);
+    expect(rt1[0].sigma).to.be.closeTo(7.917, 0.01);
+    for (let p of rt2) {
+      expect(p.mu).to.be.closeTo(9.418, 0.01);
+      expect(p.sigma).to.be.closeTo(7.917, 0.01);
+    }
     done();
   });
 });
