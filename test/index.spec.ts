@@ -58,28 +58,64 @@ describe('TrueSkill', function () {
     done();
   });
   it('should test quality', function(done) {
+    let p1, p2, p3, p4, p5, p6, p7, p8;
     // 1 vs 1
     let [t1, t2] = generateTeams([1, 1]);
-    const q = quality([t1, t2]);
+    let q = quality([t1, t2]);
     expect(q).to.be.closeTo(0.447, 0.01);
-    let [[x], [y]] = rate([t1, t2]);
-    expect(x.mu).to.be.closeTo(29.396, 0.01);
-    expect(x.sigma).to.be.closeTo(7.171, 0.01);
-    expect(y.mu).to.be.closeTo(20.604, 0.01);
-    expect(y.sigma).to.be.closeTo(7.171, 0.01);
+    [[p1], [p2]] = rate([t1, t2]);
+    expect(p1.mu).to.be.closeTo(29.396, 0.01);
+    expect(p1.sigma).to.be.closeTo(7.171, 0.01);
+    expect(p2.mu).to.be.closeTo(20.604, 0.01);
+    expect(p2.sigma).to.be.closeTo(7.171, 0.01);
     // 1 vs 1 draw
-    [[x], [y]] = rate([t1, t2], [0, 0]);
-    expect(x.mu).to.be.closeTo(25.000, 0.01);
-    expect(x.sigma).to.be.closeTo(6.458, 0.01);
-    expect(y.mu).to.be.closeTo(25.000, 0.01);
-    expect(y.sigma).to.be.closeTo(6.458, 0.01);
+    [[p1], [p2]] = rate([t1, t2], [0, 0]);
+    expect(p1.mu).to.be.closeTo(25.000, 0.01);
+    expect(p1.sigma).to.be.closeTo(6.458, 0.01);
+    expect(p2.mu).to.be.closeTo(25.000, 0.01);
+    expect(p2.sigma).to.be.closeTo(6.458, 0.01);
     // 2 vs 2
-    // [t1, t2] = generateTeams([2, 2]);
-    // [[x], [y]] = rate([t1, t2], [0, 0]);
-    // expect(x.mu).to.be.closeTo(25.000, 0.01);
-    // expect(x.sigma).to.be.closeTo(6.458, 0.01);
-    // expect(y.mu).to.be.closeTo(25.000, 0.01);
-    // expect(y.sigma).to.be.closeTo(6.458, 0.01);
+    [t1, t2] = generateTeams([2, 2]);
+    q = quality([t1, t2]);
+    expect(q).to.be.closeTo(0.447, 0.01);
+    let [rt1, rt2] = rate([t1, t2]);
+    expect(rt1.length).to.eq(2);
+    expect(rt2.length).to.eq(2);
+    for (let p of rt1) {
+      expect(p.mu).to.be.closeTo(28.108, 0.01);
+      expect(p.sigma).to.be.closeTo(7.774, 0.01);
+    }
+    for (let p of rt2) {
+      expect(p.mu).to.be.closeTo(21.892, 0.01);
+      expect(p.sigma).to.be.closeTo(7.774, 0.01);
+    }
+    // 2 vs 2 draw
+    [rt1, rt2] = rate([t1, t2], [0, 0]);
+    expect(rt1.length).to.eq(2);
+    expect(rt2.length).to.eq(2);
+    for (let p of rt1) {
+      expect(p.mu).to.be.closeTo(25.000, 0.01);
+      expect(p.sigma).to.be.closeTo(7.455, 0.01);
+    }
+    for (let p of rt2) {
+      expect(p.mu).to.be.closeTo(25.000, 0.01);
+      expect(p.sigma).to.be.closeTo(7.455, 0.01);
+    }
+    // 4 vs 4
+    [t1, t2] = generateTeams([4, 4]);
+    q = quality([t1, t2]);
+    expect(q).to.be.closeTo(0.447, 0.01);
+    [rt1, rt2] = rate([t1, t2]);
+    expect(rt1.length).to.eq(4);
+    expect(rt2.length).to.eq(4);
+    for (let p of rt1) {
+      expect(p.mu).to.be.closeTo(27.198, 0.01);
+      expect(p.sigma).to.be.closeTo(8.059, 0.01);
+    }
+    for (let p of rt2) {
+      expect(p.mu).to.be.closeTo(22.802, 0.01);
+      expect(p.sigma).to.be.closeTo(8.059, 0.01);
+    }
     done();
   });
 });
