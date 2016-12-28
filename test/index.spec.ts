@@ -13,6 +13,10 @@ function generateTeams(sizes: number[], env?) {
   });
 }
 
+function generateIndividual(size, env?) {
+  return generateTeams(Array(size).fill(1), env);
+}
+
 describe('TrueSkill', function () {
   it('should create rating', function (done) {
     const [team1, team2] = generateTeams([5, 5]);
@@ -153,6 +157,12 @@ describe('TrueSkill', function () {
       expect(p.mu).to.be.closeTo(9.418, 0.01);
       expect(p.sigma).to.be.closeTo(7.917, 0.01);
     }
+    done();
+  });
+  it('should test individual', function(done) {
+    // 3 players
+    const players = generateIndividual(3);
+    expect(quality(players)).to.eq(0.200);
     done();
   });
 });

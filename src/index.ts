@@ -289,7 +289,10 @@ export class TrueSkill {
     const rotated_a_matrix = fn_rotated_a_matrix();
     const a_matrix = math.transpose(rotated_a_matrix);
     // match quality further derivation
-    const _ata = math.multiply([[this.beta ** 2]], math.multiply(rotated_a_matrix, a_matrix));
+    const modified_rotated_a_matrix = rotated_a_matrix.map((value, index, matrix) => {
+      return this.beta ** 2 * value;
+    });
+    const _ata = math.multiply(modified_rotated_a_matrix, a_matrix);
     const _atsa = math.multiply(rotated_a_matrix, math.multiply(variance_matrix, a_matrix));
     const start = math.multiply(math.transpose(mean_matrix), a_matrix);
     const middle: any = math.add(_ata, _atsa);

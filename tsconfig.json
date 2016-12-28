@@ -14,8 +14,9 @@
     "node_modules",
     "build"
   ],
-  "files": [
-    "typings/mathjs.d.ts"
+  "include": [
+    "src/**/*",
+    "typings/*"
   ],
   "compileOnSave": false
 }
