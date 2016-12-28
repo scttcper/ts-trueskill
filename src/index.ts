@@ -230,7 +230,7 @@ export class TrueSkill {
    *     console.log('This match seems to be not so fair')
    *   }
    */
-  quality(rating_groups: Rating[][], weights: number[]) {
+  quality(rating_groups: Rating[][], weights: number[][]) {
     rating_groups = this.validateRatingGroups(rating_groups);
     weights = this.validate_weights(weights, rating_groups);
     const flattenRatings = _.flatten(rating_groups);
@@ -545,6 +545,6 @@ export function rate(rating_groups: Rating[][], ranks?, weights?, min_delta = DE
  * A proxy function for :meth:`TrueSkill.quality` of the global
  * environment.
  */
-export function quality(rating_groups: Rating[][], weights?: number[]) {
+export function quality(rating_groups: Rating[][], weights?: number[][]) {
   return global_env().quality(rating_groups, weights);
 }

@@ -244,6 +244,27 @@ describe('TrueSkill', function () {
   it('should test partial play', function() {
     const t1 = [new Rating()];
     const t2 = [new Rating(), new Rating()];
+    expect(rate([t1, t2], null, [[1], [1, 1]])).to.deep.eq(rate([t1, t2]));
+    compareRating(
+      rate([t1, t2], null, [[1], [1, 1]]),
+      [[33.730, 7.317], [16.270, 7.317], [16.270, 7.317]],
+    );
+    compareRating(
+      rate([t1, t2], null, [[0.5], [0.5, 0.5]]),
+      [[33.939, 7.312], [16.061, 7.312], [16.061, 7.312]],
+    );
+    compareRating(
+      rate([t1, t2], null, [[1], [0, 1]]),
+      [[29.440, 7.166], [25.000, 8.333], [20.560, 7.166]],
+    );
+    compareRating(
+      rate([t1, t2], null, [[1], [0.5, 1]]),
+      [[32.417, 7.056], [21.291, 8.033], [17.583, 7.056]],
+    );
+    // match quality of partial play
+    const t3 = [new Rating()];
+    expect(quality([t1, t2, t3], [[1], [0.25, 0.75], [1]])).to.closeTo(0.2, 0.001);
+    expect(quality([t1, t2, t3], [[1], [0.8, 0.9], [1]])).to.closeTo(0.0809, 0.001);
   });
 });
 
