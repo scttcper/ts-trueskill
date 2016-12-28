@@ -6,10 +6,11 @@ import { Gaussian, Matrix } from '../src/mathematics';
 
 function generateTeams(sizes: number[], env?) {
   return sizes.map((size) => {
+    const r = new Array(size).fill(0);
     if (env) {
-      return _.range(size).map(() => env.createRating());
+      return r.map(() => env.createRating());
     }
-    return _.range(size).map(() => new Rating());
+    return r.map(() => new Rating());
   });
 }
 
@@ -17,8 +18,17 @@ function generateIndividual(size, env?) {
   return generateTeams(Array(size).fill(1), env);
 }
 
+function compareRating(result: Rating[][], expected: number[][]) {
+  const res = _.flatten(result);
+  expect(result).to.be.instanceof(Array);
+  for (let team = 0; team < res.length; team++) {
+    expect(res[team].mu).to.be.closeTo(expected[team][0], 0.01);
+    expect(res[team].sigma).to.be.closeTo(expected[team][1], 0.01);
+  }
+}
+
 describe('TrueSkill', function () {
-  it('should create rating', function (done) {
+  it('should create rating', function () {
     const [team1, team2] = generateTeams([5, 5]);
     const rated = rate([team1, team2]);
     expect(rated.length).to.eq(2);
@@ -26,144 +36,166 @@ describe('TrueSkill', function () {
     expect(rated[1]).to.be.instanceof(Array);
     expect(rated[0].length).to.eq(5);
     expect(rated[1].length).to.eq(5);
-    const rated2 = rate([rated[1], rated[0]]);
-    done();
   });
-  it('should rate unsorted groups', function(done) {
+  it('should rate unsorted groups', function() {
     const [t1, t2, t3] = generateTeams([1, 1, 1]);
     const rated = rate([t1, t2, t3], [2, 1, 0]);
-    expect(rated[0][0].val()[0]).to.be.closeTo(18.325, 0.01);
-    expect(rated[0][0].val()[1]).to.be.closeTo(6.656, 0.01);
-    expect(rated[1][0].val()[0]).to.be.closeTo(25.000, 0.01);
-    expect(rated[1][0].val()[1]).to.be.closeTo(6.208, 0.01);
-    expect(rated[2][0].val()[0]).to.be.closeTo(31.675, 0.01);
-    expect(rated[2][0].val()[1]).to.be.closeTo(6.656, 0.01);
-    done();
+    compareRating(
+      rated,
+      [[18.325, 6.656], [25.000, 6.208], [31.675, 6.656]],
+    );
   });
-  it('should use custom environment', function(done) {
+  it('should use custom environment', function() {
     const env = new TrueSkill(null, null, null, null, 0.50);
     const [t1, t2] = generateTeams([1, 1], env);
     const rated = env.rate([t1, t2]);
-    expect(rated[0][0].val()[0]).to.be.closeTo(30.267, 0.01);
-    expect(rated[0][0].val()[1]).to.be.closeTo(7.077, 0.01);
-    expect(rated[1][0].val()[0]).to.be.closeTo(19.733, 0.01);
-    expect(rated[1][0].val()[1]).to.be.closeTo(7.077, 0.01);
-    done();
+    compareRating(
+      rated,
+      [[30.267, 7.077], [19.733, 7.077]],
+    );
   });
-  it('should use global environment', function(done) {
+  it('should use global environment', function() {
     setup(null, null, null, null, 0.50);
     const [t1, t2] = generateTeams([1, 1]);
     const rated = rate([t1, t2]);
-    expect(rated[0][0].val()[0]).to.be.closeTo(30.267, 0.01);
-    expect(rated[0][0].val()[1]).to.be.closeTo(7.077, 0.01);
-    expect(rated[1][0].val()[0]).to.be.closeTo(19.733, 0.01);
-    expect(rated[1][0].val()[1]).to.be.closeTo(7.077, 0.01);
+    compareRating(
+      rated,
+      [[30.267, 7.077], [19.733, 7.077]],
+    );
     setup();
-    done();
   });
-  it('should test n vs n', function(done) {
-    let p1, p2, p3, p4, p5, p6, p7, p8;
+  it('should test n vs n', function() {
     // 1 vs 1
-    let [t1, t2] = generateTeams([1, 1]);
-    expect(quality([t1, t2])).to.be.closeTo(0.447, 0.01);
-    [[p1], [p2]] = rate([t1, t2]);
-    expect(p1.mu).to.be.closeTo(29.396, 0.01);
-    expect(p1.sigma).to.be.closeTo(7.171, 0.01);
-    expect(p2.mu).to.be.closeTo(20.604, 0.01);
-    expect(p2.sigma).to.be.closeTo(7.171, 0.01);
+    let teams = generateTeams([1, 1]);
+    expect(quality(teams)).to.be.closeTo(0.447, 0.01);
+    compareRating(
+      rate(teams),
+      [[29.396, 7.171], [20.604, 7.171]],
+    );
     // 1 vs 1 draw
-    [[p1], [p2]] = rate([t1, t2], [0, 0]);
-    expect(p1.mu).to.be.closeTo(25.000, 0.01);
-    expect(p1.sigma).to.be.closeTo(6.458, 0.01);
-    expect(p2.mu).to.be.closeTo(25.000, 0.01);
-    expect(p2.sigma).to.be.closeTo(6.458, 0.01);
+    compareRating(
+      rate(teams, [0, 0]),
+      [[25.000, 6.458], [25.000, 6.458]],
+    );
     // 2 vs 2
-    [t1, t2] = generateTeams([2, 2]);
-    expect(quality([t1, t2])).to.be.closeTo(0.447, 0.01);
-    let [rt1, rt2] = rate([t1, t2]);
-    expect(rt1.length).to.eq(2);
-    expect(rt2.length).to.eq(2);
-    for (let p of rt1) {
-      expect(p.mu).to.be.closeTo(28.108, 0.01);
-      expect(p.sigma).to.be.closeTo(7.774, 0.01);
-    }
-    for (let p of rt2) {
-      expect(p.mu).to.be.closeTo(21.892, 0.01);
-      expect(p.sigma).to.be.closeTo(7.774, 0.01);
-    }
+    teams = generateTeams([2, 2]);
+    expect(quality(teams)).to.be.closeTo(0.447, 0.01);
+    compareRating(
+      rate(teams),
+      [[28.108, 7.774], [28.108, 7.774], [21.892, 7.774], [21.892, 7.774]],
+    );
     // 2 vs 2 draw
-    [rt1, rt2] = rate([t1, t2], [0, 0]);
-    expect(rt1.length).to.eq(2);
-    expect(rt2.length).to.eq(2);
-    for (let p of rt1) {
-      expect(p.mu).to.be.closeTo(25.000, 0.01);
-      expect(p.sigma).to.be.closeTo(7.455, 0.01);
-    }
-    for (let p of rt2) {
-      expect(p.mu).to.be.closeTo(25.000, 0.01);
-      expect(p.sigma).to.be.closeTo(7.455, 0.01);
-    }
+    compareRating(
+      rate(teams, [0, 0]),
+      [[25.000, 7.455], [25.000, 7.455], [25.000, 7.455], [25.000, 7.455]],
+    );
     // 4 vs 4
-    [t1, t2] = generateTeams([4, 4]);
-    expect(quality([t1, t2])).to.be.closeTo(0.447, 0.01);
-    [rt1, rt2] = rate([t1, t2]);
-    expect(rt1.length).to.eq(4);
-    expect(rt2.length).to.eq(4);
-    for (let p of rt1) {
-      expect(p.mu).to.be.closeTo(27.198, 0.01);
-      expect(p.sigma).to.be.closeTo(8.059, 0.01);
-    }
-    for (let p of rt2) {
-      expect(p.mu).to.be.closeTo(22.802, 0.01);
-      expect(p.sigma).to.be.closeTo(8.059, 0.01);
-    }
-    done();
+    teams = generateTeams([4, 4]);
+    expect(quality(teams)).to.be.closeTo(0.447, 0.01);
+    compareRating(
+      rate(teams),
+      [[27.198, 8.059], [27.198, 8.059], [27.198, 8.059], [27.198, 8.059],
+        [22.802, 8.059], [22.802, 8.059], [22.802, 8.059], [22.802, 8.059]],
+    );
   });
-  it('should test 1 vs n', function(done) {
+  it('should test 1 vs n', function() {
     const [t1] = generateTeams([1]);
     // 1 vs 2
     let [t2] = generateTeams([2]);
     expect(quality([t1, t2])).to.be.closeTo(0.135, 0.01);
-    let [rt1, rt2] = rate([t1, t2]);
-    expect(rt1.length).to.eq(1);
-    expect(rt2.length).to.eq(2);
-    expect(rt1[0].mu).to.be.closeTo(33.730, 0.01);
-    expect(rt1[0].sigma).to.be.closeTo(7.317, 0.01);
-    for (let p of rt2) {
-      expect(p.mu).to.be.closeTo(16.270, 0.01);
-      expect(p.sigma).to.be.closeTo(7.317, 0.01);
-    }
+    compareRating(
+      rate([t1, t2]),
+      [[33.730, 7.317], [16.270, 7.317], [16.270, 7.317]],
+    );
+    compareRating(
+      rate([t1, t2], [0, 0]),
+      [[31.660, 7.138], [18.340, 7.138], [18.340, 7.138]],
+    );
     // 1 vs 3
     [t2] = generateTeams([3]);
     expect(quality([t1, t2])).to.be.closeTo(0.012, 0.01);
-    [rt1, rt2] = rate([t1, t2]);
-    expect(rt1.length).to.eq(1);
-    expect(rt2.length).to.eq(3);
-    expect(rt1[0].mu).to.be.closeTo(36.337, 0.01);
-    expect(rt1[0].sigma).to.be.closeTo(7.527, 0.01);
-    for (let p of rt2) {
-      expect(p.mu).to.be.closeTo(13.663, 0.01);
-      expect(p.sigma).to.be.closeTo(7.527, 0.01);
-    }
+    compareRating(
+      rate([t1, t2]),
+      [[36.337, 7.527], [13.663, 7.527], [13.663, 7.527], [13.663, 7.527]],
+    );
+    compareRating(
+      rate([t1, t2]),
+      [[36.337, 7.527], [13.663, 7.527], [13.663, 7.527], [13.663, 7.527]],
+    );
+    compareRating(
+      rate([t1, t2], [0, 0]),
+      [[34.990, 7.455], [15.010, 7.455], [15.010, 7.455], [15.010, 7.455]],
+    );
     // 1 vs 7
     [t2] = generateTeams([7]);
     expect(quality([t1, t2])).to.be.closeTo(0, 0.01);
-    [rt1, rt2] = rate([t1, t2]);
-    expect(rt1.length).to.eq(1);
-    expect(rt2.length).to.eq(7);
-    expect(rt1[0].mu).to.be.closeTo(40.582, 0.01);
-    expect(rt1[0].sigma).to.be.closeTo(7.917, 0.01);
-    for (let p of rt2) {
-      expect(p.mu).to.be.closeTo(9.418, 0.01);
-      expect(p.sigma).to.be.closeTo(7.917, 0.01);
-    }
-    done();
+    compareRating(
+      rate([t1, t2]),
+      [[40.582, 7.917], [9.418, 7.917], [9.418, 7.917], [9.418, 7.917],
+        [9.418, 7.917], [9.418, 7.917], [9.418, 7.917], [9.418, 7.917]],
+    );
   });
-  it('should test individual', function(done) {
+  it('should test individual', function() {
     // 3 players
-    const players = generateIndividual(3);
-    expect(quality(players)).to.eq(0.200);
-    done();
+    let players = generateIndividual(3);
+    expect(quality(players)).to.closeTo(0.200, 0.001);
+    compareRating(
+      rate(players),
+      [[31.675, 6.656], [25.000, 6.208], [18.325, 6.656]],
+    );
+    compareRating(
+      rate(players, Array(players.length).fill(0)),
+      [[25.000, 5.698], [25.000, 5.695], [25.000, 5.698]],
+    );
+    // 4 players
+    players = generateIndividual(4);
+    expect(quality(players)).to.closeTo(0.089, 0.001);
+    compareRating(
+      rate(players),
+      [[33.207, 6.348], [27.401, 5.787], [22.599, 5.787], [16.793, 6.348]],
+    );
+    // 5 players
+    players = generateIndividual(5);
+    expect(quality(players)).to.closeTo(0.040, 0.001);
+    compareRating(
+      rate(players),
+      [[34.363, 6.136], [29.058, 5.536], [25.000, 5.420], [20.942, 5.536],
+        [15.637, 6.136]],
+    );
+    // 8 players draw
+    players = generateIndividual(8);
+    expect(quality(players)).to.closeTo(0.004, 0.001);
+    compareRating(
+      rate(players, Array(players.length).fill(0))  ,
+      [[25.000, 4.592], [25.000, 4.583], [25.000, 4.576], [25.000, 4.573],
+        [25.000, 4.573], [25.000, 4.576], [25.000, 4.583], [25.000, 4.592]],
+    );
+    // 16 players
+    players = generateIndividual(16);
+    compareRating(
+      rate(players),
+      [[40.539, 5.276], [36.810, 4.711], [34.347, 4.524], [32.336, 4.433],
+        [30.550, 4.380], [28.893, 4.349], [27.310, 4.330], [25.766, 4.322],
+        [24.234, 4.322], [22.690, 4.330], [21.107, 4.349], [19.450, 4.380],
+        [17.664, 4.433], [15.653, 4.524], [13.190, 4.711], [9.461, 5.276]],
+    );
+  });
+  it('should test multiple teams', function() {
+    // 2 vs 4 vs 2
+    let t1 = [new Rating(40, 4), new Rating(45, 3)];
+    let t2 = [new Rating(20, 7), new Rating(19, 6), new Rating(30, 9), new Rating(10, 4)];
+    let t3 = [new Rating(50, 5), new Rating(30, 2)];
+    expect(quality([t1, t2, t3])).to.closeTo(0.367, 0.001);
+    compareRating(
+      rate([t1, t2, t3], [0, 1, 1]),
+      [[40.877, 3.840], [45.493, 2.934], [19.609, 6.396], [18.712, 5.625],
+        [29.353, 7.673], [9.872, 3.891], [48.830, 4.590], [29.813, 1.976]],
+    );
+    // 1 vs 2 vs 1
+    t1 = [new Rating()];
+    t2 = [new Rating(), new Rating()];
+    t3 = [new Rating()];
+    expect(quality([t1, t2, t3])).to.closeTo(0.047, 0.001);
   });
 });
 
