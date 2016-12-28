@@ -1,6 +1,3 @@
-import * as _ from 'lodash';
-
-
 /**
  * A model for the normal distribution.
  */
@@ -22,9 +19,6 @@ export class Gaussian {
     }
     this.pi = pi;
     this.tau = tau;
-    if (_.isNaN(this.pi) || _.isNaN(this.tau)) {
-      throw new Error('NAN');
-    }
   }
 
   /** A property which returns the mean. */
@@ -67,16 +61,8 @@ export class Gaussian {
     return [this.mu, this.sigma];
   }
   toString() {
-    const mu = _.round(this.mu, 3);
-    let sigma = this.sigma;
-    if (sigma !== Infinity) {
-      sigma = _.round(this.sigma, 3);
-    }
+    const mu = this.mu.toPrecision(3);
+    const sigma = this.sigma.toPrecision(3);
     return `N(mu=${mu}, sigma=${sigma})`;
   }
-}
-
-export class Matrix {
-  matrix: number[][];
-  constructor(src, height = 0, width = 0) {}
 }

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import * as _ from 'lodash';
 
 import { Rating, TrueSkill, rate, setup, quality } from '../src/index';
-import { Gaussian, Matrix } from '../src/mathematics';
+import { Gaussian } from '../src/mathematics';
 
 function generateTeams(sizes: number[], env?) {
   return sizes.map((size) => {
@@ -240,6 +240,10 @@ describe('TrueSkill', function () {
       [[35.135, 4.506], [32.585, 4.037], [31.329, 3.756], [30.984, 3.453],
         [31.751, 3.064], [34.051, 2.541], [38.263, 1.849], [44.118, 0.983]],
     );
+  });
+  it('should test partial play', function() {
+    const t1 = [new Rating()];
+    const t2 = [new Rating(), new Rating()];
   });
 });
 

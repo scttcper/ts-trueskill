@@ -9,7 +9,7 @@ import {
   TruncateFactor,
   Variable,
 } from './factorgraph';
-import { Gaussian, Matrix } from './mathematics';
+import { Gaussian } from './mathematics';
 
 // Default initial mean of ratings.
 const MU = 25;
