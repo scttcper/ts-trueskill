@@ -31,7 +31,6 @@ export class Gaussian {
     }
     return Infinity;
   }
-
   mul(other: Gaussian) {
     const pi = this.pi + other.pi;
     const tau = this.tau + other.tau;
@@ -41,24 +40,6 @@ export class Gaussian {
     const pi = this.pi - other.pi;
     const tau = this.tau - other.tau;
     return new Gaussian(null, null, pi, tau);
-  }
-  eq(other: Gaussian) {
-    return this.pi === other.pi && this.tau === other.tau;
-  }
-  lt(other: Gaussian) {
-    return this.pi === other.pi && this.tau === other.tau;
-  }
-  le(other: Gaussian) {
-    return this.mu <= other.mu;
-  }
-  gt(other: Gaussian) {
-    return this.mu > other.mu;
-  }
-  ge(other: Gaussian) {
-    return this.mu >= other.mu;
-  }
-  val() {
-    return [this.mu, this.sigma];
   }
   toString() {
     const mu = this.mu.toPrecision(3);
