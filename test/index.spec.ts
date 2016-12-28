@@ -197,6 +197,50 @@ describe('TrueSkill', function () {
     t3 = [new Rating()];
     expect(quality([t1, t2, t3])).to.closeTo(0.047, 0.001);
   });
+  it('should test upset', function() {
+    // 1 vs 1
+    let t1 = [new Rating()];
+    let t2 = [new Rating(50, 12.5)];
+    expect(quality([t1, t2])).to.closeTo(0.110, 0.001);
+    compareRating(
+      rate([t1, t2], [0, 0]),
+      [[31.662, 7.137], [35.010, 7.910]],
+    );
+    // 2 vs 2
+    t1 = [new Rating(20, 8), new Rating(25, 6)];
+    t2 = [new Rating(35, 7), new Rating(40, 5)];
+    expect(quality([t1, t2])).to.closeTo(0.084, 0.001);
+    compareRating(
+      rate([t1, t2]),
+      [[29.698, 7.008], [30.455, 5.594], [27.575, 6.346], [36.211, 4.768]],
+    );
+    // 3 vs 2
+    t1 = [new Rating(28, 7), new Rating(27, 6), new Rating(26, 5)];
+    t2 = [new Rating(30, 4), new Rating(31, 3)];
+    expect(quality([t1, t2])).to.closeTo(0.254, 0.001);
+    compareRating(
+      rate([t1, t2], [0, 1]),
+      [[28.658, 6.770], [27.484, 5.856], [26.336, 4.917], [29.785, 3.958],
+        [30.879, 2.983]],
+    );
+    compareRating(
+      rate([t1, t2], [1, 0]),
+      [[21.840, 6.314], [22.474, 5.575], [22.857, 4.757], [32.012, 3.877],
+        [32.132, 2.949]],
+    );
+    // 8 players
+    const players = [
+      [new Rating(10, 8)], [new Rating(15, 7)], [new Rating(20, 6)],
+      [new Rating(25, 5)], [new Rating(30, 4)], [new Rating(35, 3)],
+      [new Rating(40, 2)], [new Rating(45, 1)],
+    ];
+    expect(quality(players)).to.closeTo(0.000, 0.001);
+    compareRating(
+      rate(players),
+      [[35.135, 4.506], [32.585, 4.037], [31.329, 3.756], [30.984, 3.453],
+        [31.751, 3.064], [34.051, 2.541], [38.263, 1.849], [44.118, 0.983]],
+    );
+  });
 });
 
 // describe('Gaussian', function () {

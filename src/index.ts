@@ -162,9 +162,8 @@ export class TrueSkill {
    * Recalculates ratings by the ranking table
    */
   rate(ratingGroups: Rating[][], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
-    let keys;
-    [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    weights = this.validate_weights(weights, ratingGroups, keys);
+    ratingGroups = this.validateRatingGroups(ratingGroups);
+    weights = this.validate_weights(weights, ratingGroups);
     const groupSize = ratingGroups.length;
     if (ranks === null) {
       ranks = _.range(groupSize);
@@ -185,7 +184,7 @@ export class TrueSkill {
     const sortedRatingGroups = [];
     const sortedRanks = [];
     const sortedWeights = [];
-    for (const [x, [g, r, w]] of zip) {
+    for (const [x, [g, r, w]] of sorting) {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
       // make weights to be greater than 0
@@ -218,20 +217,8 @@ export class TrueSkill {
     for (let [x, zz] of sorting) {
       pulled.push(x);
     }
-    const zipped = _.zip(pulled, transformed_groups);
-    const unsorting = _.sortBy(zipped, (zi) => zi[0]);
-    if (!keys) {
-      const res = [];
-      for (let [x, g] of unsorting) {
-        res.push(g);
-      }
-      return res;
-    }
-    const res = [];
-    for (let [x, g] of unsorting) {
-      res.push(_.fromPairs(_.zip(keys[x], g)));
-    }
-    return res;
+    const unsorting = _.sortBy(_.zip(pulled, transformed_groups), (zi) => zi[0]);
+    return unsorting.map((k) => k[1]);
   }
 
   /**
@@ -244,9 +231,8 @@ export class TrueSkill {
    *   }
    */
   quality(rating_groups: Rating[][], weights: number[]) {
-    let keys;
-    [rating_groups, keys] = this.validateRatingGroups(rating_groups);
-    weights = this.validate_weights(weights, rating_groups, keys);
+    rating_groups = this.validateRatingGroups(rating_groups);
+    weights = this.validate_weights(weights, rating_groups);
     const flattenRatings = _.flatten(rating_groups);
     const flattenWeights = _.flatten(weights);
     const length = flattenRatings.length;
@@ -313,7 +299,7 @@ export class TrueSkill {
    * Validates a rating_groups argument. It should contain more than
    * 2 groups and all groups must not be empty.
    */
-  validateRatingGroups(ratingGroups: Rating[][]) {
+  validateRatingGroups(ratingGroups: Rating[][]): Rating[][] {
     if (ratingGroups.length < 2) {
       throw new Error('Need multiple rating groups');
     }
@@ -325,11 +311,10 @@ export class TrueSkill {
         throw new Error('Rating cannot be a rating group');
       }
     }
-    const keys = null;
-    return [ratingGroups, keys];
+    return ratingGroups;
   }
 
-  validate_weights(weights: any[] = null, ratingGroups: Rating[][], keys) {
+  validate_weights(weights: any[] = null, ratingGroups: Rating[][]) {
     if (weights === null) {
       weights = _.map(ratingGroups, (n) => {
         return new Array(n.length).fill(1);
