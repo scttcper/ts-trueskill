@@ -266,6 +266,39 @@ describe('TrueSkill', function () {
     expect(quality([t1, t2, t3], [[1], [0.25, 0.75], [1]])).to.closeTo(0.2, 0.001);
     expect(quality([t1, t2, t3], [[1], [0.8, 0.9], [1]])).to.closeTo(0.0809, 0.001);
   });
+  it('should test microsoft reasearch example', function() {
+    // http://research.microsoft.com/en-us/projects/trueskill/details.aspx
+    const rated = rate([
+      {alice: new Rating()},
+      {bob: new Rating()},
+      {chris: new Rating()},
+      {darren: new Rating()},
+      {eve: new Rating()},
+      {fabien: new Rating()},
+      {george: new Rating()},
+      {hillary: new Rating()},
+    ]);
+    let r: any = {};
+    rated.forEach((n) => {
+      r = _.merge(r, n);
+    });
+    expect(r.alice.mu).to.be.closeTo(36.771, 0.001);
+    expect(r.alice.sigma).to.be.closeTo(5.749, 0.001);
+    expect(r.bob.mu).to.be.closeTo(32.242, 0.001);
+    expect(r.bob.sigma).to.be.closeTo(5.133, 0.001);
+    expect(r.chris.mu).to.be.closeTo(29.074, 0.001);
+    expect(r.chris.sigma).to.be.closeTo(4.943, 0.001);
+    expect(r.darren.mu).to.be.closeTo(26.322, 0.001);
+    expect(r.darren.sigma).to.be.closeTo(4.874, 0.001);
+    expect(r.eve.mu).to.be.closeTo(23.678, 0.001);
+    expect(r.eve.sigma).to.be.closeTo(4.874, 0.001);
+    expect(r.fabien.mu).to.be.closeTo(20.926, 0.001);
+    expect(r.fabien.sigma).to.be.closeTo(4.943, 0.001);
+    expect(r.george.mu).to.be.closeTo(17.758, 0.001);
+    expect(r.george.sigma).to.be.closeTo(5.133, 0.001);
+    expect(r.hillary.mu).to.be.closeTo(13.229, 0.001);
+    expect(r.hillary.sigma).to.be.closeTo(5.749, 0.001);
+  });
 });
 
 // describe('Gaussian', function () {

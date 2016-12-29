@@ -161,8 +161,9 @@ export class TrueSkill {
   /**
    * Recalculates ratings by the ranking table
    */
-  rate(ratingGroups: Rating[][], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
-    ratingGroups = this.validateRatingGroups(ratingGroups);
+  rate(ratingGroups: Rating[][] | any[], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
+    let keys;
+    [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
     weights = this.validate_weights(weights, ratingGroups);
     const groupSize = ratingGroups.length;
     if (ranks === null) {
@@ -204,7 +205,7 @@ export class TrueSkill {
     const rating_layer: any[] = layers[0];
     const team_sizes = _teamSizes(sortedRatingGroups);
     const transformed_groups = [];
-    const trimmed = _.slice(team_sizes, 0, team_sizes.length - 1);
+    const trimmed = team_sizes.slice(0, team_sizes.length - 1);
     for (let [start, end] of _.zip([0].concat(trimmed), team_sizes)) {
       const group = [];
       let f: PriorFactor;
@@ -218,7 +219,12 @@ export class TrueSkill {
       pulled.push(x);
     }
     const unsorting = _.sortBy(_.zip(pulled, transformed_groups), (zi) => zi[0]);
-    return unsorting.map((k) => k[1]);
+    if (!keys) {
+      return unsorting.map((k) => k[1]);
+    }
+    return unsorting.map((v) => {
+      return _.zipObject(keys[v[0]], v[1]);
+    });
   }
 
   /**
@@ -231,8 +237,9 @@ export class TrueSkill {
    *   }
    */
   quality(rating_groups: Rating[][], weights: number[][]) {
-    rating_groups = this.validateRatingGroups(rating_groups);
-    weights = this.validate_weights(weights, rating_groups);
+    let keys: string[];
+    [rating_groups, keys] = this.validateRatingGroups(rating_groups);
+    weights = this.validate_weights(weights, rating_groups, keys);
     const flattenRatings = _.flatten(rating_groups);
     const flattenWeights = _.flatten(weights);
     const length = flattenRatings.length;
@@ -299,11 +306,11 @@ export class TrueSkill {
    * Validates a rating_groups argument. It should contain more than
    * 2 groups and all groups must not be empty.
    */
-  validateRatingGroups(ratingGroups: Rating[][]): Rating[][] {
+  validateRatingGroups(ratingGroups: Rating[][]): [Rating[][], string[]] {
     if (ratingGroups.length < 2) {
       throw new Error('Need multiple rating groups');
     }
-    for (let group of ratingGroups) {
+    for (const group of ratingGroups) {
       if (group.length === 0) {
         throw new Error('Each group must contain multiple ratings');
       }
@@ -311,10 +318,26 @@ export class TrueSkill {
         throw new Error('Rating cannot be a rating group');
       }
     }
-    return ratingGroups;
+    let keys = null;
+    if (!_.isArray(ratingGroups[0])) {
+      const dict_rating_groups = ratingGroups;
+      ratingGroups = [];
+      keys = [];
+      for (const dict_rating_group of dict_rating_groups) {
+        const rating_group = [];
+        const key_group = [];
+        _.forEach(dict_rating_group, (rating, key) => {
+          rating_group.push(rating);
+          key_group.push(key);
+        });
+        ratingGroups.push(_.toArray(rating_group));
+        keys.push(_.toArray(key_group));
+      }
+    }
+    return [ratingGroups, keys];
   }
 
-  validate_weights(weights: any[] = null, ratingGroups: Rating[][]) {
+  validate_weights(weights: any[] = null, ratingGroups: Rating[][], keys?: string[]) {
     if (weights === null) {
       weights = _.map(ratingGroups, (n) => {
         return new Array(n.length).fill(1);
@@ -537,7 +560,7 @@ export function setup(
 /**
  * A proxy function for :meth:`TrueSkill.rate` of the global environment.
  */
-export function rate(rating_groups: Rating[][], ranks?, weights?, min_delta = DELTA): Rating[][] {
+export function rate(rating_groups: Rating[][] | any[], ranks?, weights?, min_delta = DELTA): Rating[][] {
   return global_env().rate(rating_groups, ranks, weights, min_delta);
 }
 
@@ -545,6 +568,6 @@ export function rate(rating_groups: Rating[][], ranks?, weights?, min_delta = DE
  * A proxy function for :meth:`TrueSkill.quality` of the global
  * environment.
  */
-export function quality(rating_groups: Rating[][], weights?: number[][]) {
+export function quality(rating_groups: Rating[][] | any[], weights?: number[][]) {
   return global_env().quality(rating_groups, weights);
 }

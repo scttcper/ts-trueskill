@@ -128,9 +128,8 @@ export class SumFactor extends Factor {
     this.coeffs = coeffs;
   }
   down() {
-    const msgs: Gaussian[] = _.map(this.terms, (v) => v.messages[this.toString()]);
-    const res = this.update(this.sum, this.terms, msgs, this.coeffs);
-    return res;
+    const msgs: Gaussian[] = this.terms.map((v) => v.messages[this.toString()]);
+    return this.update(this.sum, this.terms, msgs, this.coeffs);
   }
   up(index = 0) {
     const coeff = this.coeffs[index];
@@ -149,9 +148,9 @@ export class SumFactor extends Factor {
       }
       coeffs.push(p);
     }
-    const vals = _.cloneDeep(this.terms);
+    const vals = _.clone(this.terms);
     vals[index] = this.sum;
-    const msgs: Gaussian[] = _.map(vals, (v) => v.messages[this.toString()]);
+    const msgs: Gaussian[] = vals.map((v) => v.messages[this.toString()]);
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
   update(v: Variable, vals: Variable[], msgs: Gaussian[], coeffs: number[]) {
