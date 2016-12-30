@@ -24,25 +24,28 @@ const DRAW_PROBABILITY = 0.10;
 // A basis to check reliability of the result.
 const DELTA = 0.0001;
 
-export let __trueskill__: TrueSkill;
+export let trueskill: TrueSkill;
 
 /**
- * Calculates a draw-margin from the given ``draw_probability``
+ * Calculates a draw-margin from the given drawProbability
  */
-export function calc_draw_margin(draw_probability, size: number, env: TrueSkill = global_env()) {
-  return env.ppf((draw_probability + 1) / 2) * Math.sqrt(size) * env.beta;
+export function calcDrawMargin(drawProbability: number, size: number, env?: TrueSkill) {
+  if (!env) {
+    env = global_env();
+  }
+  return env.ppf((drawProbability + 1) / 2) * Math.sqrt(size) * env.beta;
 }
 
 /**
  * Makes a size map of each teams.
  */
 function _teamSizes(ratingGroups) {
-  const team_sizes = [0];
-  for (let group of ratingGroups) {
-    team_sizes.push(group.length + _.last(team_sizes));
+  const teamSizes = [0];
+  for (const group of ratingGroups) {
+    teamSizes.push(group.length + _.last(teamSizes));
   }
-  team_sizes.shift();
-  return team_sizes;
+  teamSizes.shift();
+  return teamSizes;
 }
 
 /**
@@ -117,14 +120,14 @@ export class TrueSkill {
    * The non-draw version of "V" function.
    * "V" calculates a variation of a mean.
    */
-  v_win(diff, draw_margin) {
-    const x = diff - draw_margin;
+  v_win(diff, drawMargin) {
+    const x = diff - drawMargin;
     const denom = this.cdf(x);
     return denom ? (this.pdf(x) / denom) : -x;
   }
-  v_draw(diff, draw_margin) {
-    const abs_diff = Math.abs(diff);
-    const [a, b] = [draw_margin - abs_diff, -draw_margin - abs_diff];
+  v_draw(diff, drawMargin) {
+    const absDiff = Math.abs(diff);
+    const [a, b] = [drawMargin - absDiff, -drawMargin - absDiff];
     const denom = this.cdf(a) - this.cdf(b);
     const numer = this.pdf(b) - this.pdf(a);
     return (denom ? (numer / denom) : a) * (diff < 0 ? -1 : +1);
@@ -133,12 +136,12 @@ export class TrueSkill {
    * The non-draw version of "W" function.
    * "W" calculates a variation of a standard deviation.
    */
-  w_win(diff, draw_margin) {
+  w_win(diff, drawMargin) {
     // if (diff !== 1.5491313744672435) {
     //   throw new Error('wtf')
     // }
-    const x = diff - draw_margin;
-    const v = this.v_win(diff, draw_margin);
+    const x = diff - drawMargin;
+    const v = this.v_win(diff, drawMargin);
     const w = v * (v + x);
     if (0 < w && w < 1) {
       return w;
@@ -148,15 +151,15 @@ export class TrueSkill {
   /**
    * The draw version of "W" function.
    */
-  w_draw(diff, draw_margin) {
-    const abs_diff = Math.abs(diff);
-    const a = draw_margin - abs_diff;
-    const b = -draw_margin - abs_diff;
+  w_draw(diff, drawMargin) {
+    const absDiff = Math.abs(diff);
+    const a = drawMargin - absDiff;
+    const b = -drawMargin - absDiff;
     const denom = this.cdf(a) - this.cdf(b);
     if (!denom) {
       throw new Error('Floating point error');
     }
-    const v = this.v_draw(abs_diff, draw_margin);
+    const v = this.v_draw(absDiff, drawMargin);
     return (v ** 2) + (a * this.pdf(a) - b * this.pdf(b)) / denom;
   }
 
@@ -166,7 +169,7 @@ export class TrueSkill {
   rate(ratingGroups: Rating[][] | any[],
        ranks: any[] = null,
        weights: any[] = null,
-       min_delta = DELTA): Rating[][] | any[] {
+       minDelta = DELTA): Rating[][] | any[] {
     let keys;
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
     weights = this.validate_weights(ratingGroups, weights);
@@ -194,36 +197,29 @@ export class TrueSkill {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
       // make weights to be greater than 0
-      const max = _.map(w, (_w) => _.max([min_delta, _w]));
+      const max = _.map(w, (ww) => _.max([minDelta, ww]));
       sortedWeights.push(max);
     }
     // build factor graph
     const builders = this.factorGraphBuilders(sortedRatingGroups, sortedRanks, sortedWeights);
-    const layers = this.run_schedule(
-      builders[0],
-      builders[1],
-      builders[2],
-      builders[3],
-      builders[4],
-      min_delta,
-    );
-    const rating_layer: any[] = layers[0];
-    const team_sizes = _teamSizes(sortedRatingGroups);
-    const transformed_groups = [];
-    const trimmed = team_sizes.slice(0, team_sizes.length - 1);
-    for (let [start, end] of _.zip([0].concat(trimmed), team_sizes)) {
+    const layers = this.runSchedule(builders[0], builders[1], builders[2], builders[3], builders[4], minDelta);
+    const ratingLayer: any[] = layers[0];
+    const teamSizes = _teamSizes(sortedRatingGroups);
+    const transformedGroups = [];
+    const trimmed = teamSizes.slice(0, teamSizes.length - 1);
+    for (let [start, end] of _.zip([0].concat(trimmed), teamSizes)) {
       const group = [];
       let f: PriorFactor;
-      for (f of _.slice(rating_layer, start, end)) {
+      for (f of ratingLayer.slice(start, end)) {
         group.push(new Rating(f.v.mu, f.v.sigma));
       }
-      transformed_groups.push(group);
+      transformedGroups.push(group);
     }
     const pulled = [];
     for (let [x, zz] of sorting) {
       pulled.push(x);
     }
-    const unsorting = _.sortBy(_.zip(pulled, transformed_groups), (zi) => zi[0]);
+    const unsorting = _.sortBy(_.zip(pulled, transformedGroups), (zi) => zi[0]);
     if (!keys) {
       return unsorting.map((k) => k[1]);
     }
@@ -241,16 +237,16 @@ export class TrueSkill {
    *     console.log('This match seems to be not so fair')
    *   }
    */
-  quality(rating_groups: Rating[][], weights?: number[][]) {
+  quality(ratingGroups: Rating[][], weights?: number[][]) {
     let keys: string[];
-    [rating_groups, keys] = this.validateRatingGroups(rating_groups);
-    weights = this.validate_weights(rating_groups, weights, keys);
-    const flattenRatings = _.flatten(rating_groups);
+    [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
+    weights = this.validate_weights(ratingGroups, weights, keys);
+    const flattenRatings = _.flatten(ratingGroups);
     const flattenWeights = _.flatten(weights);
     const length = flattenRatings.length;
     // a vector of all of the skill means
-    const mean_matrix = math.matrix(flattenRatings.map((r) => [r.mu]));
-    function fn_variance_matrix(height, width) {
+    const meanMatrix = math.matrix(flattenRatings.map((r) => [r.mu]));
+    function fnVarianceMatrix(height, width) {
       const variances = flattenRatings.map((r) => r.sigma ** 2);
       const matrix = math.matrix().resize([height, width]);
       let i = 0;
@@ -260,14 +256,14 @@ export class TrueSkill {
       }
       return matrix;
     }
-    const variance_matrix = fn_variance_matrix(length, length);
-    function fn_rotated_a_matrix() {
+    const varianceMatrix = fnVarianceMatrix(length, length);
+    function fn_rotatedAMatrix() {
       let t = 0;
       let r = 0;
       let d;
       const zipped = _.zip(
-        rating_groups.slice(0, rating_groups.length - 1),
-        rating_groups.slice(1),
+        ratingGroups.slice(0, ratingGroups.length - 1),
+        ratingGroups.slice(1),
       );
       const matrix = math.matrix();
       for (const [cur, next] of zipped) {
@@ -284,31 +280,31 @@ export class TrueSkill {
       }
       return matrix;
     }
-    const rotated_a_matrix = fn_rotated_a_matrix();
-    const a_matrix = math.transpose(rotated_a_matrix);
+    const rotatedAMatrix = fn_rotatedAMatrix();
+    const aMatrix = math.transpose(rotatedAMatrix);
     // match quality further derivation
-    const modified_rotated_a_matrix = rotated_a_matrix.map((value, index, matrix) => {
+    const modifiedRotatedAMatrix = rotatedAMatrix.map((value, index, matrix) => {
       return this.beta ** 2 * value;
     });
-    const _ata = math.multiply(modified_rotated_a_matrix, a_matrix);
-    const _atsa = math.multiply(rotated_a_matrix, math.multiply(variance_matrix, a_matrix));
-    const start = math.multiply(math.transpose(mean_matrix), a_matrix);
-    const middle: any = math.add(_ata, _atsa);
-    const end = math.multiply(rotated_a_matrix, mean_matrix);
+    const ata = math.multiply(modifiedRotatedAMatrix, aMatrix);
+    const atsa = math.multiply(rotatedAMatrix, math.multiply(varianceMatrix, aMatrix));
+    const start = math.multiply(math.transpose(meanMatrix), aMatrix);
+    const middle: any = math.add(ata, atsa);
+    const end = math.multiply(rotatedAMatrix, meanMatrix);
     // make result
-    const e_arg = math.det(
+    const eArg = math.det(
       math.multiply(
         math.multiply([[-0.5]],
           math.multiply(start, math.inv(middle))),
           end,
         ),
       );
-    const s_arg = math.det(_ata) / math.det(middle);
-    return math.exp(e_arg) * math.sqrt(s_arg);
+    const sArg = math.det(ata) / math.det(middle);
+    return math.exp(eArg) * math.sqrt(sArg);
   }
 
   /**
-   * Validates a rating_groups argument. It should contain more than
+   * Validates a ratingGroups argument. It should contain more than
    * 2 groups and all groups must not be empty.
    */
   validateRatingGroups(ratingGroups: Rating[][]): [Rating[][], string[]] {
@@ -325,18 +321,18 @@ export class TrueSkill {
     }
     let keys = null;
     if (!_.isArray(ratingGroups[0])) {
-      const dict_rating_groups = ratingGroups;
+      const dictRatingGroups = ratingGroups;
       ratingGroups = [];
       keys = [];
-      for (const dict_rating_group of dict_rating_groups) {
-        const rating_group = [];
-        const key_group = [];
-        _.forEach(dict_rating_group, (rating, key) => {
-          rating_group.push(rating);
-          key_group.push(key);
+      for (const dictRatingGroup of dictRatingGroups) {
+        const ratingGroup = [];
+        const keyGroup = [];
+        _.forEach(dictRatingGroup, (rating, key) => {
+          ratingGroup.push(rating);
+          keyGroup.push(key);
         });
-        ratingGroups.push(_.toArray(rating_group));
-        keys.push(_.toArray(key_group));
+        ratingGroups.push(_.toArray(ratingGroup));
+        keys.push(_.toArray(keyGroup));
       }
     }
     return [ratingGroups, keys];
@@ -355,7 +351,11 @@ export class TrueSkill {
   /**
    * Makes nodes for the TrueSkill factor graph.
    */
-  factorGraphBuilders(ratingGroups: Rating[][], ranks: any[], weights: any[]) {
+  factorGraphBuilders(
+    ratingGroups: Rating[][],
+    ranks: any[],
+    weights: any[],
+  ): [Function, Function, Function, Function, Function] {
     const flattenRatings = _.flatten(ratingGroups);
     const flattenWeights = _.flatten(weights);
     const size = flattenRatings.length;
@@ -365,157 +365,150 @@ export class TrueSkill {
     const perfVars: Variable[] = _.range(size).map(() => new Variable());
     const teamPerfVars: Variable[] = _.range(groupSize).map(() => new Variable());
     const teamDiffVars: Variable[] = _.range(groupSize - 1).map(() => new Variable());
-    const team_sizes = _teamSizes(ratingGroups);
+    const teamSizes = _teamSizes(ratingGroups);
     // layer builders
-    const _that: TrueSkill = this;
-    function build_rating_layer(): PriorFactor[] {
-      return _.map(_.zip(ratingVars, flattenRatings), (n) => {
-        let [rating_var, rating] = n;
-        return new PriorFactor(rating_var, rating, _that.tau);
+    const that = this;
+    function buildRatingLayer(): PriorFactor[] {
+      const z = _.zip(ratingVars, flattenRatings);
+      return z.map(([ratingVar, rating]) => {
+        return new PriorFactor(ratingVar, rating, that.tau);
       });
     }
-    function build_perf_layer(): LikelihoodFactor[] {
-      return _.map(_.zip(ratingVars, perfVars), (n) => {
-        let [rating_var, perf_var] = n;
-        return new LikelihoodFactor(rating_var, perf_var, _that.beta ** 2);
+    function buildPerfLayer(): LikelihoodFactor[] {
+      const z = _.zip(ratingVars, perfVars);
+      return z.map(([ratingVar, perfVar]) => {
+        return new LikelihoodFactor(ratingVar, perfVar, that.beta ** 2);
       });
     }
-    function build_team_perf_layer(): SumFactor[] {
+    function buildTeamPerfLayer(): SumFactor[] {
       let team = 0;
-      return _.map(teamPerfVars, (team_perf_var) => {
-        let start;
-        if (team > 0) {
-          start = team_sizes[team - 1];
-        } else {
-          start = 0;
-        }
-        const end = team_sizes[team];
-        const child_perf_vars = _.slice(perfVars, start, end);
-        const coeffs = _.slice(flattenWeights, start, end);
-        team = team + 1;
-        return new SumFactor(team_perf_var, child_perf_vars, coeffs);
+      return teamPerfVars.map((teamPerfVar) => {
+        const start = team > 0 ? teamSizes[team - 1] : 0;
+        const end = teamSizes[team];
+        team++;
+        const childPerfVars = perfVars.slice(start, end);
+        const coeffs = flattenWeights.slice(start, end);
+        return new SumFactor(teamPerfVar, childPerfVars, coeffs);
       });
     }
-    function build_team_diff_layer(): SumFactor[] {
+    function buildTeamDiffLayer(): SumFactor[] {
       let team = 0;
-      return _.map(teamDiffVars, (team_diff_var) => {
-        const sl = _.slice(teamPerfVars, team, team + 2);
-        const res = new SumFactor(team_diff_var, sl, [1, -1]);
-        team = team + 1;
-        return res;
+      return teamDiffVars.map((teamDiffVar) => {
+        const sl = teamPerfVars.slice(team, team + 2);
+        team++;
+        return new SumFactor(teamDiffVar, sl, [1, -1]);
       });
     }
-    function build_trunc_layer(): TruncateFactor[] {
+    function buildTruncLayer(): TruncateFactor[] {
       let x = 0;
-      return _.map(teamDiffVars, (team_diff_var) => {
+      return teamDiffVars.map((teamDiffVar) => {
         // static draw probability
-        const draw_probability = _that.drawProbability;
-        const lengths = _.slice(ratingGroups, x, x + 2).map((n) => n.length);
-        const draw_margin = calc_draw_margin(draw_probability, _.sum(lengths), _that);
-        let v_func;
-        let w_func;
+        const drawProbability = that.drawProbability;
+        const lengths = ratingGroups.slice(x, x + 2).map((n) => n.length);
+        const drawMargin = calcDrawMargin(drawProbability, _.sum(lengths), that);
+        let vFunc;
+        let wFunc;
         if (ranks[x] === ranks[x + 1]) {
-          v_func = (a, b) => _that.v_draw(a, b);
-          w_func = (a, b) => _that.w_draw(a, b);
+          vFunc = (a, b) => that.v_draw(a, b);
+          wFunc = (a, b) => that.w_draw(a, b);
         } else {
-          v_func = (a, b) => _that.v_win(a, b);
-          w_func = (a, b) => _that.w_win(a, b);
+          vFunc = (a, b) => that.v_win(a, b);
+          wFunc = (a, b) => that.w_win(a, b);
         }
-        const res = new TruncateFactor(team_diff_var, v_func, w_func, draw_margin);
-        x = x + 1;
-        return res;
+        x++;
+        return new TruncateFactor(teamDiffVar, vFunc, wFunc, drawMargin);
       });
     }
     return [
-      build_rating_layer,
-      build_perf_layer,
-      build_team_perf_layer,
-      build_team_diff_layer,
-      build_trunc_layer,
+      buildRatingLayer,
+      buildPerfLayer,
+      buildTeamPerfLayer,
+      buildTeamDiffLayer,
+      buildTruncLayer,
     ];
   }
   /**
    * Sends messages within every nodes of the factor graph
    * until the result is reliable.
    */
-  run_schedule(
-    build_rating_layer: Function,
-    build_perf_layer: Function,
-    build_team_perf_layer: Function,
-    build_team_diff_layer: Function,
-    build_trunc_layer: Function,
-    min_delta = DELTA,
+  runSchedule(
+    buildRatingLayer: Function,
+    buildPerfLayer: Function,
+    buildTeamPerfLayer: Function,
+    buildTeamDiffLayer: Function,
+    buildTruncLayer: Function,
+    minDelta = DELTA,
   ) {
-    if (min_delta <= 0) {
-      throw new Error('min_delta must be greater than 0');
+    if (minDelta <= 0) {
+      throw new Error('minDelta must be greater than 0');
     }
     const layers = [];
     function build(builders) {
-      const layers_built = [];
+      const allLayersBuilt = [];
       for (const builder of builders) {
         const res = builder();
-        layers_built.push(res);
+        allLayersBuilt.push(res);
       }
-      layers.push(layers_built);
-      return layers_built;
+      layers.push(allLayersBuilt);
+      return allLayersBuilt;
     }
-    const layers_built = build([
-      build_rating_layer,
-      build_perf_layer,
-      build_team_perf_layer,
+    const layersBuilt = build([
+      buildRatingLayer,
+      buildPerfLayer,
+      buildTeamPerfLayer,
     ]);
-    let rating_layer: Rating[];
-    let perf_layer: LikelihoodFactor[];
-    let team_perf_layer: SumFactor[];
-    [rating_layer, perf_layer, team_perf_layer] = layers_built;
-    for (let layer of layers_built) {
+    let ratingLayer: Rating[];
+    let perfLayer: LikelihoodFactor[];
+    let teamPerfLayer: SumFactor[];
+    [ratingLayer, perfLayer, teamPerfLayer] = layersBuilt;
+    for (let layer of layersBuilt) {
       for (let f of layer) {
         f.down();
       }
     }
     // arrow #1, #2, #3
-    let team_diff_layer: SumFactor[];
-    let trunc_layer: TruncateFactor[];
-    [team_diff_layer, trunc_layer] = build([
-      build_team_diff_layer,
-      build_trunc_layer,
+    let teamDiffLayer: SumFactor[];
+    let truncLayer: TruncateFactor[];
+    [teamDiffLayer, truncLayer] = build([
+      buildTeamDiffLayer,
+      buildTruncLayer,
     ]);
-    const team_diff_len = team_diff_layer.length;
+    const teamDiffLen = teamDiffLayer.length;
     for (let x of _.range(10)) {
       let delta;
-      if (team_diff_len === 1) {
+      if (teamDiffLen === 1) {
         // only two teams
-        team_diff_layer[0].down();
-        delta = trunc_layer[0].up();
+        teamDiffLayer[0].down();
+        delta = truncLayer[0].up();
       } else {
         // multiple teams
         delta = 0;
-        for (let z of _.range(team_diff_len - 1)) {
-          team_diff_layer[z].down();
-          delta = _.max([delta, trunc_layer[z].up()]);
-          team_diff_layer[z].up(1);
+        for (let z of _.range(teamDiffLen - 1)) {
+          teamDiffLayer[z].down();
+          delta = _.max([delta, truncLayer[z].up()]);
+          teamDiffLayer[z].up(1);
         }
-        for (let z of _.range(team_diff_len - 1, 0, -1)) {
-          team_diff_layer[z].down();
-          delta = _.max([delta, trunc_layer[z].up()]);
-          team_diff_layer[z].up(0);
+        for (let z of _.range(teamDiffLen - 1, 0, -1)) {
+          teamDiffLayer[z].down();
+          delta = _.max([delta, truncLayer[z].up()]);
+          teamDiffLayer[z].up(0);
         }
       }
       // repeat until to small update
-      if (delta <= min_delta) {
+      if (delta <= minDelta) {
         break;
       }
     }
     // up both ends
-    team_diff_layer[0].up(0);
-    team_diff_layer[team_diff_len - 1].up(1);
+    teamDiffLayer[0].up(0);
+    teamDiffLayer[teamDiffLen - 1].up(1);
     // up the remainder of the black arrows
-    for (let f of team_perf_layer) {
+    for (let f of teamPerfLayer) {
       for (let x of _.range(f.vars.length - 1)) {
         f.up(x);
       }
     }
-    for (let f of perf_layer) {
+    for (let f of perfLayer) {
       f.up();
     }
     return _.flatten(layers);
@@ -552,13 +545,13 @@ export class TrueSkill {
 export function rate_1vs1(rating1: Rating,
                           rating2: Rating,
                           drawn = false,
-                          min_delta = DELTA,
+                          minDelta = DELTA,
                           env?: TrueSkill): [Rating, Rating] {
   if (!env) {
     env = global_env();
   }
   const ranks = [0, drawn ? 0 : 1];
-  const teams = env.rate([[rating1], [rating2]], ranks, undefined, min_delta);
+  const teams = env.rate([[rating1], [rating2]], ranks, undefined, minDelta);
   return [teams[0][0], teams[1][0]];
 }
 
@@ -576,39 +569,39 @@ export function quality_1vs1(rating1: Rating, rating2: Rating, env?: TrueSkill) 
  * Gets the :class:`TrueSkill` object which is the global environment.
  */
 export function global_env(): TrueSkill {
-  if (__trueskill__) {
-    return __trueskill__;
+  if (trueskill) {
+    return trueskill;
   }
   setup();
-  return __trueskill__;
+  return trueskill;
 }
 
 /**
  * Setups the global environment.
  */
 export function setup(mu = MU, sigma = SIGMA, beta = BETA,
-                      tau = TAU, draw_probability = DRAW_PROBABILITY,
+                      tau = TAU, drawProbability = DRAW_PROBABILITY,
                       backend?, env?: TrueSkill) {
   if (!env) {
-    env = new TrueSkill(mu, sigma, beta, tau, draw_probability, backend);
+    env = new TrueSkill(mu, sigma, beta, tau, drawProbability, backend);
   }
-  __trueskill__ = env;
+  trueskill = env;
   return env;
 }
 
 /**
  * A proxy function for :meth:`TrueSkill.rate` of the global environment.
  */
-export function rate(rating_groups: Rating[][] | any[], ranks?, weights?, min_delta = DELTA): Rating[][] {
-  return global_env().rate(rating_groups, ranks, weights, min_delta);
+export function rate(ratingGroups: Rating[][] | any[], ranks?, weights?, minDelta = DELTA): Rating[][] {
+  return global_env().rate(ratingGroups, ranks, weights, minDelta);
 }
 
 /**
  * A proxy function for :meth:`TrueSkill.quality` of the global
  * environment.
  */
-export function quality(rating_groups: Rating[][] | any[], weights?: number[][]) {
-  return global_env().quality(rating_groups, weights);
+export function quality(ratingGroups: Rating[][] | any[], weights?: number[][]) {
+  return global_env().quality(ratingGroups, weights);
 }
 
 /**

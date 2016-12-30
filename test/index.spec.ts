@@ -1,7 +1,14 @@
 import { expect } from 'chai';
 import * as _ from 'lodash';
 
-import { Rating, TrueSkill, rate, setup, quality, rate_1vs1, quality_1vs1 } from '../src/index';
+import {
+  quality,
+  quality_1vs1,
+  rate, rate_1vs1,
+  Rating,
+  setup,
+  TrueSkill,
+} from '../src/index';
 import { Gaussian } from '../src/mathematics';
 
 function generateTeams(sizes: number[], env?) {

@@ -4,7 +4,6 @@
     "quotemark": [true, "single", "avoid-escape"],
     "member-access": false,
     "max-classes-per-file": false,
-    "variable-name": false,
     "no-var-requires": false,
     "no-empty": false
   }
