@@ -24,6 +24,8 @@ const DRAW_PROBABILITY = 0.10;
 // A basis to check reliability of the result.
 const DELTA = 0.0001;
 
+export let __trueskill__: TrueSkill;
+
 /**
  * Calculates a draw-margin from the given ``draw_probability``
  */
@@ -161,10 +163,13 @@ export class TrueSkill {
   /**
    * Recalculates ratings by the ranking table
    */
-  rate(ratingGroups: Rating[][] | any[], ranks: any[] = null, weights: any[] = null, min_delta = DELTA) {
+  rate(ratingGroups: Rating[][] | any[],
+       ranks: any[] = null,
+       weights: any[] = null,
+       min_delta = DELTA): Rating[][] | any[] {
     let keys;
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    weights = this.validate_weights(weights, ratingGroups);
+    weights = this.validate_weights(ratingGroups, weights);
     const groupSize = ratingGroups.length;
     if (ranks === null) {
       ranks = _.range(groupSize);
@@ -236,10 +241,10 @@ export class TrueSkill {
    *     console.log('This match seems to be not so fair')
    *   }
    */
-  quality(rating_groups: Rating[][], weights: number[][]) {
+  quality(rating_groups: Rating[][], weights?: number[][]) {
     let keys: string[];
     [rating_groups, keys] = this.validateRatingGroups(rating_groups);
-    weights = this.validate_weights(weights, rating_groups, keys);
+    weights = this.validate_weights(rating_groups, weights, keys);
     const flattenRatings = _.flatten(rating_groups);
     const flattenWeights = _.flatten(weights);
     const length = flattenRatings.length;
@@ -337,9 +342,9 @@ export class TrueSkill {
     return [ratingGroups, keys];
   }
 
-  validate_weights(weights: any[] = null, ratingGroups: Rating[][], keys?: string[]) {
-    if (weights === null) {
-      weights = _.map(ratingGroups, (n) => {
+  validate_weights(ratingGroups: Rating[][], weights?: any[], keys?: string[]) {
+    if (!weights) {
+      weights = ratingGroups.map((n) => {
         return new Array(n.length).fill(1);
       });
     }
@@ -524,13 +529,53 @@ export class TrueSkill {
   cdf(x) {
     return gaus(0, 1).cdf(x);
   }
+  /**
+   * Returns the value of the rating exposure.  It starts from 0 and
+   * converges to the mean.  Use this as a sort key in a leaderboard
+   */
+  expose(rating: Rating) {
+    const k = this.mu / this.sigma;
+    return rating.mu - k * rating.sigma;
+  }
+  /**
+   * Registers the environment as the global environment.
+   */
+  make_as_global() {
+    const u = undefined;
+    return setup(u, u, u, u, u, u, this);
+  }
 }
 
-export let __trueskill__: TrueSkill;
+/**
+ * A shortcut to rate just 2 players in a head-to-head match
+ */
+export function rate_1vs1(rating1: Rating,
+                          rating2: Rating,
+                          drawn = false,
+                          min_delta = DELTA,
+                          env?: TrueSkill): [Rating, Rating] {
+  if (!env) {
+    env = global_env();
+  }
+  const ranks = [0, drawn ? 0 : 1];
+  const teams = env.rate([[rating1], [rating2]], ranks, undefined, min_delta);
+  return [teams[0][0], teams[1][0]];
+}
+
+/**
+ * A shortcut to calculate the match quality between 2 players in
+ * a head-to-head match
+ */
+export function quality_1vs1(rating1: Rating, rating2: Rating, env?: TrueSkill) {
+  if (!env) {
+    env = global_env();
+  }
+  return env.quality([[rating1], [rating2]]);
+}
 /**
  * Gets the :class:`TrueSkill` object which is the global environment.
  */
-export function global_env() {
+export function global_env(): TrueSkill {
   if (__trueskill__) {
     return __trueskill__;
   }
@@ -541,15 +586,9 @@ export function global_env() {
 /**
  * Setups the global environment.
  */
-export function setup(
-  mu = MU,
-  sigma = SIGMA,
-  beta = BETA,
-  tau = TAU,
-  draw_probability = DRAW_PROBABILITY,
-  backend?,
-  env?,
-) {
+export function setup(mu = MU, sigma = SIGMA, beta = BETA,
+                      tau = TAU, draw_probability = DRAW_PROBABILITY,
+                      backend?, env?: TrueSkill) {
   if (!env) {
     env = new TrueSkill(mu, sigma, beta, tau, draw_probability, backend);
   }
@@ -570,4 +609,11 @@ export function rate(rating_groups: Rating[][] | any[], ranks?, weights?, min_de
  */
 export function quality(rating_groups: Rating[][] | any[], weights?: number[][]) {
   return global_env().quality(rating_groups, weights);
+}
+
+/**
+ * A proxy function for TrueSkill.expose of the global environment.
+ */
+export function expose(rating: Rating) {
+  return global_env().expose(rating);
 }

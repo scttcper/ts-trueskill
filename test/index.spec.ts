@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as _ from 'lodash';
 
-import { Rating, TrueSkill, rate, setup, quality } from '../src/index';
+import { Rating, TrueSkill, rate, setup, quality, rate_1vs1, quality_1vs1 } from '../src/index';
 import { Gaussian } from '../src/mathematics';
 
 function generateTeams(sizes: number[], env?) {
@@ -299,30 +299,22 @@ describe('TrueSkill', function () {
     expect(r.hillary.mu).to.be.closeTo(13.229, 0.001);
     expect(r.hillary.sigma).to.be.closeTo(5.749, 0.001);
   });
+  it('should test 1vs1 shortcuts', function() {
+    const [p1, p2] = rate_1vs1(new Rating(), new Rating());
+    expect(p1.mu).to.be.closeTo(29.396, 0.001);
+    expect(p1.sigma).to.be.closeTo(7.171, 0.001);
+    expect(p2.mu).to.be.closeTo(20.604, 0.001);
+    expect(p2.sigma).to.be.closeTo(7.171, 0.001);
+    const quality = quality_1vs1(new Rating(), new Rating());
+    expect(quality).to.be.closeTo(0.447, 0.01);
+  });
 });
 
-// describe('Gaussian', function () {
-//   it('should validate sigma argument is needed', function (done) {
-//     try {
-//       const a = new Gaussian(0);
-//     } catch (e) {
-//       expect(e).to.be.instanceOf(TypeError);
-//       done();
-//     }
-//   });
-//   it('should validate sigma**2 should be greater than 0', function (done) {
-//     try {
-//       const a = new Gaussian(0, 0);
-//     } catch (e) {
-//       expect(e).to.be.instanceOf(Error);
-//       done();
-//     }
-//   });
-// });
-//
-// describe('Matrix', function () {
-//   it('test matrix operations', function (done) {
-//     // expect(new Matrix([[1, 2], [3, 4]])).inverse()
-//     done();
-//   });
-// });
+describe('Gaussian', function () {
+  it('should test valid gaussian', function () {
+    const fn = () => new Gaussian(0);
+    expect(fn).to.throw(TypeError);
+    const fn1 = () => new Gaussian(0, 0);
+    expect(fn1).to.throw(Error);
+  });
+});
