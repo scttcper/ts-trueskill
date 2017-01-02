@@ -10,6 +10,7 @@
 [coverage-img]: https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/gh/scttcper/ts-trueskill
 
+[View Docs](https://scttcper.github.io/ts-trueskill/)
 TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee. Passing most of the same tests.
 
 ### What's TrueSkill™

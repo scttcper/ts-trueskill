@@ -11,6 +11,7 @@
     "build:watch": "tsc -p . -w",
     "test": "mocha --require ts-node/register test/*.spec.ts",
     "coverage": "nyc npm test",
+    "docs": "typedoc --out docs src",
     "lint": "tslint \"src/**/*.ts\""
   },
   "dependencies": {

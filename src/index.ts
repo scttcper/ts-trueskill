@@ -1,4 +1,7 @@
-import * as gaus from 'gaussian';
+// TODO: use @types/gaussian when it gets merged
+// import * as gaus from 'gaussian';
+declare var require: any;
+const gaus = require('gaussian');
 import * as _ from 'lodash';
 import * as math from 'mathjs';
 
