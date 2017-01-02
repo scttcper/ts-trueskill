@@ -3,8 +3,8 @@
 [![build status][build-img]][build-url]
 [![coverage status][coverage-img]][coverage-url]
 
-[npm-img]: https://img.shields.io/npm/v/toastr-ng2.svg?maxAge=3600
-[npm-url]: https://www.npmjs.com/package/toastr-ng2
+[npm-img]: https://img.shields.io/npm/v/ts-trueskill.svg?maxAge=3600
+[npm-url]: https://www.npmjs.com/package/ts-trueskill
 [build-img]: https://img.shields.io/travis/scttcper/ts-trueskill.svg
 [build-url]: https://travis-ci.org/scttcper/ts-trueskill
 [coverage-img]: https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg
