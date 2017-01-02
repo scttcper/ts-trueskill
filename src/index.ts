@@ -14,19 +14,19 @@ import {
 } from './factorgraph';
 import { Gaussian } from './mathematics';
 
-// Default initial mean of ratings.
+/** Default initial mean of ratings. */
 const MU = 25;
-// Default initial standard deviation of ratings.
+/** Default initial standard deviation of ratings. */
 const SIGMA = MU / 3;
-// Default distance that guarantees about 76% chance of winning.
+/** Default distance that guarantees about 76% chance of winning. */
 const BETA = SIGMA / 2;
-// Default dynamic factor.
+/** Default dynamic factor. */
 const TAU = SIGMA / 100;
-// Default draw probability of the game.
+/** Default draw probability of the game. */
 const DRAW_PROBABILITY = 0.10;
-// A basis to check reliability of the result.
+/** A basis to check reliability of the result. */
 const DELTA = 0.0001;
-
+/** stores set global environment */
 export let trueskill: TrueSkill;
 
 /**
@@ -57,7 +57,7 @@ function _teamSizes(ratingGroups) {
  * create the rating object.
  */
 export class Rating extends Gaussian {
-  constructor(mu?, sigma?) {
+  constructor(mu?: number | Gaussian | [number, number], sigma?: number) {
     if (Array.isArray(mu)) {
       [mu, sigma] = mu;
     } else if (mu instanceof Gaussian) {
@@ -86,12 +86,11 @@ export class Rating extends Gaussian {
  * For example, 60% of matches in your game have finished as draw then you
  * should set ``draw_probability`` to 0.60::
  *
- * env = TrueSkill(draw_probability=0.60)
+ * const env = new TrueSkill(draw_probability=0.60)
  *
  * For more details of the constants, see `The Math Behind TrueSkill`_ by
  * Jeff Moser.
  *
- * .. _The Math Behind TrueSkill:: http://bit.ly/trueskill-math
  */
 export class TrueSkill {
   mu: number;
@@ -102,7 +101,7 @@ export class TrueSkill {
   backend: any;
   gaussian;
 
-  constructor(mu?, sigma?, beta?, tau?, drawProbability?) {
+  constructor(mu?: number, sigma?: number, beta?: number, tau?: number, drawProbability?: number) {
     this.mu = mu || MU;
     this.sigma = sigma || SIGMA;
     this.beta = beta || BETA;
@@ -112,7 +111,7 @@ export class TrueSkill {
   }
 
   /**
-   * Initializes new :class:`Rating` object, but it fixes default mu and
+   * Initializes new `Rating` object, but it fixes default mu and
    * sigma to the environment's.
    * >>> env = TrueSkill(mu=0, sigma=1)
    * >>> env.createRating()

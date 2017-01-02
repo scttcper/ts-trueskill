@@ -46,7 +46,7 @@ export class Variable extends Gaussian {
     const count = Object.keys(this.messages).length;
     const s = count === 1 ? '' : 's';
     const val = super.toString();
-    return `<Variable ${val} with ${count} connection${s}>`;
+    return `<${this.constructor.name} ${val} with ${count} connection${s}>`;
   }
 }
 
@@ -79,7 +79,7 @@ export class Factor {
 
 export class PriorFactor extends Factor {
   val;
-  dynamic;
+  dynamic: number;
   constructor(v, val, dynamic = 0) {
     super([v]);
     this.val = val;
