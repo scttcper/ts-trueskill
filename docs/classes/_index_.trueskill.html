@@ -1,0 +1,961 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>TrueSkill | ts-trueskill</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">ts-trueskill</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/_index_.html">&quot;index&quot;</a>
+				</li>
+				<li>
+					<a href="_index_.trueskill.html">TrueSkill</a>
+				</li>
+			</ul>
+			<h1>Class TrueSkill</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Implements a TrueSkill environment.  An environment could have
+							customized constants.  Every games have not same design and may need to
+						customize TrueSkill constants.</p>
+					</div>
+					<p>For example, 60% of matches in your game have finished as draw then you
+					should set <code>draw_probability</code> to 0.60::</p>
+					<p>env = TrueSkill(draw_probability=0.60)</p>
+					<p>For more details of the constants, see <code>The Math Behind TrueSkill</code>_ by
+					Jeff Moser.</p>
+					<p>.. _The Math Behind TrueSkill:: <a href="http://bit.ly/trueskill-math">http://bit.ly/trueskill-math</a></p>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">TrueSkill</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_index_.trueskill.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.trueskill.html#backend" class="tsd-kind-icon">backend</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.trueskill.html#beta" class="tsd-kind-icon">beta</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.trueskill.html#drawprobability" class="tsd-kind-icon">draw<wbr>Probability</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.trueskill.html#mu" class="tsd-kind-icon">mu</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.trueskill.html#sigma" class="tsd-kind-icon">sigma</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_index_.trueskill.html#tau" class="tsd-kind-icon">tau</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#cdf" class="tsd-kind-icon">cdf</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#createrating" class="tsd-kind-icon">create<wbr>Rating</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#expose" class="tsd-kind-icon">expose</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#factorgraphbuilders" class="tsd-kind-icon">factor<wbr>Graph<wbr>Builders</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#make_as_global" class="tsd-kind-icon">make_<wbr>as_<wbr>global</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#pdf" class="tsd-kind-icon">pdf</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#ppf" class="tsd-kind-icon">ppf</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#quality" class="tsd-kind-icon">quality</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#rate" class="tsd-kind-icon">rate</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#runschedule" class="tsd-kind-icon">run<wbr>Schedule</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#v_draw" class="tsd-kind-icon">v_<wbr>draw</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#v_win" class="tsd-kind-icon">v_<wbr>win</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#validateratinggroups" class="tsd-kind-icon">validate<wbr>Rating<wbr>Groups</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#validate_weights" class="tsd-kind-icon">validate_<wbr>weights</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#w_draw" class="tsd-kind-icon">w_<wbr>draw</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_index_.trueskill.html#w_win" class="tsd-kind-icon">w_<wbr>win</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>True<wbr>Skill<span class="tsd-signature-symbol">(</span>mu<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, sigma<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, beta<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, tau<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, drawProbability<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, backend<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_index_.trueskill.html" class="tsd-signature-type">TrueSkill</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L97">index.ts:97</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> mu: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> sigma: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> beta: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> tau: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> drawProbability: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> backend: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_index_.trueskill.html" class="tsd-signature-type">TrueSkill</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="backend" class="tsd-anchor"></a>
+					<h3>backend</h3>
+					<div class="tsd-signature tsd-kind-icon">backend<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L97">index.ts:97</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="beta" class="tsd-anchor"></a>
+					<h3>beta</h3>
+					<div class="tsd-signature tsd-kind-icon">beta<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L94">index.ts:94</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="drawprobability" class="tsd-anchor"></a>
+					<h3>draw<wbr>Probability</h3>
+					<div class="tsd-signature tsd-kind-icon">draw<wbr>Probability<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L96">index.ts:96</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="mu" class="tsd-anchor"></a>
+					<h3>mu</h3>
+					<div class="tsd-signature tsd-kind-icon">mu<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L92">index.ts:92</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="sigma" class="tsd-anchor"></a>
+					<h3>sigma</h3>
+					<div class="tsd-signature tsd-kind-icon">sigma<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L93">index.ts:93</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="tau" class="tsd-anchor"></a>
+					<h3>tau</h3>
+					<div class="tsd-signature tsd-kind-icon">tau<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L95">index.ts:95</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="cdf" class="tsd-anchor"></a>
+					<h3>cdf</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">cdf<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L522">index.ts:522</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="createrating" class="tsd-anchor"></a>
+					<h3>create<wbr>Rating</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Rating<span class="tsd-signature-symbol">(</span>mu<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span>, sigma<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L115">index.ts:115</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Initializes new :class:<code>Rating</code> object, but it fixes default mu and
+									sigma to the environment&#39;s.</p>
+									<blockquote>
+										<blockquote>
+											<blockquote>
+												<p>env = TrueSkill(mu=0, sigma=1)
+													env.createRating()
+												trueskill.Rating(mu=0.000, sigma=1.000)</p>
+											</blockquote>
+										</blockquote>
+									</blockquote>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> mu: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;this.mu</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> sigma: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;this.sigma</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_index_.rating.html" class="tsd-signature-type">Rating</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="expose" class="tsd-anchor"></a>
+					<h3>expose</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">expose<span class="tsd-signature-symbol">(</span>rating<span class="tsd-signature-symbol">: </span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L529">index.ts:529</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Returns the value of the rating exposure.  It starts from 0 and
+									converges to the mean.  Use this as a sort key in a leaderboard</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>rating: <a href="_index_.rating.html" class="tsd-signature-type">Rating</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="factorgraphbuilders" class="tsd-anchor"></a>
+					<h3>factor<wbr>Graph<wbr>Builders</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">factor<wbr>Graph<wbr>Builders<span class="tsd-signature-symbol">(</span>ratingGroups<span class="tsd-signature-symbol">: </span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span>, ranks<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, weights<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L354">index.ts:354</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Makes nodes for the TrueSkill factor graph.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ratingGroups: <a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5>ranks: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5>weights: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Function</span><span class="tsd-signature-symbol">]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="make_as_global" class="tsd-anchor"></a>
+					<h3>make_<wbr>as_<wbr>global</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">make_<wbr>as_<wbr>global<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_index_.trueskill.html" class="tsd-signature-type">TrueSkill</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L536">index.ts:536</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Registers the environment as the global environment.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="_index_.trueskill.html" class="tsd-signature-type">TrueSkill</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="pdf" class="tsd-anchor"></a>
+					<h3>pdf</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">pdf<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L519">index.ts:519</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="ppf" class="tsd-anchor"></a>
+					<h3>ppf</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">ppf<span class="tsd-signature-symbol">(</span>x<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L516">index.ts:516</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>x: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="quality" class="tsd-anchor"></a>
+					<h3>quality</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">quality<span class="tsd-signature-symbol">(</span>ratingGroups<span class="tsd-signature-symbol">: </span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span>, weights<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L240">index.ts:240</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Calculates the match quality of the given rating groups. Result
+									is the draw probability in the association::</p>
+								</div>
+								<p>  env = TrueSkill()
+									if env.quality([team1, team2, team3]) &lt; 0.50 {
+									console.log(&#39;This match seems to be not so fair&#39;)
+								}</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ratingGroups: <a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> weights: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="rate" class="tsd-anchor"></a>
+					<h3>rate</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">rate<span class="tsd-signature-symbol">(</span>ratingGroups<span class="tsd-signature-symbol">: </span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, ranks<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, weights<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, minDelta<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L169">index.ts:169</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Recalculates ratings by the ranking table</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ratingGroups: <a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> ranks: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;null</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> weights: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;null</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> minDelta: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;DELTA</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span>
+								<span class="tsd-signature-symbol"> | </span>
+								<span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>
+							</h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="runschedule" class="tsd-anchor"></a>
+					<h3>run<wbr>Schedule</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Schedule<span class="tsd-signature-symbol">(</span>buildRatingLayer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, buildPerfLayer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, buildTeamPerfLayer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, buildTeamDiffLayer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, buildTruncLayer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span>, minDelta<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L434">index.ts:434</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sends messages within every nodes of the factor graph
+									until the result is reliable.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>buildRatingLayer: <span class="tsd-signature-type">Function</span></h5>
+								</li>
+								<li>
+									<h5>buildPerfLayer: <span class="tsd-signature-type">Function</span></h5>
+								</li>
+								<li>
+									<h5>buildTeamPerfLayer: <span class="tsd-signature-type">Function</span></h5>
+								</li>
+								<li>
+									<h5>buildTeamDiffLayer: <span class="tsd-signature-type">Function</span></h5>
+								</li>
+								<li>
+									<h5>buildTruncLayer: <span class="tsd-signature-type">Function</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> minDelta: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> =&nbsp;DELTA</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="v_draw" class="tsd-anchor"></a>
+					<h3>v_<wbr>draw</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">v_<wbr>draw<span class="tsd-signature-symbol">(</span>diff<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, drawMargin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L128">index.ts:128</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>diff: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>drawMargin: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="v_win" class="tsd-anchor"></a>
+					<h3>v_<wbr>win</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">v_<wbr>win<span class="tsd-signature-symbol">(</span>diff<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, drawMargin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L123">index.ts:123</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The non-draw version of &quot;V&quot; function.
+									&quot;V&quot; calculates a variation of a mean.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>diff: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>drawMargin: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="validateratinggroups" class="tsd-anchor"></a>
+					<h3>validate<wbr>Rating<wbr>Groups</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">validate<wbr>Rating<wbr>Groups<span class="tsd-signature-symbol">(</span>ratingGroups<span class="tsd-signature-symbol">: </span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L310">index.ts:310</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Validates a ratingGroups argument. It should contain more than
+									2 groups and all groups must not be empty.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ratingGroups: <a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">[</span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="validate_weights" class="tsd-anchor"></a>
+					<h3>validate_<wbr>weights</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">validate_<wbr>weights<span class="tsd-signature-symbol">(</span>ratingGroups<span class="tsd-signature-symbol">: </span><a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span>, weights<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span>, keys<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L341">index.ts:341</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>ratingGroups: <a href="_index_.rating.html" class="tsd-signature-type">Rating</a><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> weights: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> keys: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="w_draw" class="tsd-anchor"></a>
+					<h3>w_<wbr>draw</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">w_<wbr>draw<span class="tsd-signature-symbol">(</span>diff<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, drawMargin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L154">index.ts:154</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The draw version of &quot;W&quot; function.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>diff: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>drawMargin: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="w_win" class="tsd-anchor"></a>
+					<h3>w_<wbr>win</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">w_<wbr>win<span class="tsd-signature-symbol">(</span>diff<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, drawMargin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/scttcper/ts-trueskill/blob/47a242e/src/index.ts#L139">index.ts:139</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>The non-draw version of &quot;W&quot; function.
+									&quot;W&quot; calculates a variation of a standard deviation.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>diff: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>drawMargin: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_factorgraph_.html">"factorgraph"</a>
+					</li>
+					<li class="current tsd-kind-external-module">
+						<a href="../modules/_index_.html">"index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="../modules/_mathematics_.html">"mathematics"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_index_.rating.html" class="tsd-kind-icon">Rating</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_index_.trueskill.html" class="tsd-kind-icon">True<wbr>Skill</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#backend" class="tsd-kind-icon">backend</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#beta" class="tsd-kind-icon">beta</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#drawprobability" class="tsd-kind-icon">draw<wbr>Probability</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#mu" class="tsd-kind-icon">mu</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#sigma" class="tsd-kind-icon">sigma</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#tau" class="tsd-kind-icon">tau</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#cdf" class="tsd-kind-icon">cdf</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#createrating" class="tsd-kind-icon">create<wbr>Rating</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#expose" class="tsd-kind-icon">expose</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#factorgraphbuilders" class="tsd-kind-icon">factor<wbr>Graph<wbr>Builders</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#make_as_global" class="tsd-kind-icon">make_<wbr>as_<wbr>global</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#pdf" class="tsd-kind-icon">pdf</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#ppf" class="tsd-kind-icon">ppf</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#quality" class="tsd-kind-icon">quality</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#rate" class="tsd-kind-icon">rate</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#runschedule" class="tsd-kind-icon">run<wbr>Schedule</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#v_draw" class="tsd-kind-icon">v_<wbr>draw</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#v_win" class="tsd-kind-icon">v_<wbr>win</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#validateratinggroups" class="tsd-kind-icon">validate<wbr>Rating<wbr>Groups</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#validate_weights" class="tsd-kind-icon">validate_<wbr>weights</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#w_draw" class="tsd-kind-icon">w_<wbr>draw</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_index_.trueskill.html#w_win" class="tsd-kind-icon">w_<wbr>win</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_index_.html#beta" class="tsd-kind-icon">BETA</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_index_.html#delta" class="tsd-kind-icon">DELTA</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_index_.html#draw_probability" class="tsd-kind-icon">DRAW_<wbr>PROBABILITY</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_index_.html#mu" class="tsd-kind-icon">MU</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_index_.html#sigma" class="tsd-kind-icon">SIGMA</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_index_.html#tau" class="tsd-kind-icon">TAU</a>
+					</li>
+					<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#trueskill-1" class="tsd-kind-icon">trueskill</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-not-exported">
+						<a href="../modules/_index_.html#_teamsizes" class="tsd-kind-icon">_team<wbr>Sizes</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#calcdrawmargin" class="tsd-kind-icon">calc<wbr>Draw<wbr>Margin</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#expose" class="tsd-kind-icon">expose</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#global_env" class="tsd-kind-icon">global_<wbr>env</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#quality" class="tsd-kind-icon">quality</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#quality_1vs1" class="tsd-kind-icon">quality_<wbr>1vs1</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#rate" class="tsd-kind-icon">rate</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#rate_1vs1" class="tsd-kind-icon">rate_<wbr>1vs1</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="../modules/_index_.html#setup" class="tsd-kind-icon">setup</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

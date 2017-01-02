@@ -4,7 +4,8 @@ import * as _ from 'lodash';
 import {
   quality,
   quality_1vs1,
-  rate, rate_1vs1,
+  rate,
+  rate_1vs1,
   Rating,
   setup,
   TrueSkill,
