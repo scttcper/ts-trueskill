@@ -1,6 +1,5 @@
-import * as assert from 'assert';
 import * as _ from 'lodash';
-const uuid = require('uuid/v4');
+import * as uuid from 'uuid/v4';
 
 import { Gaussian } from './mathematics';
 
@@ -17,11 +16,11 @@ export class Variable extends Gaussian {
     return delta;
   }
   delta(other: Variable) {
-    const pi_delta = Math.abs(this.pi - other.pi);
-    if (pi_delta === Infinity) {
+    const piDelta = Math.abs(this.pi - other.pi);
+    if (piDelta === Infinity) {
       return 0;
     }
-    return _.max([Math.abs(this.tau - other.tau), Math.sqrt(pi_delta)]);
+    return Math.max(Math.abs(this.tau - other.tau), Math.sqrt(piDelta));
   }
   updateMessage(
     factor: LikelihoodFactor | SumFactor | PriorFactor,
@@ -30,17 +29,17 @@ export class Variable extends Gaussian {
     message?: Gaussian,
   ) {
     message = message || new Gaussian(null, null, pi, tau);
-    const old_message = this.messages[factor.toString()];
+    const oldMessage = this.messages[factor.toString()];
     this.messages[factor.toString()] = message;
-    const res = this.set(this.div(old_message).mul(message));
+    const res = this.set(this.div(oldMessage).mul(message));
     return res;
   }
   updateValue(factor: TruncateFactor | PriorFactor, pi = 0, tau = 0, value?: Gaussian) {
     if (!value) {
       value = new Gaussian(null, null, pi, tau);
     }
-    const old_message = this.messages[factor.toString()];
-    this.messages[factor.toString()] = value.mul(old_message).div(this);
+    const oldMessage = this.messages[factor.toString()];
+    this.messages[factor.toString()] = value.mul(oldMessage).div(this);
     return this.set(value);
   }
   toString() {
@@ -67,7 +66,9 @@ export class Factor {
     return 0;
   }
   get v() {
-    assert(this.vars.length === 1);
+    if (this.vars.length !== 1) {
+      throw new Error('Too long');
+    }
     return this.vars[0];
   }
   toString() {
@@ -95,10 +96,10 @@ export class LikelihoodFactor extends Factor {
   mean: Variable;
   value: Variable;
   variance;
-  constructor(mean_var: Variable, value_var: Variable, variance) {
-    super([mean_var, value_var]);
-    this.mean = mean_var;
-    this.value = value_var;
+  constructor(meanVar: Variable, valueVar: Variable, variance) {
+    super([meanVar, valueVar]);
+    this.mean = meanVar;
+    this.value = valueVar;
     this.variance = variance;
   }
   calc_a(v) {
@@ -121,10 +122,10 @@ export class SumFactor extends Factor {
   terms: Variable[];
   coeffs: number[];
 
-  constructor(sum_var: Variable, term_vars: Variable[], coeffs: number[]) {
-    super([sum_var].concat(term_vars));
-    this.sum = sum_var;
-    this.terms = term_vars;
+  constructor(sumVar: Variable, termVars: Variable[], coeffs: number[]) {
+    super([sumVar].concat(termVars));
+    this.sum = sumVar;
+    this.terms = termVars;
     this.coeffs = coeffs;
   }
   down() {
@@ -154,7 +155,7 @@ export class SumFactor extends Factor {
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
   update(v: Variable, vals: Variable[], msgs: Gaussian[], coeffs: number[]) {
-    let pi_inv = 0;
+    let piInv = 0;
     let mu = 0;
     // not sure why _.zip types were so angry
     const zipped: any[][] = _.zip<Variable|Gaussian|number>(vals, msgs, coeffs);
@@ -164,37 +165,37 @@ export class SumFactor extends Factor {
     for ([val, msg, coeff] of zipped) {
       const div = val.div(msg);
       mu += coeff * div.mu;
-      if (!_.isFinite(pi_inv)) {
+      if (!_.isFinite(piInv)) {
         continue;
       }
-      pi_inv += coeff ** 2 / div.pi;
+      piInv += coeff ** 2 / div.pi;
     }
-    const pi = 1.0 / pi_inv;
+    const pi = 1.0 / piInv;
     const tau = pi * mu;
     return v.updateMessage(this, pi, tau);
   }
 }
 
 export class TruncateFactor extends Factor {
-  v_func;
-  w_func;
-  draw_margin;
-  constructor(v, v_func, w_func, draw_margin: number) {
+  vFunc: Function;
+  wFunc: Function;
+  drawMargin: number;
+  constructor(v: Variable, vFunc: Function, wFunc: Function, drawMargin: number) {
     super([v]);
-    this.v_func = v_func;
-    this.w_func = w_func;
-    this.draw_margin = draw_margin;
+    this.vFunc = vFunc;
+    this.wFunc = wFunc;
+    this.drawMargin = drawMargin;
   }
   up() {
     const val = this.v;
     const msg = this.v.messages[this.toString()];
     const div = val.div(msg);
-    const sqrt_pi = Math.sqrt(div.pi);
-    const v = this.v_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
-    const w = this.w_func(div.tau / sqrt_pi, this.draw_margin * sqrt_pi);
+    const sqrtPi = Math.sqrt(div.pi);
+    const v = this.vFunc(div.tau / sqrtPi, this.drawMargin * sqrtPi);
+    const w = this.wFunc(div.tau / sqrtPi, this.drawMargin * sqrtPi);
     const denom = (1.0 - w);
     const pi = div.pi / denom;
-    const tau = (div.tau + sqrt_pi * v) / denom;
+    const tau = (div.tau + sqrtPi * v) / denom;
     return val.updateValue(this, pi, tau);
   }
 }

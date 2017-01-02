@@ -15,16 +15,16 @@
   },
   "dependencies": {
     "gaussian": "^1.1.0",
+    "lodash": "^4.17.4",
     "mathjs": "^3.8.1",
-    "uuid": "^3.0.1",
-    "lodash": "^4.17.3"
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "@types/chai": "^3.4.34",
-    "@types/lodash": "^4.14.44",
-    "@types/mathjs": "^0.0.31",
+    "@types/lodash": "^4.14.45",
+    "@types/mathjs": "^0.0.32",
     "@types/mocha": "^2.2.35",
-    "@types/node": "^6.0.54",
+    "@types/node": "^6.0.55",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
     "coveralls": "^2.11.15",
@@ -32,6 +32,7 @@
     "nyc": "^10.0.0",
     "ts-node": "^2.0.0",
     "tslint": "^4.2.0",
+    "typedoc": "^0.5.3",
     "typescript": "^2.1.4"
   },
   "nyc": {

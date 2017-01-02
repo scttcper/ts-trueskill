@@ -1,6 +1,6 @@
+import * as gaus from 'gaussian';
 import * as _ from 'lodash';
 import * as math from 'mathjs';
-const gaus = require('gaussian');
 
 import {
   LikelihoodFactor,
@@ -69,7 +69,9 @@ export class Rating extends Gaussian {
     super(mu, sigma);
   }
   toString() {
-    return `${this.mu}, ${this.sigma}`;
+    const mu = this.mu.toFixed(3);
+    const sigma = this.sigma.toFixed(3);
+    return `Rating(mu=${mu}, sigma=${sigma})`;
   }
 }
 
@@ -95,14 +97,15 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
+  gaussian;
 
-  constructor(mu?, sigma?, beta?, tau?, drawProbability?, backend?) {
+  constructor(mu?, sigma?, beta?, tau?, drawProbability?) {
     this.mu = mu || MU;
     this.sigma = sigma || SIGMA;
     this.beta = beta || BETA;
     this.tau = tau || TAU;
     this.drawProbability = drawProbability || DRAW_PROBABILITY;
-    this.backend = backend;
+    this.gaussian = gaus(0, 1);
   }
 
   /**
@@ -183,9 +186,9 @@ export class TrueSkill {
     let zip = _.zip(ratingGroups, ranks, weights);
     let n = 0;
     zip = zip.map((el) => {
-      const y = [n, el];
-      n = n + 1;
-      return y;
+      const res = [n, el];
+      n++;
+      return res;
     });
     const sorting = _.orderBy(zip, (x) => {
       return x[1][1];
@@ -197,7 +200,7 @@ export class TrueSkill {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
       // make weights to be greater than 0
-      const max = _.map(w, (ww) => _.max([minDelta, ww]));
+      const max = w.map((ww: number) => Math.max(minDelta, ww));
       sortedWeights.push(max);
     }
     // build factor graph
@@ -215,10 +218,7 @@ export class TrueSkill {
       }
       transformedGroups.push(group);
     }
-    const pulled = [];
-    for (let [x, zz] of sorting) {
-      pulled.push(x);
-    }
+    const pulled = sorting.map(([x, zz]) => x);
     const unsorting = _.sortBy(_.zip(pulled, transformedGroups), (zi) => zi[0]);
     if (!keys) {
       return unsorting.map((k) => k[1]);
@@ -485,16 +485,16 @@ export class TrueSkill {
         delta = 0;
         for (let z of _.range(teamDiffLen - 1)) {
           teamDiffLayer[z].down();
-          delta = _.max([delta, truncLayer[z].up()]);
+          delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(1);
         }
         for (let z of _.range(teamDiffLen - 1, 0, -1)) {
           teamDiffLayer[z].down();
-          delta = _.max([delta, truncLayer[z].up()]);
+          delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(0);
         }
       }
-      // repeat until to small update
+      // repeat until too small update
       if (delta <= minDelta) {
         break;
       }
@@ -514,13 +514,13 @@ export class TrueSkill {
     return _.flatten(layers);
   }
   ppf(x) {
-    return gaus(0, 1).ppf(x);
+    return this.gaussian.ppf(x);
   }
   pdf(x) {
-    return gaus(0, 1).pdf(x);
+    return this.gaussian.pdf(x);
   }
   cdf(x) {
-    return gaus(0, 1).cdf(x);
+    return this.gaussian.cdf(x);
   }
   /**
    * Returns the value of the rating exposure.  It starts from 0 and
@@ -535,17 +535,15 @@ export class TrueSkill {
    */
   make_as_global() {
     const u = undefined;
-    return setup(u, u, u, u, u, u, this);
+    return setup(u, u, u, u, u, this);
   }
 }
 
 /**
  * A shortcut to rate just 2 players in a head-to-head match
  */
-export function rate_1vs1(rating1: Rating,
-                          rating2: Rating,
-                          drawn = false,
-                          minDelta = DELTA,
+export function rate_1vs1(rating1: Rating, rating2: Rating,
+                          drawn = false, minDelta = DELTA,
                           env?: TrueSkill): [Rating, Rating] {
   if (!env) {
     env = global_env();
@@ -559,7 +557,8 @@ export function rate_1vs1(rating1: Rating,
  * A shortcut to calculate the match quality between 2 players in
  * a head-to-head match
  */
-export function quality_1vs1(rating1: Rating, rating2: Rating, env?: TrueSkill) {
+export function quality_1vs1(rating1: Rating, rating2: Rating,
+                             env?: TrueSkill) {
   if (!env) {
     env = global_env();
   }
@@ -581,9 +580,9 @@ export function global_env(): TrueSkill {
  */
 export function setup(mu = MU, sigma = SIGMA, beta = BETA,
                       tau = TAU, drawProbability = DRAW_PROBABILITY,
-                      backend?, env?: TrueSkill) {
+                      env?: TrueSkill) {
   if (!env) {
-    env = new TrueSkill(mu, sigma, beta, tau, drawProbability, backend);
+    env = new TrueSkill(mu, sigma, beta, tau, drawProbability);
   }
   trueskill = env;
   return env;
@@ -592,7 +591,8 @@ export function setup(mu = MU, sigma = SIGMA, beta = BETA,
 /**
  * A proxy function for :meth:`TrueSkill.rate` of the global environment.
  */
-export function rate(ratingGroups: Rating[][] | any[], ranks?, weights?, minDelta = DELTA): Rating[][] {
+export function rate(ratingGroups: Rating[][] | any[],
+                     ranks?, weights?, minDelta = DELTA): Rating[][] {
   return global_env().rate(ratingGroups, ranks, weights, minDelta);
 }
 

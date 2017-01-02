@@ -325,3 +325,9 @@ describe('Gaussian', function () {
     expect(fn1).to.throw(Error);
   });
 });
+
+describe('Rating', function () {
+  it('should print Rating', function () {
+    expect(new Rating().toString()).to.eq('Rating(mu=25.000, sigma=8.333)');
+  });
+});
