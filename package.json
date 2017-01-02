@@ -7,11 +7,11 @@
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p .",
+    "build": "rimraf build; tsc -p .",
     "build:watch": "tsc -p . -w",
     "test": "mocha --require ts-node/register test/*.spec.ts",
     "coverage": "nyc npm test",
-    "docs": "typedoc --out docs src",
+    "docs": "typedoc --out docs src; touch docs/.nojekyll",
     "lint": "tslint \"src/**/*.ts\""
   },
   "dependencies": {
@@ -31,6 +31,7 @@
     "coveralls": "^2.11.15",
     "mocha": "^3.2.0",
     "nyc": "^10.0.0",
+    "rimraf": "^2.5.4",
     "ts-node": "^2.0.0",
     "tslint": "^4.2.0",
     "typedoc": "^0.5.3",
