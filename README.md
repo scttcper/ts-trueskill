@@ -10,7 +10,7 @@
 [coverage-img]: https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/gh/scttcper/ts-trueskill
 
-[View Docs](https://scttcper.github.io/ts-trueskill/)
+[View Docs](https://scttcper.github.io/ts-trueskill/)  
 TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee. Passing most of the same tests.
 
 ### What's TrueSkill™
@@ -19,7 +19,7 @@ TypeScript port of the [python TrueSkill package](https://github.com/sublee/true
 Read about [how the trueskill model works](https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/)
 
 ### Installation
-This package is available on [npm](https://www.npmjs.com/package/toastr-ng2):
+This package is built into es6 and published with typings. Available on [npm](https://www.npmjs.com/package/toastr-ng2):
 ```bash
 npm install ts-trueskill
 ```
