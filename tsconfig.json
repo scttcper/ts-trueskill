@@ -15,8 +15,8 @@
     "build"
   ],
   "include": [
-    "src/**/*",
-    "typings/*"
+    "typings/gaussian.d.ts",
+    "src/**/*"
   ],
   "compileOnSave": false
 }
