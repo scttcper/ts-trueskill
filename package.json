@@ -1,6 +1,6 @@
 {
   "name": "ts-trueskill",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "typescript trueskill port",
   "main": "build/src/index.js",
   "repository": "https://github.com/scttcper/ts-trueskill.git",
