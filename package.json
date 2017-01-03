@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/chai": "^3.4.34",
+    "@types/gaussian": "^1.1.0",
     "@types/lodash": "^4.14.45",
     "@types/mathjs": "^0.0.32",
     "@types/mocha": "^2.2.35",

@@ -12,6 +12,10 @@
   dependencies:
     "@types/node" "*"
 
+"@types/gaussian@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/gaussian/-/gaussian-1.1.0.tgz#4d5dff27ca1be5313eea1fe63f05dc9b2538ae8e"
+
 "@types/handlebars@^4.0.31":
   version "4.0.31"
   resolved "https://registry.yarnpkg.com/@types/handlebars/-/handlebars-4.0.31.tgz#a7fba66fafe42713aee88eeca8db91192efe6e72"

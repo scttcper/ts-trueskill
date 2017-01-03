@@ -1,7 +1,4 @@
-// TODO: use @types/gaussian when it gets merged
-// import * as gaus from 'gaussian';
-declare var require: any;
-const gaus = require('gaussian');
+import * as gaus from 'gaussian';
 import * as _ from 'lodash';
 import * as math from 'mathjs';
 
@@ -99,7 +96,7 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
-  gaussian;
+  gaussian: gaus.Gaussian;
 
   constructor(mu?: number, sigma?: number, beta?: number, tau?: number, drawProbability?: number) {
     this.mu = mu || MU;
@@ -153,9 +150,7 @@ export class TrueSkill {
     }
     throw new Error('floating point error');
   }
-  /**
-   * The draw version of "W" function.
-   */
+  /** The draw version of "W" function. */
   w_draw(diff, drawMargin) {
     const absDiff = Math.abs(diff);
     const a = drawMargin - absDiff;
@@ -168,9 +163,7 @@ export class TrueSkill {
     return (v ** 2) + (a * this.pdf(a) - b * this.pdf(b)) / denom;
   }
 
-  /**
-   * Recalculates ratings by the ranking table
-   */
+  /** Recalculates ratings by the ranking table */
   rate(ratingGroups: Rating[][] | any[],
        ranks: any[] = null,
        weights: any[] = null,
@@ -350,14 +343,12 @@ export class TrueSkill {
     return weights;
   }
 
-  /**
-   * Makes nodes for the TrueSkill factor graph.
-   */
+  /** Makes nodes for the TrueSkill factor graph. */
   factorGraphBuilders(
     ratingGroups: Rating[][],
     ranks: any[],
     weights: any[],
-  ): [Function, Function, Function, Function, Function] {
+  ): [() => PriorFactor[], () => LikelihoodFactor[], () => SumFactor[], () => SumFactor[], () => TruncateFactor[]] {
     const flattenRatings = _.flatten(ratingGroups);
     const flattenWeights = _.flatten(weights);
     const size = flattenRatings.length;
@@ -369,20 +360,19 @@ export class TrueSkill {
     const teamDiffVars: Variable[] = _.range(groupSize - 1).map(() => new Variable());
     const teamSizes = _teamSizes(ratingGroups);
     // layer builders
-    const that = this;
-    function buildRatingLayer(): PriorFactor[] {
+    const buildRatingLayer = (): PriorFactor[] => {
       const z = _.zip(ratingVars, flattenRatings);
       return z.map(([ratingVar, rating]) => {
-        return new PriorFactor(ratingVar, rating, that.tau);
+        return new PriorFactor(ratingVar, rating, this.tau);
       });
-    }
-    function buildPerfLayer(): LikelihoodFactor[] {
+    };
+    const buildPerfLayer = (): LikelihoodFactor[] => {
       const z = _.zip(ratingVars, perfVars);
       return z.map(([ratingVar, perfVar]) => {
-        return new LikelihoodFactor(ratingVar, perfVar, that.beta ** 2);
+        return new LikelihoodFactor(ratingVar, perfVar, this.beta ** 2);
       });
-    }
-    function buildTeamPerfLayer(): SumFactor[] {
+    };
+    const buildTeamPerfLayer = (): SumFactor[] => {
       let team = 0;
       return teamPerfVars.map((teamPerfVar) => {
         const start = team > 0 ? teamSizes[team - 1] : 0;
@@ -392,35 +382,35 @@ export class TrueSkill {
         const coeffs = flattenWeights.slice(start, end);
         return new SumFactor(teamPerfVar, childPerfVars, coeffs);
       });
-    }
-    function buildTeamDiffLayer(): SumFactor[] {
+    };
+    const buildTeamDiffLayer = (): SumFactor[] => {
       let team = 0;
       return teamDiffVars.map((teamDiffVar) => {
         const sl = teamPerfVars.slice(team, team + 2);
         team++;
         return new SumFactor(teamDiffVar, sl, [1, -1]);
       });
-    }
-    function buildTruncLayer(): TruncateFactor[] {
+    };
+    const buildTruncLayer = (): TruncateFactor[] => {
       let x = 0;
       return teamDiffVars.map((teamDiffVar) => {
         // static draw probability
-        const drawProbability = that.drawProbability;
+        const drawProbability = this.drawProbability;
         const lengths = ratingGroups.slice(x, x + 2).map((n) => n.length);
-        const drawMargin = calcDrawMargin(drawProbability, _.sum(lengths), that);
+        const drawMargin = calcDrawMargin(drawProbability, _.sum(lengths), this);
         let vFunc;
         let wFunc;
         if (ranks[x] === ranks[x + 1]) {
-          vFunc = (a, b) => that.v_draw(a, b);
-          wFunc = (a, b) => that.w_draw(a, b);
+          vFunc = (a, b) => this.v_draw(a, b);
+          wFunc = (a, b) => this.w_draw(a, b);
         } else {
-          vFunc = (a, b) => that.v_win(a, b);
-          wFunc = (a, b) => that.w_win(a, b);
+          vFunc = (a, b) => this.v_win(a, b);
+          wFunc = (a, b) => this.w_win(a, b);
         }
         x++;
         return new TruncateFactor(teamDiffVar, vFunc, wFunc, drawMargin);
       });
-    }
+    };
     return [
       buildRatingLayer,
       buildPerfLayer,
@@ -434,49 +424,32 @@ export class TrueSkill {
    * until the result is reliable.
    */
   runSchedule(
-    buildRatingLayer: Function,
-    buildPerfLayer: Function,
-    buildTeamPerfLayer: Function,
-    buildTeamDiffLayer: Function,
-    buildTruncLayer: Function,
+    buildRatingLayer: () => PriorFactor[],
+    buildPerfLayer: () => LikelihoodFactor[],
+    buildTeamPerfLayer: () => SumFactor[],
+    buildTeamDiffLayer: () => SumFactor[],
+    buildTruncLayer: () => TruncateFactor[],
     minDelta = DELTA,
   ) {
     if (minDelta <= 0) {
       throw new Error('minDelta must be greater than 0');
     }
     const layers = [];
-    function build(builders) {
-      const allLayersBuilt = [];
-      for (const builder of builders) {
-        const res = builder();
-        allLayersBuilt.push(res);
-      }
-      layers.push(allLayersBuilt);
-      return allLayersBuilt;
-    }
-    const layersBuilt = build([
-      buildRatingLayer,
-      buildPerfLayer,
-      buildTeamPerfLayer,
-    ]);
-    let ratingLayer: Rating[];
-    let perfLayer: LikelihoodFactor[];
-    let teamPerfLayer: SumFactor[];
-    [ratingLayer, perfLayer, teamPerfLayer] = layersBuilt;
-    for (let layer of layersBuilt) {
-      for (let f of layer) {
+    const ratingLayer: PriorFactor[] = buildRatingLayer();
+    const perfLayer: LikelihoodFactor[] = buildPerfLayer();
+    const teamPerfLayer: SumFactor[] = buildTeamPerfLayer();
+    layers.push(ratingLayer, perfLayer, teamPerfLayer);
+    for (const layer of [ratingLayer, perfLayer, teamPerfLayer]) {
+      for (const f of layer) {
         f.down();
       }
     }
     // arrow #1, #2, #3
-    let teamDiffLayer: SumFactor[];
-    let truncLayer: TruncateFactor[];
-    [teamDiffLayer, truncLayer] = build([
-      buildTeamDiffLayer,
-      buildTruncLayer,
-    ]);
+    const teamDiffLayer: SumFactor[] = buildTeamDiffLayer();
+    const truncLayer: TruncateFactor[] = buildTruncLayer();
+    layers.push(teamDiffLayer, truncLayer);
     const teamDiffLen = teamDiffLayer.length;
-    for (let x of _.range(10)) {
+    for (const x of _.range(10)) {
       let delta;
       if (teamDiffLen === 1) {
         // only two teams
@@ -485,12 +458,12 @@ export class TrueSkill {
       } else {
         // multiple teams
         delta = 0;
-        for (let z of _.range(teamDiffLen - 1)) {
+        for (const z of _.range(teamDiffLen - 1)) {
           teamDiffLayer[z].down();
           delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(1);
         }
-        for (let z of _.range(teamDiffLen - 1, 0, -1)) {
+        for (const z of _.range(teamDiffLen - 1, 0, -1)) {
           teamDiffLayer[z].down();
           delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(0);
@@ -505,23 +478,23 @@ export class TrueSkill {
     teamDiffLayer[0].up(0);
     teamDiffLayer[teamDiffLen - 1].up(1);
     // up the remainder of the black arrows
-    for (let f of teamPerfLayer) {
-      for (let x of _.range(f.vars.length - 1)) {
+    for (const f of teamPerfLayer) {
+      for (const x of _.range(f.vars.length - 1)) {
         f.up(x);
       }
     }
-    for (let f of perfLayer) {
+    for (const f of perfLayer) {
       f.up();
     }
-    return _.flatten(layers);
+    return layers;
   }
-  ppf(x) {
+  ppf(x: number) {
     return this.gaussian.ppf(x);
   }
-  pdf(x) {
+  pdf(x: number) {
     return this.gaussian.pdf(x);
   }
-  cdf(x) {
+  cdf(x: number) {
     return this.gaussian.cdf(x);
   }
   /**
@@ -567,7 +540,7 @@ export function quality_1vs1(rating1: Rating, rating2: Rating,
   return env.quality([[rating1], [rating2]]);
 }
 /**
- * Gets the :class:`TrueSkill` object which is the global environment.
+ * Gets the `TrueSkill` object which is the global environment.
  */
 export function global_env(): TrueSkill {
   if (trueskill) {
