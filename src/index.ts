@@ -551,7 +551,7 @@ export function global_env(): TrueSkill {
 }
 
 /**
- * Setups the global environment.
+ * Setup the global environment defaults
  */
 export function setup(mu = MU, sigma = SIGMA, beta = BETA,
                       tau = TAU, drawProbability = DRAW_PROBABILITY,
