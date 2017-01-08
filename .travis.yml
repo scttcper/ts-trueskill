@@ -2,6 +2,7 @@ sudo: false
 language: node_js
 node_js:
   - "7"
+  - "6"
 cache: yarn
 script: yarn coverage
 after_success:

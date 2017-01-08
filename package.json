@@ -55,5 +55,6 @@
       "text"
     ],
     "exclude": []
-  }
+  },
+  "engines" : { "node" : ">=6" },
 }
