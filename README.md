@@ -24,7 +24,7 @@ This package is built into es6 and published with typings. Available on [npm](ht
 npm install ts-trueskill
 ```
 
-### Basic Use
+### Basic Use in Typescript
 
 2 vs 2 example:
 ```typescript
@@ -34,8 +34,13 @@ const team2 = [new Rating(), new Rating()];
 // Assumes the first team was the winner by default
 const q = quality([team1, team2]);
 // q is quality of the match with the players at their current rating
-const [rated1, rated2] = rate([team1, team2]);
+const [rated1, rated2] = rate([team1, team2]); // rate also takes weights of winners or draw
 // rated1 and rated2 are now arrays with updated scores from result of match
+
+console.log(rated1.toString()) // team 1 went up in rating
+// >> Rating(mu=28.108, sigma=7.774),Rating(mu=28.108, sigma=7.774)
+console.log(rated2.toString()) // team 2 went down in rating
+// >> Rating(mu=21.892, sigma=7.774),Rating(mu=21.892, sigma=7.774)
 ```
 
 1 vs 1 example:
@@ -43,9 +48,28 @@ const [rated1, rated2] = rate([team1, team2]);
 import { Rating, quality_1vs1, rate_1vs1 } from 'ts-trueskill';
 const r1 = new Rating(40, 4);
 const r2 = new Rating(10, 4);
-const q = quality_1vs1(r1, r2); // quality will be pretty low
+const q = quality_1vs1(r1, r2); // quality will be low from large difference in scores
 const [new_r1, new_r2] = rate_1vs1(r1, r2); // get new ratings after r1 wins
 ```
+
+### Basic Use in node
+Requires node > v6
+```javascript
+const trueskill = require("ts-trueskill");
+const team1 = [new trueskill.Rating(), new trueskill.Rating()];
+const team2 = [new trueskill.Rating(), new trueskill.Rating()];
+// Assumes the first team was the winner by default
+const q = trueskill.quality([team1, team2]);
+// q is quality of the match with the players at their current rating
+const [rated1, rated2] = trueskill.rate([team1, team2]);
+// rated1 and rated2 are now arrays with updated scores from result of match 
+console.log(rated1.toString()) // team 1 went up in rating
+// >> Rating(mu=28.108, sigma=7.774),Rating(mu=28.108, sigma=7.774)
+console.log(rated2.toString()) // team 2 went down in rating
+// >> Rating(mu=21.892, sigma=7.774),Rating(mu=21.892, sigma=7.774)
+```
+
+###
 
 
 ### Differences from python version
