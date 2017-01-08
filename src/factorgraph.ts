@@ -55,7 +55,7 @@ export class Factor {
   vars: Variable[];
   constructor(vars: Variable[]) {
     this.vars = vars;
-    for (let v of vars) {
+    for (const v of vars) {
       v.messages[this.toString()] = new Gaussian();
     }
   }
@@ -157,12 +157,10 @@ export class SumFactor extends Factor {
   update(v: Variable, vals: Variable[], msgs: Gaussian[], coeffs: number[]) {
     let piInv = 0;
     let mu = 0;
-    // not sure why _.zip types were so angry
-    const zipped: any[][] = _.zip<Variable|Gaussian|number>(vals, msgs, coeffs);
-    let val: Variable;
-    let msg: Gaussian;
-    let coeff: number;
-    for ([val, msg, coeff] of zipped) {
+    for (let i = 0; i < vals.length; i++) {
+      const val = vals[i];
+      const msg = msgs[i];
+      const coeff = coeffs[i];
       const div = val.div(msg);
       mu += coeff * div.mu;
       if (!_.isFinite(piInv)) {

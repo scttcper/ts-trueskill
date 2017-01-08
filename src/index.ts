@@ -205,12 +205,11 @@ export class TrueSkill {
     const teamSizes = _teamSizes(sortedRatingGroups);
     const transformedGroups = [];
     const trimmed = teamSizes.slice(0, teamSizes.length - 1);
-    for (let [start, end] of _.zip([0].concat(trimmed), teamSizes)) {
+    for (const [start, end] of _.zip([0].concat(trimmed), teamSizes)) {
       const group = [];
-      let f: PriorFactor;
-      for (f of ratingLayer.slice(start, end)) {
+      ratingLayer.slice(start, end).map((f: PriorFactor) => {
         group.push(new Rating(f.v.mu, f.v.sigma));
-      }
+      });
       transformedGroups.push(group);
     }
     const pulled = sorting.map(([x, zz]) => x);
@@ -245,7 +244,7 @@ export class TrueSkill {
       const variances = flattenRatings.map((r) => r.sigma ** 2);
       const matrix = math.matrix().resize([height, width]);
       let i = 0;
-      for (let f of variances) {
+      for (const f of variances) {
         matrix.set([i, i], f);
         i++;
       }
@@ -255,7 +254,6 @@ export class TrueSkill {
     function fn_rotatedAMatrix() {
       let t = 0;
       let r = 0;
-      let d;
       const zipped = _.zip(
         ratingGroups.slice(0, ratingGroups.length - 1),
         ratingGroups.slice(1),
@@ -268,7 +266,7 @@ export class TrueSkill {
           t += 1;
         }
         x += 1;
-        for (d of _.range(x, x + next.length)) {
+        for (const d of _.range(x, x + next.length)) {
           matrix.set([r, d], -flattenWeights[d]);
         }
         r++;
