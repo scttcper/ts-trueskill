@@ -35,8 +35,8 @@ function compareRating(result: Rating[][], expected: number[][]) {
   }
 }
 
-describe('TrueSkill', function () {
-  it('should create rating', function () {
+describe('TrueSkill', function() {
+  it('should create rating', function() {
     const [team1, team2] = generateTeams([5, 5]);
     const rated = rate([team1, team2]);
     expect(rated.length).to.eq(2);
@@ -318,8 +318,8 @@ describe('TrueSkill', function () {
   });
 });
 
-describe('Gaussian', function () {
-  it('should test valid gaussian', function () {
+describe('Gaussian', function() {
+  it('should test valid gaussian', function() {
     const fn = () => new Gaussian(0);
     expect(fn).to.throw(TypeError);
     const fn1 = () => new Gaussian(0, 0);
@@ -327,8 +327,8 @@ describe('Gaussian', function () {
   });
 });
 
-describe('Rating', function () {
-  it('should print Rating', function () {
+describe('Rating', function() {
+  it('should print Rating', function() {
     expect(new Rating().toString()).to.eq('Rating(mu=25.000, sigma=8.333)');
   });
 });
