@@ -56,5 +56,5 @@
     ],
     "exclude": []
   },
-  "engines" : { "node" : ">=6" },
+  "engines" : { "node" : ">=6" }
 }
