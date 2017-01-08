@@ -8,10 +8,12 @@
 [build-img]: https://img.shields.io/travis/scttcper/ts-trueskill.svg
 [build-url]: https://travis-ci.org/scttcper/ts-trueskill
 [coverage-img]: https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg
-[coverage-url]: https://codecov.io/gh/scttcper/ts-trueskill
+[coverage-url]: https://codecov.io/gh/scttcper/ts-trueskill  
 
-[View Docs](https://scttcper.github.io/ts-trueskill/)  
 TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee. Passing most of the same tests.
+
+### Docs
+https://scttcper.github.io/ts-trueskill/  
 
 ### What's TrueSkill™
 [TrueSkill](http://research.microsoft.com/en-us/projects/trueskill) is a rating system for players of a game. It was developed, patented, and trademarked by Microsoft Research and has been used on Xbox LIVE for ranking and matchmaking service. This system quantifies players’ TRUE skill points by the Bayesian inference algorithm. It also works well with any type of match rule including N:N team game or free-for-all.
@@ -68,8 +70,6 @@ console.log(rated1.toString()) // team 1 went up in rating
 console.log(rated2.toString()) // team 2 went down in rating
 // >> Rating(mu=21.892, sigma=7.774),Rating(mu=21.892, sigma=7.774)
 ```
-
-###
 
 
 ### Differences from python version
