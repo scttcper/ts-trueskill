@@ -21,7 +21,7 @@ https://scttcper.github.io/ts-trueskill/
 Read about [how the trueskill model works](https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/)
 
 ### Installation
-This package is built into es6 and published with typings. Available on [npm](https://www.npmjs.com/package/toastr-ng2):
+This package is built into es6 and published with typings. Available on [npm](https://www.npmjs.com/package/ts-trueskill):
 ```bash
 npm install ts-trueskill
 ```
