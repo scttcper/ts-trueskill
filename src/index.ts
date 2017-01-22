@@ -50,15 +50,16 @@ function _teamSizes(ratingGroups) {
 
 /**
  * The default mu and sigma value follows the global environment's settings.
- * If you don't want to use the global, use :meth:`TrueSkill.createRating` to
+ * If you don't want to use the global, use `TrueSkill.createRating` to
  * create the rating object.
  */
 export class Rating extends Gaussian {
-  constructor(mu?: number | Gaussian | [number, number], sigma?: number) {
+  constructor(mu?: number|Gaussian|[number, number], sigma?: number) {
     if (Array.isArray(mu)) {
       [mu, sigma] = mu;
     } else if (mu instanceof Gaussian) {
-      [mu, sigma] = [mu.mu, mu.sigma];
+      sigma = mu.sigma;
+      mu = mu.mu;
     }
     if (!mu) {
       mu = global_env().mu;
