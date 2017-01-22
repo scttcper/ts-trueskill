@@ -104,7 +104,11 @@ export class TrueSkill {
     this.sigma = sigma || SIGMA;
     this.beta = beta || BETA;
     this.tau = tau || TAU;
-    this.drawProbability = drawProbability || DRAW_PROBABILITY;
+    if (drawProbability === undefined || drawProbability === null) {
+      this.drawProbability = DRAW_PROBABILITY;
+    } else {
+      this.drawProbability = drawProbability;
+    }
     this.gaussian = gaus(0, 1);
   }
 
