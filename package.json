@@ -23,19 +23,19 @@
   "devDependencies": {
     "@types/chai": "^3.4.34",
     "@types/gaussian": "^1.1.0",
-    "@types/lodash": "^4.14.47",
+    "@types/lodash": "^4.14.50",
     "@types/mathjs": "^0.0.32",
-    "@types/mocha": "^2.2.36",
-    "@types/node": "^6.0.58",
+    "@types/mocha": "^2.2.38",
+    "@types/node": "^7.0.1",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
     "coveralls": "^2.11.15",
     "mocha": "^3.2.0",
-    "nyc": "^10.0.0",
+    "nyc": "^10.1.2",
     "ts-node": "^2.0.0",
     "tslint": "^4.3.1",
-    "typedoc": "^0.5.3",
-    "typescript": "^2.1.4"
+    "typedoc": "^0.5.5",
+    "typescript": "^2.1.5"
   },
   "nyc": {
     "sourceMap": true,
