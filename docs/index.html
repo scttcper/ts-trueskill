@@ -68,15 +68,17 @@
 				<p><a href="https://www.npmjs.com/package/ts-trueskill"><img src="https://img.shields.io/npm/v/ts-trueskill.svg?maxAge=3600" alt="npm"></a>
 					<a href="https://travis-ci.org/scttcper/ts-trueskill"><img src="https://img.shields.io/travis/scttcper/ts-trueskill.svg" alt="build status"></a>
 				<a href="https://codecov.io/gh/scttcper/ts-trueskill"><img src="https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg" alt="coverage status"></a></p>
-				<p><a href="https://scttcper.github.io/ts-trueskill/">View Docs</a><br>TypeScript port of the <a href="https://github.com/sublee/trueskill">python TrueSkill package</a> by Heungsub Lee. Passing most of the same tests.</p>
+				<p>TypeScript port of the <a href="https://github.com/sublee/trueskill">python TrueSkill package</a> by Heungsub Lee. Passing most of the same tests.</p>
+				<h3 id="docs">Docs</h3>
+				<p><a href="https://scttcper.github.io/ts-trueskill/">https://scttcper.github.io/ts-trueskill/</a>  </p>
 				<h3 id="what-s-trueskill-">What&#39;s TrueSkill™</h3>
 				<p><a href="http://research.microsoft.com/en-us/projects/trueskill">TrueSkill</a> is a rating system for players of a game. It was developed, patented, and trademarked by Microsoft Research and has been used on Xbox LIVE for ranking and matchmaking service. This system quantifies players’ TRUE skill points by the Bayesian inference algorithm. It also works well with any type of match rule including N:N team game or free-for-all.</p>
 				<p>Read about <a href="https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/">how the trueskill model works</a></p>
 				<h3 id="installation">Installation</h3>
-				<p>This package is built into es6 and published with typings. Available on <a href="https://www.npmjs.com/package/toastr-ng2">npm</a>:</p>
+				<p>This package is built into es6 and published with typings. Available on <a href="https://www.npmjs.com/package/ts-trueskill">npm</a>:</p>
 				<pre><code class="lang-bash">npm install ts-trueskill
 </code></pre>
-				<h3 id="basic-use">Basic Use</h3>
+				<h3 id="basic-use-in-typescript">Basic Use in Typescript</h3>
 				<p>2 vs 2 example:</p>
 				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { rate, Rating, quality } from <span class="hljs-string">'ts-trueskill'</span>;
 <span class="hljs-keyword">const</span> team1 = [<span class="hljs-keyword">new</span> Rating(), <span class="hljs-keyword">new</span> Rating()];
@@ -84,15 +86,35 @@
 <span class="hljs-comment">// Assumes the first team was the winner by default</span>
 <span class="hljs-keyword">const</span> q = quality([team1, team2]);
 <span class="hljs-comment">// q is quality of the match with the players at their current rating</span>
-<span class="hljs-keyword">const</span> [rated1, rated2] = rate([team1, team2]);
+<span class="hljs-keyword">const</span> [rated1, rated2] = rate([team1, team2]); <span class="hljs-comment">// rate also takes weights of winners or draw</span>
 <span class="hljs-comment">// rated1 and rated2 are now arrays with updated scores from result of match</span>
+
+<span class="hljs-built_in">console</span>.log(rated1.toString()) <span class="hljs-comment">// team 1 went up in rating</span>
+<span class="hljs-comment">// &gt;&gt; Rating(mu=28.108, sigma=7.774),Rating(mu=28.108, sigma=7.774)</span>
+<span class="hljs-built_in">console</span>.log(rated2.toString()) <span class="hljs-comment">// team 2 went down in rating</span>
+<span class="hljs-comment">// &gt;&gt; Rating(mu=21.892, sigma=7.774),Rating(mu=21.892, sigma=7.774)</span>
 </code></pre>
 				<p>1 vs 1 example:</p>
 				<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { Rating, quality_1vs1, rate_1vs1 } from <span class="hljs-string">'ts-trueskill'</span>;
 <span class="hljs-keyword">const</span> r1 = <span class="hljs-keyword">new</span> Rating(<span class="hljs-number">40</span>, <span class="hljs-number">4</span>);
 <span class="hljs-keyword">const</span> r2 = <span class="hljs-keyword">new</span> Rating(<span class="hljs-number">10</span>, <span class="hljs-number">4</span>);
-<span class="hljs-keyword">const</span> q = quality_1vs1(r1, r2); <span class="hljs-comment">// quality will be pretty low</span>
+<span class="hljs-keyword">const</span> q = quality_1vs1(r1, r2); <span class="hljs-comment">// quality will be low from large difference in scores</span>
 <span class="hljs-keyword">const</span> [new_r1, new_r2] = rate_1vs1(r1, r2); <span class="hljs-comment">// get new ratings after r1 wins</span>
+</code></pre>
+				<h3 id="basic-use-in-node">Basic Use in node</h3>
+				<p>Requires node &gt; v6</p>
+				<pre><code class="lang-javascript"><span class="hljs-keyword">const</span> trueskill = <span class="hljs-built_in">require</span>(<span class="hljs-string">"ts-trueskill"</span>);
+<span class="hljs-keyword">const</span> team1 = [<span class="hljs-keyword">new</span> trueskill.Rating(), <span class="hljs-keyword">new</span> trueskill.Rating()];
+<span class="hljs-keyword">const</span> team2 = [<span class="hljs-keyword">new</span> trueskill.Rating(), <span class="hljs-keyword">new</span> trueskill.Rating()];
+<span class="hljs-comment">// Assumes the first team was the winner by default</span>
+<span class="hljs-keyword">const</span> q = trueskill.quality([team1, team2]);
+<span class="hljs-comment">// q is quality of the match with the players at their current rating</span>
+<span class="hljs-keyword">const</span> [rated1, rated2] = trueskill.rate([team1, team2]);
+<span class="hljs-comment">// rated1 and rated2 are now arrays with updated scores from result of match </span>
+<span class="hljs-built_in">console</span>.log(rated1.toString()) <span class="hljs-comment">// team 1 went up in rating</span>
+<span class="hljs-comment">// &gt;&gt; Rating(mu=28.108, sigma=7.774),Rating(mu=28.108, sigma=7.774)</span>
+<span class="hljs-built_in">console</span>.log(rated2.toString()) <span class="hljs-comment">// team 2 went down in rating</span>
+<span class="hljs-comment">// &gt;&gt; Rating(mu=21.892, sigma=7.774),Rating(mu=21.892, sigma=7.774)</span>
 </code></pre>
 				<h3 id="differences-from-python-version">Differences from python version</h3>
 				<ul>
