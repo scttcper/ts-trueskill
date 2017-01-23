@@ -515,6 +515,16 @@ export class TrueSkill {
     const u = undefined;
     return setup(u, u, u, u, u, this);
   }
+  /**
+   * Taken from https://github.com/sublee/trueskill/issues/1
+   */
+  winProbability(a: Rating[], b: Rating[]) {
+    const deltaMu = _.sumBy(a, 'mu') - _.sumBy(b, 'mu');
+    const sumSigma = _.sum(a.map((x) => x.sigma ** 2)) + _.sum(b.map((x) => x.sigma ** 2));
+    const playerCount = a.length + b.length;
+    const denominator = Math.sqrt(playerCount * (BETA * BETA) + sumSigma);
+    return this.cdf(deltaMu / denominator);
+  }
 }
 
 /**
@@ -567,15 +577,19 @@ export function setup(mu = MU, sigma = SIGMA, beta = BETA,
 }
 
 /**
- * A proxy function for :meth:`TrueSkill.rate` of the global environment.
+ * A proxy function for `TrueSkill.rate` of the global environment.
  */
 export function rate(ratingGroups: Rating[][] | any[],
                      ranks?, weights?, minDelta = DELTA): Rating[][] {
   return global_env().rate(ratingGroups, ranks, weights, minDelta);
 }
 
+export function winProbability(a: Rating[], b: Rating[]) {
+  return global_env().winProbability(a, b);
+}
+
 /**
- * A proxy function for :meth:`TrueSkill.quality` of the global
+ * A proxy function for `TrueSkill.quality` of the global
  * environment.
  */
 export function quality(ratingGroups: Rating[][] | any[], weights?: number[][]) {

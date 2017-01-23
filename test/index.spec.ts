@@ -9,6 +9,7 @@ import {
   Rating,
   setup,
   TrueSkill,
+  winProbability,
 } from '../src/index';
 import { Gaussian } from '../src/mathematics';
 
@@ -248,6 +249,12 @@ describe('TrueSkill', function() {
       [[35.135, 4.506], [32.585, 4.037], [31.329, 3.756], [30.984, 3.453],
         [31.751, 3.064], [34.051, 2.541], [38.263, 1.849], [44.118, 0.983]],
     );
+  });
+  it('should test winProbability', function() {
+    // 1 vs 1
+    const t1 = [new Rating()];
+    const t2 = [new Rating(50, 12.5)];
+    expect(winProbability(t1, t2)).to.closeTo(0.06, 0.001);
   });
   it('should test partial play', function() {
     const t1 = [new Rating()];
