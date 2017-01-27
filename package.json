@@ -18,7 +18,7 @@
   "dependencies": {
     "gaussian": "^1.1.0",
     "lodash": "^4.17.4",
-    "mathjs": "^3.8.1",
+    "mathjs": "^3.9.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
@@ -27,14 +27,14 @@
     "@types/lodash": "^4.14.50",
     "@types/mathjs": "^0.0.33",
     "@types/mocha": "^2.2.38",
-    "@types/node": "^7.0.1",
+    "@types/node": "^7.0.4",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
     "coveralls": "^2.11.15",
     "mocha": "^3.2.0",
     "nyc": "^10.1.2",
     "ts-node": "^2.0.0",
-    "tslint": "^4.3.1",
+    "tslint": "^4.4.2",
     "typedoc": "^0.5.5",
     "typescript": "^2.1.5"
   },
