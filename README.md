@@ -1,4 +1,6 @@
 # ts-trueskill
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/scttcper/ts-trueskill.svg)](https://greenkeeper.io/)
 [![npm][npm-img]][npm-url]
 [![build status][build-img]][build-url]
 [![coverage status][coverage-img]][coverage-url]
