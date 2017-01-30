@@ -1,16 +1,18 @@
 # ts-trueskill
-
-[![Greenkeeper badge](https://badges.greenkeeper.io/scttcper/ts-trueskill.svg)](https://greenkeeper.io/)
 [![npm][npm-img]][npm-url]
 [![build status][build-img]][build-url]
 [![coverage status][coverage-img]][coverage-url]
+[![greenkeeper][greenkeeper-image]][greenkeeper-url]
 
 [npm-img]: https://img.shields.io/npm/v/ts-trueskill.svg?maxAge=3600
 [npm-url]: https://www.npmjs.com/package/ts-trueskill
 [build-img]: https://img.shields.io/travis/scttcper/ts-trueskill.svg
 [build-url]: https://travis-ci.org/scttcper/ts-trueskill
 [coverage-img]: https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg
-[coverage-url]: https://codecov.io/gh/scttcper/ts-trueskill  
+[coverage-url]: https://codecov.io/gh/scttcper/ts-trueskill
+[greenkeeper-image]: https://badges.greenkeeper.io/scttcper/ts-trueskill.svg
+[greenkeeper-url]: https://greenkeeper.io/
+
 
 TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee. Passing most of the same tests.
 
