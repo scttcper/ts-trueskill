@@ -7,3 +7,4 @@ cache: yarn
 script: yarn coverage
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - bash yarn.sh
