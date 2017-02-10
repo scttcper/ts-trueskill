@@ -32,9 +32,9 @@
   version "0.0.28"
   resolved "https://registry.yarnpkg.com/@types/marked/-/marked-0.0.28.tgz#44ba754e9fa51432583e8eb30a7c4dd249b52faa"
 
-"@types/mathjs@^0.0.33":
-  version "0.0.33"
-  resolved "https://registry.yarnpkg.com/@types/mathjs/-/mathjs-0.0.33.tgz#2c3065a58fc7c2279e32452157382ce68e71eabc"
+"@types/mathjs@^0.0.34":
+  version "0.0.34"
+  resolved "https://registry.yarnpkg.com/@types/mathjs/-/mathjs-0.0.34.tgz#e22f44b72e6b148608887fb816f9376dcfedc97d"
 
 "@types/minimatch@^2.0.29":
   version "2.0.29"
@@ -44,11 +44,7 @@
   version "2.2.38"
   resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.38.tgz#8c188f6e34c2e7c3f1d0127d908d5a36e5a60dc9"
 
-"@types/node@*":
-  version "7.0.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.1.tgz#858610f58e4d48dd4410145eef9e12c97e3aacfd"
-
-"@types/node@^7.0.4":
+"@types/node@*", "@types/node@^7.0.4":
   version "7.0.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.0.4.tgz#9aabc135979ded383325749f508894c662948c8b"
 
