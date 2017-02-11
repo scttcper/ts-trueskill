@@ -1,4 +1,4 @@
-import * as gaus from 'gaussian';
+import * as gaussian from 'gaussian';
 import * as _ from 'lodash';
 import * as math from 'mathjs';
 
@@ -97,7 +97,7 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
-  gaussian: gaus.Gaussian;
+  gaussian: gaussian.Gaussian;
 
   constructor(mu?: number, sigma?: number, beta?: number, tau?: number, drawProbability?: number) {
     this.mu = mu || MU;
@@ -109,7 +109,7 @@ export class TrueSkill {
     } else {
       this.drawProbability = drawProbability;
     }
-    this.gaussian = gaus(0, 1);
+    this.gaussian = gaussian(0, 1);
   }
 
   /**
