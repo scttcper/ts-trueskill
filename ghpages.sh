@@ -7,4 +7,4 @@ fi
 yarn docs
 yarn global add gh-pages
 echo "Pushing to github pages"
-gh-pages -r "https://$PUSH_TOKEN@github.com/$TRAVIS_REPO_SLUG.git" -d docs -x -t
+gh-pages -r "https://$PUSH_TOKEN@github.com/$TRAVIS_REPO_SLUG.git" -d docs -t
