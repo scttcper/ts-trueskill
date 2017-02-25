@@ -5,6 +5,7 @@ if [[ $TRAVIS_BRANCH != 'master' ]]; then
 	exit 0
 fi
 yarn docs
+touch docs/.nojekyll
 yarn global add gh-pages
 echo "Pushing to github pages"
 gh-pages -r "https://$PUSH_TOKEN@github.com/$TRAVIS_REPO_SLUG.git" -d docs -x
