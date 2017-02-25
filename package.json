@@ -1,6 +1,6 @@
 {
   "name": "ts-trueskill",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Port of trueskill package written in TypeScript",
   "main": "index.js",
   "typings": "index.d.ts",
