@@ -8,8 +8,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "build",
-    "types" : ["node", "mocha"],
-    "skipLibCheck": true
+    "types" : ["node", "mocha"]
   },
   "exclude": [
     "node_modules",
