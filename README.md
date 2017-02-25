@@ -1,5 +1,5 @@
 # ts-trueskill
-> TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee.
+> TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee.  
 [![npm][npm-img]][npm-url]
 [![build status][build-img]][build-url]
 [![coverage status][coverage-img]][coverage-url]
