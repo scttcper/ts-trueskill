@@ -20,7 +20,6 @@ https://scttcper.github.io/ts-trueskill/
 
 ### What's TrueSkill™
 [TrueSkill](http://research.microsoft.com/en-us/projects/trueskill) is a rating system for players of a game. It was developed, patented, and trademarked by Microsoft Research and has been used on Xbox LIVE for ranking and matchmaking service. This system quantifies players’ TRUE skill points by the Bayesian inference algorithm. It also works well with any type of match rule including N:N team game or free-for-all.
-
 Read about [how the trueskill model works](https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/)
 
 ### Installation
