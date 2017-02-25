@@ -73,7 +73,6 @@ console.log(rated2.toString()) // team 2 went down in rating
 // >> Rating(mu=21.892, sigma=7.774),Rating(mu=21.892, sigma=7.774)
 ```
 
-
 ### Differences from python version
 - Currently does not support multiple backends
 
