@@ -143,7 +143,7 @@ export class SumFactor extends Factor {
       } else {
         p = -c / coeff;
       }
-      p = _.isFinite(p) ? p : 0;
+      p = Number.isFinite(p) ? p : 0;
       if (coeff === 0) {
         p = 0;
       }
@@ -163,7 +163,7 @@ export class SumFactor extends Factor {
       const coeff = coeffs[i];
       const div = val.div(msg);
       mu += coeff * div.mu;
-      if (!_.isFinite(piInv)) {
+      if (!Number.isFinite(piInv)) {
         continue;
       }
       piInv += coeff ** 2 / div.pi;

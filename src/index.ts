@@ -42,7 +42,7 @@ export function calcDrawMargin(drawProbability: number, size: number, env?: True
 function _teamSizes(ratingGroups) {
   const teamSizes = [0];
   for (const group of ratingGroups) {
-    teamSizes.push(group.length + _.last(teamSizes));
+    teamSizes.push(group.length + teamSizes[teamSizes.length - 1]);
   }
   teamSizes.shift();
   return teamSizes;
@@ -452,7 +452,7 @@ export class TrueSkill {
     const truncLayer: TruncateFactor[] = buildTruncLayer();
     layers.push(teamDiffLayer, truncLayer);
     const teamDiffLen = teamDiffLayer.length;
-    for (const x of _.range(10)) {
+    for (let index = 0; index <= 10; index++) {
       let delta;
       if (teamDiffLen === 1) {
         // only two teams
