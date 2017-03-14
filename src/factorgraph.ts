@@ -175,10 +175,15 @@ export class SumFactor extends Factor {
 }
 
 export class TruncateFactor extends Factor {
-  vFunc: Function;
-  wFunc: Function;
+  vFunc: (a: number, b: number) => number;
+  wFunc: (a: number, b: number) => number;
   drawMargin: number;
-  constructor(v: Variable, vFunc: Function, wFunc: Function, drawMargin: number) {
+  constructor(
+    v: Variable,
+    vFunc: (a: number, b: number) => number,
+    wFunc: (a: number, b: number) => number,
+    drawMargin: number,
+  ) {
     super([v]);
     this.vFunc = vFunc;
     this.wFunc = wFunc;

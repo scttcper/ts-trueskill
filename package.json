@@ -24,10 +24,10 @@
   "devDependencies": {
     "@types/chai": "^3.4.35",
     "@types/gaussian": "^1.1.0",
-    "@types/lodash": "^4.14.54",
+    "@types/lodash": "^4.14.55",
     "@types/mathjs": "^0.0.34",
-    "@types/mocha": "^2.2.39",
-    "@types/node": "^7.0.5",
+    "@types/mocha": "^2.2.40",
+    "@types/node": "^7.0.8",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
