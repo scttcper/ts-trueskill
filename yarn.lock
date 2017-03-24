@@ -12,9 +12,9 @@
   dependencies:
     "@types/node" "*"
 
-"@types/gaussian@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@types/gaussian/-/gaussian-1.1.0.tgz#4d5dff27ca1be5313eea1fe63f05dc9b2538ae8e"
+"@types/gaussian@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/gaussian/-/gaussian-1.1.1.tgz#ce670c1d41d33d5a8601235da1cc5395783f6d7f"
 
 "@types/handlebars@^4.0.31":
   version "4.0.32"
@@ -24,9 +24,9 @@
   version "9.1.9"
   resolved "https://registry.yarnpkg.com/@types/highlight.js/-/highlight.js-9.1.9.tgz#ed6336955eaf233b75eb7923b9b1f373d045ef01"
 
-"@types/lodash@^4.14.37", "@types/lodash@^4.14.57":
-  version "4.14.57"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.57.tgz#f0095fb15ec1004455613f3ad73766583e62f830"
+"@types/lodash@^4.14.37", "@types/lodash@^4.14.58":
+  version "4.14.58"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.58.tgz#18d45863b6119c1ffffe935c1f51fe044c8c4102"
 
 "@types/marked@0.0.28":
   version "0.0.28"
