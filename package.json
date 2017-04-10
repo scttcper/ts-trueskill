@@ -1,6 +1,6 @@
 {
   "name": "ts-trueskill",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Port of trueskill package written in TypeScript",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -18,24 +18,24 @@
   "dependencies": {
     "gaussian": "^1.1.0",
     "lodash": "^4.17.4",
-    "mathjs": "^3.10.0",
+    "mathjs": "^3.11.5",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
     "@types/chai": "^3.4.35",
     "@types/gaussian": "^1.1.1",
-    "@types/lodash": "^4.14.58",
+    "@types/lodash": "^4.14.62",
     "@types/mathjs": "^0.0.34",
     "@types/mocha": "^2.2.40",
-    "@types/node": "^7.0.10",
+    "@types/node": "^7.0.12",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
-    "nyc": "^10.1.2",
+    "nyc": "^10.2.0",
     "ts-node": "^3.0.2",
-    "tslint": "^4.5.1",
-    "typedoc": "^0.5.9",
-    "typescript": "^2.2.1"
+    "tslint": "^5.0.0",
+    "typedoc": "^0.5.10",
+    "typescript": "^2.2.2"
   },
   "nyc": {
     "sourceMap": true,
@@ -54,8 +54,5 @@
       "text"
     ],
     "exclude": []
-  },
-  "engines": {
-    "node": ">=6"
   }
 }
