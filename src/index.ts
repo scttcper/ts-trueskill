@@ -54,7 +54,7 @@ function _teamSizes(ratingGroups) {
  * create the rating object.
  */
 export class Rating extends Gaussian {
-  constructor(mu?: number|Gaussian|[number, number], sigma?: number) {
+  constructor(mu?: number | Gaussian | [number, number], sigma?: number) {
     if (Array.isArray(mu)) {
       [mu, sigma] = mu;
     } else if (mu instanceof Gaussian) {
@@ -97,7 +97,7 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
-  gaussian: gaussian.Gaussian;
+  gaussian: any;
 
   constructor(mu?: number, sigma?: number, beta?: number, tau?: number, drawProbability?: number) {
     this.mu = mu || MU;
@@ -294,9 +294,9 @@ export class TrueSkill {
       math.multiply(
         math.multiply([[-0.5]],
           math.multiply(start, math.inv(middle))),
-          end,
-        ),
-      );
+        end,
+      ),
+    );
     const sArg = math.det(ata) / math.det(middle);
     return math.exp(eArg) * math.sqrt(sArg);
   }
@@ -545,8 +545,11 @@ export function rate_1vs1(rating1: Rating, rating2: Rating,
  * A shortcut to calculate the match quality between 2 players in
  * a head-to-head match
  */
-export function quality_1vs1(rating1: Rating, rating2: Rating,
-                             env?: TrueSkill) {
+export function quality_1vs1(
+  rating1: Rating,
+  rating2: Rating,
+  env?: TrueSkill,
+) {
   if (!env) {
     env = global_env();
   }
@@ -566,9 +569,14 @@ export function global_env(): TrueSkill {
 /**
  * Setup the global environment defaults
  */
-export function setup(mu = MU, sigma = SIGMA, beta = BETA,
-                      tau = TAU, drawProbability = DRAW_PROBABILITY,
-                      env?: TrueSkill) {
+export function setup(
+  mu = MU,
+  sigma = SIGMA,
+  beta = BETA,
+  tau = TAU,
+  drawProbability = DRAW_PROBABILITY,
+  env?: TrueSkill,
+) {
   if (!env) {
     env = new TrueSkill(mu, sigma, beta, tau, drawProbability);
   }
@@ -579,8 +587,12 @@ export function setup(mu = MU, sigma = SIGMA, beta = BETA,
 /**
  * A proxy function for `TrueSkill.rate` of the global environment.
  */
-export function rate(ratingGroups: Rating[][] | any[],
-                     ranks?, weights?, minDelta = DELTA): Rating[][] {
+export function rate(
+  ratingGroups: Rating[][] | any[],
+  ranks?,
+  weights?,
+  minDelta = DELTA,
+): Rating[][] {
   return global_env().rate(ratingGroups, ranks, weights, minDelta);
 }
 
