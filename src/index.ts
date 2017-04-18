@@ -144,9 +144,6 @@ export class TrueSkill {
    * "W" calculates a variation of a standard deviation.
    */
   w_win(diff, drawMargin) {
-    // if (diff !== 1.5491313744672435) {
-    //   throw new Error('wtf')
-    // }
     const x = diff - drawMargin;
     const v = this.v_win(diff, drawMargin);
     const w = v * (v + x);
