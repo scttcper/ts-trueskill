@@ -1,5 +1,5 @@
 {
-  "name": "ts-trueskill",
+  "name": "@wraithan/ts-trueskill",
   "version": "1.0.15",
   "description": "Port of trueskill package written in TypeScript",
   "main": "index.js",
