@@ -5,6 +5,7 @@
     "noImplicitAny": false,
     "noResolve": false,
     "target": "es5",
+    "lib": ["es6"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "build",
@@ -15,7 +16,8 @@
     "build"
   ],
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "test/**/*"
   ],
   "compileOnSave": false
 }
