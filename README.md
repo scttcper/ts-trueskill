@@ -23,7 +23,7 @@ https://scttcper.github.io/ts-trueskill/
 Read about [how the trueskill model works](https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/)
 
 ### Installation
-This package is built into es6 and published with typings. Available on [npm](https://www.npmjs.com/package/ts-trueskill):
+Built into es5 and published with typings. Available on [npm](https://www.npmjs.com/package/ts-trueskill):
 ```bash
 npm install ts-trueskill
 ```
@@ -57,7 +57,6 @@ const [new_r1, new_r2] = rate_1vs1(r1, r2); // get new ratings after r1 wins
 ```
 
 ### Basic Use in node
-Requires node > v6
 ```javascript
 const trueskill = require("ts-trueskill");
 const team1 = [new trueskill.Rating(), new trueskill.Rating()];
@@ -74,7 +73,7 @@ console.log(rated2.toString()) // team 2 went down in rating
 ```
 
 ### Differences from python version
-- Currently does not support multiple backends
+- Does not support multiple backends
 
 ### License
 This package is Licensed under MIT, but is a port of the [BSD](http://en.wikipedia.org/wiki/BSD_licenses) licensed python TrueSkill package by Heungsub Lee. The _TrueSkill™_ brand is not very permissive. Microsoft permits only Xbox Live games or non-commercial projects to use TrueSkill™.
