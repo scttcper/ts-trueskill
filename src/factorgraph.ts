@@ -46,7 +46,7 @@ export class Variable extends Gaussian {
     const count = Object.keys(this.messages).length;
     const s = count === 1 ? '' : 's';
     const val = super.toString();
-    return `<${this.constructor.name} ${val} with ${count} connection${s}>`;
+    return `<Variable ${val} with ${count} connection${s}>`;
   }
 }
 
@@ -73,7 +73,7 @@ export class Factor {
   }
   toString() {
     const s = this.vars.length === 1 ? '' : 's';
-    return `<${this.constructor.name} with ${this.vars.length} connection${s} ${this.uuid}>`;
+    return `<Factor with ${this.vars.length} connection${s} ${this.uuid}>`;
   }
 }
 
@@ -143,7 +143,7 @@ export class SumFactor extends Factor {
       } else {
         p = -c / coeff;
       }
-      p = Number.isFinite(p) ? p : 0;
+      p = (typeof p === 'number' && isFinite(p)) ? p : 0;
       if (coeff === 0) {
         p = 0;
       }
@@ -163,7 +163,7 @@ export class SumFactor extends Factor {
       const coeff = coeffs[i];
       const div = val.div(msg);
       mu += coeff * div.mu;
-      if (!Number.isFinite(piInv)) {
+      if (typeof piInv !== 'number' || !isFinite(piInv)) {
         continue;
       }
       piInv += coeff ** 2 / div.pi;

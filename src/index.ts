@@ -336,7 +336,11 @@ export class TrueSkill {
   validate_weights(ratingGroups: Rating[][], weights?: any[], keys?: string[]) {
     if (!weights) {
       weights = ratingGroups.map((n) => {
-        return new Array(n.length).fill(1);
+        const result = new Array(n.length);
+        for (let i = 0; i < n.length; i++) {
+          result[i] = 1;
+        }
+        return result;
       });
     }
     // TODO: weights is dict?

@@ -4,7 +4,7 @@
     "sourceMap": true,
     "noImplicitAny": false,
     "noResolve": false,
-    "target": "es6",
+    "target": "es5",
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "build",
