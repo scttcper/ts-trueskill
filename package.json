@@ -1,7 +1,7 @@
 {
   "name": "ts-trueskill",
   "version": "1.0.15",
-  "description": "Port of trueskill package written in TypeScript",
+  "description": "Port of python trueskill package in TypeScript",
   "main": "index.js",
   "typings": "index.d.ts",
   "repository": "https://github.com/scttcper/ts-trueskill.git",
@@ -18,23 +18,23 @@
   "dependencies": {
     "gaussian": "^1.1.0",
     "lodash": "^4.17.4",
-    "mathjs": "^3.11.5",
+    "mathjs": "^3.12.1",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "@types/chai": "^3.5.0",
+    "@types/chai": "^3.5.1",
     "@types/gaussian": "^1.1.1",
-    "@types/lodash": "^4.14.62",
+    "@types/lodash": "^4.14.63",
     "@types/mathjs": "^0.0.34",
-    "@types/mocha": "^2.2.40",
-    "@types/node": "^7.0.12",
+    "@types/mocha": "^2.2.41",
+    "@types/node": "^7.0.14",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
-    "mocha": "^3.2.0",
+    "mocha": "^3.3.0",
     "nyc": "^10.2.0",
     "ts-node": "^3.0.2",
     "tslint": "^5.1.0",
-    "typedoc": "^0.5.10",
+    "typedoc": "^0.6.0",
     "typescript": "^2.2.2"
   },
   "nyc": {
@@ -54,5 +54,10 @@
       "text"
     ],
     "exclude": []
-  }
+  },
+  "keywords": [
+    "typescript",
+    "trueskill",
+    "player skill"
+  ]
 }
