@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as uuid from 'uuid/v4';
+import * as uuid from 'uuid';
 
 import { Gaussian } from './mathematics';
 
@@ -51,7 +51,7 @@ export class Variable extends Gaussian {
 }
 
 export class Factor {
-  uuid = uuid();
+  uuid = uuid.v4();
   vars: Variable[];
   constructor(vars: Variable[]) {
     this.vars = vars;
