@@ -27,7 +27,6 @@
     "@types/lodash": "^4.14.63",
     "@types/mathjs": "^0.0.34",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.14",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
     "mocha": "^3.3.0",
