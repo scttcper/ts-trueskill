@@ -333,9 +333,9 @@ export class TrueSkill {
     return [ratingGroups, null];
   }
 
-  validate_weights(ratingGroups: Rating[][], weights?: any[], keys?: string[][]) {
+  validate_weights(ratingGroups: Rating[][], weights?: number[][], keys?: string[][]): number[][] {
     if (!weights) {
-      weights = ratingGroups.map((n) => {
+      return ratingGroups.map((n) => {
         return _.fill(Array(n.length), 1);
       });
     }
