@@ -25,6 +25,8 @@ const DRAW_PROBABILITY = 0.10;
 const DELTA = 0.0001;
 /** stores set global environment */
 export let trueskill: TrueSkill;
+/** reuseable gaussian */
+const gaus = gaussian(0, 1);
 
 /**
  * Calculates a draw-margin from the given drawProbability
@@ -33,13 +35,13 @@ export function calcDrawMargin(drawProbability: number, size: number, env?: True
   if (!env) {
     env = global_env();
   }
-  return env.ppf((drawProbability + 1) / 2) * Math.sqrt(size) * env.beta;
+  return gaus.ppf((drawProbability + 1) / 2) * Math.sqrt(size) * env.beta;
 }
 
 /**
  * Makes a size map of each teams.
  */
-function _teamSizes(ratingGroups) {
+function _teamSizes(ratingGroups: Rating[][]) {
   const teamSizes = [0];
   for (const group of ratingGroups) {
     teamSizes.push(group.length + teamSizes[teamSizes.length - 1]);
@@ -97,9 +99,14 @@ export class TrueSkill {
   tau: number;
   drawProbability: number;
   backend: any;
-  gaussian: any;
 
-  constructor(mu?: number, sigma?: number, beta?: number, tau?: number, drawProbability?: number) {
+  constructor(
+    mu?: number | null,
+    sigma?: number | null,
+    beta?: number | null,
+    tau?: number | null,
+    drawProbability?: number | null,
+  ) {
     this.mu = mu || MU;
     this.sigma = sigma || SIGMA;
     this.beta = beta || BETA;
@@ -109,90 +116,39 @@ export class TrueSkill {
     } else {
       this.drawProbability = drawProbability;
     }
-    this.gaussian = gaussian(0, 1);
-  }
-
-  /**
-   * Initializes new `Rating` object, but it fixes default mu and
-   * sigma to the environment's.
-   * >>> env = TrueSkill(mu=0, sigma=1)
-   * >>> env.createRating()
-   * trueskill.Rating(mu=0.000, sigma=1.000)
-   */
-  createRating(mu = this.mu, sigma = this.sigma) {
-    return new Rating(mu, sigma);
-  }
-
-  /**
-   * The non-draw version of "V" function.
-   * "V" calculates a variation of a mean.
-   */
-  v_win(diff, drawMargin) {
-    const x = diff - drawMargin;
-    const denom = this.cdf(x);
-    return denom ? (this.pdf(x) / denom) : -x;
-  }
-  v_draw(diff, drawMargin) {
-    const absDiff = Math.abs(diff);
-    const [a, b] = [drawMargin - absDiff, -drawMargin - absDiff];
-    const denom = this.cdf(a) - this.cdf(b);
-    const numer = this.pdf(b) - this.pdf(a);
-    return (denom ? (numer / denom) : a) * (diff < 0 ? -1 : +1);
-  }
-  /**
-   * The non-draw version of "W" function.
-   * "W" calculates a variation of a standard deviation.
-   */
-  w_win(diff, drawMargin) {
-    const x = diff - drawMargin;
-    const v = this.v_win(diff, drawMargin);
-    const w = v * (v + x);
-    if (0 < w && w < 1) {
-      return w;
-    }
-    throw new Error('floating point error');
-  }
-  /** The draw version of "W" function. */
-  w_draw(diff, drawMargin) {
-    const absDiff = Math.abs(diff);
-    const a = drawMargin - absDiff;
-    const b = -drawMargin - absDiff;
-    const denom = this.cdf(a) - this.cdf(b);
-    if (!denom) {
-      throw new Error('Floating point error');
-    }
-    const v = this.v_draw(absDiff, drawMargin);
-    return (v ** 2) + (a * this.pdf(a) - b * this.pdf(b)) / denom;
   }
 
   /** Recalculates ratings by the ranking table */
-  rate(ratingGroups: Rating[][] | any[],
-       ranks: any[] = null,
-       weights: any[] = null,
-       minDelta = DELTA): Rating[][] | any[] {
-    let keys;
-    [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    weights = this.validate_weights(ratingGroups, weights);
+  rate(
+    ratingGroups: Rating[][] | any[],
+    ranks: number[] | null = null,
+    weights: number[][] | null = null,
+    minDelta = DELTA,
+  ): Rating[][] | any[] {
+    const [newRatingGroups, keys] = this.validateRatingGroups(ratingGroups);
+    weights = this.validate_weights(newRatingGroups, weights);
     const groupSize = ratingGroups.length;
-    if (ranks === null) {
-      ranks = _.range(groupSize);
-    } else if (ranks.length !== groupSize) {
+    if (ranks && ranks.length !== groupSize) {
       throw new Error('Wrong ranks');
     }
+    const newRanks = ranks ? ranks : _.range(groupSize);
     // sort rating groups by rank
-    let zip = _.zip(ratingGroups, ranks, weights);
-    let n = 0;
-    zip = zip.map((el) => {
-      const res = [n, el];
-      n++;
+    const zip: Array<[Rating[], number, number[]]> = [];
+    for (let idx = 0; idx < newRatingGroups.length; idx++) {
+      zip.push([newRatingGroups[idx], newRanks[idx], weights[idx]]);
+    }
+    let position = 0;
+    const positions = zip.map((el) => {
+      const res: [number, [Rating[], number, number[]]] = [position, el];
+      position++;
       return res;
     });
-    const sorting = _.orderBy(zip, (x) => {
+    const sorting = _.orderBy(positions, (x) => {
       return x[1][1];
     });
-    const sortedRatingGroups = [];
-    const sortedRanks = [];
-    const sortedWeights = [];
+    const sortedRatingGroups: Rating[][] = [];
+    const sortedRanks: number[] = [];
+    const sortedWeights: number[][] = [];
     for (const [x, [g, r, w]] of sorting) {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
@@ -201,21 +157,93 @@ export class TrueSkill {
       sortedWeights.push(max);
     }
     // build factor graph
-    const builders = this.factorGraphBuilders(sortedRatingGroups, sortedRanks, sortedWeights);
-    const layers = this.runSchedule(builders[0], builders[1], builders[2], builders[3], builders[4], minDelta);
-    const ratingLayer: any[] = layers[0];
+    const flattenRatings = _.flatten(sortedRatingGroups);
+    const flattenWeights = _.flatten(sortedWeights);
+    const size = flattenRatings.length;
+    // create variables
+    const ratingVars: Variable[] = _.range(size).map(() => new Variable());
+    const perfVars: Variable[] = _.range(size).map(() => new Variable());
+    const teamPerfVars: Variable[] = _.range(groupSize).map(() => new Variable());
+    const teamDiffVars: Variable[] = _.range(groupSize - 1).map(() => new Variable());
     const teamSizes = _teamSizes(sortedRatingGroups);
-    const transformedGroups = [];
+    // layer builders
+    const buildRatingLayer = () => {
+      const pf: PriorFactor[] = [];
+      for (let idx = 0; idx < ratingVars.length; idx++) {
+        pf.push(new PriorFactor(ratingVars[idx], flattenRatings[idx], this.tau));
+      }
+      return pf;
+    };
+    const buildPerfLayer = () => {
+      const lf: LikelihoodFactor[] = [];
+      for (let idx = 0; idx < ratingVars.length; idx++) {
+        lf.push(new LikelihoodFactor(ratingVars[idx], perfVars[idx], this.beta ** 2));
+      }
+      return lf;
+    };
+    const buildTeamPerfLayer = () => {
+      let team = 0;
+      return teamPerfVars.map((teamPerfVar) => {
+        const start = team > 0 ? teamSizes[team - 1] : 0;
+        const end = teamSizes[team];
+        team++;
+        const childPerfVars = perfVars.slice(start, end);
+        const coeffs = flattenWeights.slice(start, end);
+        return new SumFactor(teamPerfVar, childPerfVars, coeffs);
+      });
+    };
+    const buildTeamDiffLayer = () => {
+      let team = 0;
+      return teamDiffVars.map((teamDiffVar) => {
+        const sl = teamPerfVars.slice(team, team + 2);
+        team++;
+        return new SumFactor(teamDiffVar, sl, [1, -1]);
+      });
+    };
+    const buildTruncLayer = () => {
+      let x = 0;
+      return teamDiffVars.map((teamDiffVar) => {
+        // static draw probability
+        const drawProbability = this.drawProbability;
+        const lengths = sortedRatingGroups.slice(x, x + 2).map((n) => n.length);
+        const drawMargin = calcDrawMargin(drawProbability, _.sum(lengths), this);
+        let vFunc;
+        let wFunc;
+        if (sortedRanks[x] === sortedRanks[x + 1]) {
+          vFunc = (a: number, b: number) => this.v_draw(a, b);
+          wFunc = (a: number, b: number) => this.w_draw(a, b);
+        } else {
+          vFunc = (a: number, b: number) => this.v_win(a, b);
+          wFunc = (a: number, b: number) => this.w_win(a, b);
+        }
+        x++;
+        return new TruncateFactor(teamDiffVar, vFunc, wFunc, drawMargin);
+      });
+    };
+    const layers = this.runSchedule(
+      buildRatingLayer,
+      buildPerfLayer,
+      buildTeamPerfLayer,
+      buildTeamDiffLayer,
+      buildTruncLayer,
+      minDelta,
+    );
+    const ratingLayer: any[] = layers[0];
+    const transformedGroups: Rating[][] = [];
     const trimmed = teamSizes.slice(0, teamSizes.length - 1);
     for (const [start, end] of _.zip([0].concat(trimmed), teamSizes)) {
-      const group = [];
+      const group: Rating[] = [];
       ratingLayer.slice(start, end).map((f: PriorFactor) => {
         group.push(new Rating(f.v.mu, f.v.sigma));
       });
       transformedGroups.push(group);
     }
     const pulled = sorting.map(([x, zz]) => x);
-    const unsorting = _.sortBy(_.zip(pulled, transformedGroups), (zi) => zi[0]);
+    const pulledTranformedGroups: Array<[number, Rating[]]> = [];
+    for (let idx = 0; idx < pulled.length; idx++) {
+      pulledTranformedGroups.push([pulled[idx], transformedGroups[idx]]);
+    }
+    const unsorting = _.sortBy(pulledTranformedGroups, (zi) => zi[0]);
     if (!keys) {
       return unsorting.map((k) => k[1]);
     }
@@ -234,15 +262,14 @@ export class TrueSkill {
    *   }
    */
   quality(ratingGroups: Rating[][], weights?: number[][]) {
-    let keys: string[];
-    [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    weights = this.validate_weights(ratingGroups, weights, keys);
+    const [newRatingGroups, keys] = this.validateRatingGroups(ratingGroups);
+    const newWeights = this.validate_weights(ratingGroups, weights, keys);
     const flattenRatings = _.flatten(ratingGroups);
-    const flattenWeights = _.flatten(weights);
+    const flattenWeights = _.flatten(newWeights);
     const length = flattenRatings.length;
     // a vector of all of the skill means
     const meanMatrix = math.matrix(flattenRatings.map((r) => [r.mu]));
-    function fnVarianceMatrix(height, width) {
+    function fnVarianceMatrix(height: number, width: number) {
       const variances = flattenRatings.map((r) => r.sigma ** 2);
       const matrix = math.matrix().resize([height, width]);
       let i = 0;
@@ -257,12 +284,12 @@ export class TrueSkill {
       let t = 0;
       let r = 0;
       const zipped = _.zip(
-        ratingGroups.slice(0, ratingGroups.length - 1),
-        ratingGroups.slice(1),
+        newRatingGroups.slice(0, newRatingGroups.length - 1),
+        newRatingGroups.slice(1),
       );
       const matrix = math.matrix();
       for (const [cur, next] of zipped) {
-        let x;
+        let x = 0;
         for (x of _.range(t, t + cur.length)) {
           matrix.set([r, x], flattenWeights[x]);
           t += 1;
@@ -299,10 +326,90 @@ export class TrueSkill {
   }
 
   /**
+   * Initializes new `Rating` object, but it fixes default mu and
+   * sigma to the environment's.
+   * >>> env = TrueSkill(mu=0, sigma=1)
+   * >>> env.createRating()
+   * trueskill.Rating(mu=0.000, sigma=1.000)
+   */
+  createRating(mu = this.mu, sigma = this.sigma) {
+    return new Rating(mu, sigma);
+  }
+
+  /**
+   * Returns the value of the rating exposure.  It starts from 0 and
+   * converges to the mean.  Use this as a sort key in a leaderboard
+   */
+  expose(rating: Rating) {
+    const k = this.mu / this.sigma;
+    return rating.mu - k * rating.sigma;
+  }
+
+  /**
+   * Registers the environment as the global environment.
+   */
+  make_as_global() {
+    return setup(undefined, undefined, undefined, undefined, undefined, this);
+  }
+
+  /**
+   * Taken from https://github.com/sublee/trueskill/issues/1
+   */
+  winProbability(a: Rating[], b: Rating[]) {
+    const deltaMu = _.sumBy(a, 'mu') - _.sumBy(b, _.identity('mu'));
+    const sumSigma = _.sum(a.map((x) => x.sigma ** 2)) + _.sum(b.map((x) => x.sigma ** 2));
+    const playerCount = a.length + b.length;
+    const denominator = Math.sqrt(playerCount * (BETA * BETA) + sumSigma);
+    return gaus.cdf(deltaMu / denominator);
+  }
+
+  /**
+   * The non-draw version of "V" function.
+   * "V" calculates a variation of a mean.
+   */
+  private v_win(diff: number, drawMargin: number) {
+    const x = diff - drawMargin;
+    const denom = gaus.cdf(x);
+    return denom ? (gaus.pdf(x) / denom) : -x;
+  }
+  private v_draw(diff: number, drawMargin: number) {
+    const absDiff = Math.abs(diff);
+    const [a, b] = [drawMargin - absDiff, -drawMargin - absDiff];
+    const denom = gaus.cdf(a) - gaus.cdf(b);
+    const numer = gaus.pdf(b) - gaus.pdf(a);
+    return (denom ? (numer / denom) : a) * (diff < 0 ? -1 : +1);
+  }
+  /**
+   * The non-draw version of "W" function.
+   * "W" calculates a variation of a standard deviation.
+   */
+  private w_win(diff: number, drawMargin: number) {
+    const x = diff - drawMargin;
+    const v = this.v_win(diff, drawMargin);
+    const w = v * (v + x);
+    if (0 < w && w < 1) {
+      return w;
+    }
+    throw new Error('floating point error');
+  }
+  /** The draw version of "W" function. */
+  private w_draw(diff: number, drawMargin: number) {
+    const absDiff = Math.abs(diff);
+    const a = drawMargin - absDiff;
+    const b = -drawMargin - absDiff;
+    const denom = gaus.cdf(a) - gaus.cdf(b);
+    if (!denom) {
+      throw new Error('Floating point error');
+    }
+    const v = this.v_draw(absDiff, drawMargin);
+    return (v ** 2) + (a * gaus.pdf(a) - b * gaus.pdf(b)) / denom;
+  }
+
+  /**
    * Validates a ratingGroups argument. It should contain more than
    * 2 groups and all groups must not be empty.
    */
-  validateRatingGroups(ratingGroups: Rating[][]): [Rating[][], string[]] {
+  private validateRatingGroups(ratingGroups: Rating[][] | any[]): [Rating[][], string[][] | null] {
     if (ratingGroups.length < 2) {
       throw new Error('Need multiple rating groups');
     }
@@ -314,28 +421,31 @@ export class TrueSkill {
         throw new Error('Rating cannot be a rating group');
       }
     }
-    let keys = null;
-    if (!_.isArray(ratingGroups[0])) {
-      const dictRatingGroups = ratingGroups;
-      ratingGroups = [];
-      keys = [];
-      for (const dictRatingGroup of dictRatingGroups) {
-        const ratingGroup = [];
-        const keyGroup = [];
-        _.forEach(dictRatingGroup, (rating, key) => {
+    if (!Array.isArray(ratingGroups[0])) {
+      const keys: string[][] = [];
+      const newRatingGroups: Rating[][] = [];
+      for (const dictRatingGroup of ratingGroups) {
+        const ratingGroup: Rating[] = [];
+        const keyGroup: string[] = [];
+        _.forEach(dictRatingGroup, (rating, key: string) => {
           ratingGroup.push(rating);
           keyGroup.push(key);
         });
-        ratingGroups.push(_.toArray(ratingGroup));
-        keys.push(_.toArray(keyGroup));
+        newRatingGroups.push(ratingGroup);
+        keys.push(keyGroup);
       }
+      return [newRatingGroups, keys];
     }
-    return [ratingGroups, keys];
+    return [ratingGroups, null];
   }
 
-  validate_weights(ratingGroups: Rating[][], weights?: any[], keys?: string[]) {
+  private validate_weights(
+    ratingGroups: Rating[][],
+    weights?: number[][] | null,
+    keys?: string[][] | null,
+  ): number[][] {
     if (!weights) {
-      weights = ratingGroups.map((n) => {
+      return ratingGroups.map((n) => {
         return _.fill(Array(n.length), 1);
       });
     }
@@ -343,87 +453,11 @@ export class TrueSkill {
     return weights;
   }
 
-  /** Makes nodes for the TrueSkill factor graph. */
-  factorGraphBuilders(
-    ratingGroups: Rating[][],
-    ranks: any[],
-    weights: any[],
-  ): [() => PriorFactor[], () => LikelihoodFactor[], () => SumFactor[], () => SumFactor[], () => TruncateFactor[]] {
-    const flattenRatings = _.flatten(ratingGroups);
-    const flattenWeights = _.flatten(weights);
-    const size = flattenRatings.length;
-    const groupSize = ratingGroups.length;
-    // create variables
-    const ratingVars: Variable[] = _.range(size).map(() => new Variable());
-    const perfVars: Variable[] = _.range(size).map(() => new Variable());
-    const teamPerfVars: Variable[] = _.range(groupSize).map(() => new Variable());
-    const teamDiffVars: Variable[] = _.range(groupSize - 1).map(() => new Variable());
-    const teamSizes = _teamSizes(ratingGroups);
-    // layer builders
-    const buildRatingLayer = (): PriorFactor[] => {
-      const z = _.zip(ratingVars, flattenRatings);
-      return z.map(([ratingVar, rating]) => {
-        return new PriorFactor(ratingVar, rating, this.tau);
-      });
-    };
-    const buildPerfLayer = (): LikelihoodFactor[] => {
-      const z = _.zip(ratingVars, perfVars);
-      return z.map(([ratingVar, perfVar]) => {
-        return new LikelihoodFactor(ratingVar, perfVar, this.beta ** 2);
-      });
-    };
-    const buildTeamPerfLayer = (): SumFactor[] => {
-      let team = 0;
-      return teamPerfVars.map((teamPerfVar) => {
-        const start = team > 0 ? teamSizes[team - 1] : 0;
-        const end = teamSizes[team];
-        team++;
-        const childPerfVars = perfVars.slice(start, end);
-        const coeffs = flattenWeights.slice(start, end);
-        return new SumFactor(teamPerfVar, childPerfVars, coeffs);
-      });
-    };
-    const buildTeamDiffLayer = (): SumFactor[] => {
-      let team = 0;
-      return teamDiffVars.map((teamDiffVar) => {
-        const sl = teamPerfVars.slice(team, team + 2);
-        team++;
-        return new SumFactor(teamDiffVar, sl, [1, -1]);
-      });
-    };
-    const buildTruncLayer = (): TruncateFactor[] => {
-      let x = 0;
-      return teamDiffVars.map((teamDiffVar) => {
-        // static draw probability
-        const drawProbability = this.drawProbability;
-        const lengths = ratingGroups.slice(x, x + 2).map((n) => n.length);
-        const drawMargin = calcDrawMargin(drawProbability, _.sum(lengths), this);
-        let vFunc;
-        let wFunc;
-        if (ranks[x] === ranks[x + 1]) {
-          vFunc = (a, b) => this.v_draw(a, b);
-          wFunc = (a, b) => this.w_draw(a, b);
-        } else {
-          vFunc = (a, b) => this.v_win(a, b);
-          wFunc = (a, b) => this.w_win(a, b);
-        }
-        x++;
-        return new TruncateFactor(teamDiffVar, vFunc, wFunc, drawMargin);
-      });
-    };
-    return [
-      buildRatingLayer,
-      buildPerfLayer,
-      buildTeamPerfLayer,
-      buildTeamDiffLayer,
-      buildTruncLayer,
-    ];
-  }
   /**
    * Sends messages within every nodes of the factor graph
    * until the result is reliable.
    */
-  runSchedule(
+  private runSchedule(
     buildRatingLayer: () => PriorFactor[],
     buildPerfLayer: () => LikelihoodFactor[],
     buildTeamPerfLayer: () => SumFactor[],
@@ -488,48 +522,18 @@ export class TrueSkill {
     }
     return layers;
   }
-  ppf(x: number) {
-    return this.gaussian.ppf(x);
-  }
-  pdf(x: number) {
-    return this.gaussian.pdf(x);
-  }
-  cdf(x: number) {
-    return this.gaussian.cdf(x);
-  }
-  /**
-   * Returns the value of the rating exposure.  It starts from 0 and
-   * converges to the mean.  Use this as a sort key in a leaderboard
-   */
-  expose(rating: Rating) {
-    const k = this.mu / this.sigma;
-    return rating.mu - k * rating.sigma;
-  }
-  /**
-   * Registers the environment as the global environment.
-   */
-  make_as_global() {
-    const u = undefined;
-    return setup(u, u, u, u, u, this);
-  }
-  /**
-   * Taken from https://github.com/sublee/trueskill/issues/1
-   */
-  winProbability(a: Rating[], b: Rating[]) {
-    const deltaMu = _.sumBy(a, 'mu') - _.sumBy(b, 'mu');
-    const sumSigma = _.sum(a.map((x) => x.sigma ** 2)) + _.sum(b.map((x) => x.sigma ** 2));
-    const playerCount = a.length + b.length;
-    const denominator = Math.sqrt(playerCount * (BETA * BETA) + sumSigma);
-    return this.cdf(deltaMu / denominator);
-  }
 }
 
 /**
  * A shortcut to rate just 2 players in a head-to-head match
  */
-export function rate_1vs1(rating1: Rating, rating2: Rating,
-                          drawn = false, minDelta = DELTA,
-                          env?: TrueSkill): [Rating, Rating] {
+export function rate_1vs1(
+  rating1: Rating,
+  rating2: Rating,
+  drawn = false,
+  minDelta = DELTA,
+  env?: TrueSkill,
+): [Rating, Rating] {
   if (!env) {
     env = global_env();
   }
@@ -567,11 +571,11 @@ export function global_env(): TrueSkill {
  * Setup the global environment defaults
  */
 export function setup(
-  mu = MU,
-  sigma = SIGMA,
-  beta = BETA,
-  tau = TAU,
-  drawProbability = DRAW_PROBABILITY,
+  mu: number | null = MU,
+  sigma: number | null = SIGMA,
+  beta: number | null = BETA,
+  tau: number | null = TAU,
+  drawProbability: number | null = DRAW_PROBABILITY,
   env?: TrueSkill,
 ) {
   if (!env) {
@@ -586,8 +590,8 @@ export function setup(
  */
 export function rate(
   ratingGroups: Rating[][] | any[],
-  ranks?,
-  weights?,
+  ranks?: any[] | null,
+  weights?: any[] | null,
   minDelta = DELTA,
 ): Rating[][] {
   return global_env().rate(ratingGroups, ranks, weights, minDelta);
