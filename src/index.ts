@@ -234,7 +234,7 @@ export class TrueSkill {
    *   }
    */
   quality(ratingGroups: Rating[][], weights?: number[][]) {
-    let keys: string[];
+    let keys: string[][];
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
     weights = this.validate_weights(ratingGroups, weights, keys);
     const flattenRatings = _.flatten(ratingGroups);
@@ -302,7 +302,7 @@ export class TrueSkill {
    * Validates a ratingGroups argument. It should contain more than
    * 2 groups and all groups must not be empty.
    */
-  validateRatingGroups(ratingGroups: Rating[][]): [Rating[][], string[]] {
+  validateRatingGroups(ratingGroups: Rating[][]): [Rating[][], string[][] | null] {
     if (ratingGroups.length < 2) {
       throw new Error('Need multiple rating groups');
     }
@@ -314,11 +314,10 @@ export class TrueSkill {
         throw new Error('Rating cannot be a rating group');
       }
     }
-    let keys = null;
     if (!_.isArray(ratingGroups[0])) {
+      const keys: string[][] = [];
       const dictRatingGroups = ratingGroups;
       ratingGroups = [];
-      keys = [];
       for (const dictRatingGroup of dictRatingGroups) {
         const ratingGroup = [];
         const keyGroup = [];
@@ -326,14 +325,15 @@ export class TrueSkill {
           ratingGroup.push(rating);
           keyGroup.push(key);
         });
-        ratingGroups.push(_.toArray(ratingGroup));
-        keys.push(_.toArray(keyGroup));
+        ratingGroups.push(ratingGroup);
+        keys.push(keyGroup);
       }
+      return [ratingGroups, keys];
     }
-    return [ratingGroups, keys];
+    return [ratingGroups, null];
   }
 
-  validate_weights(ratingGroups: Rating[][], weights?: any[], keys?: string[]) {
+  validate_weights(ratingGroups: Rating[][], weights?: any[], keys?: string[][]) {
     if (!weights) {
       weights = ratingGroups.map((n) => {
         return _.fill(Array(n.length), 1);
