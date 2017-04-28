@@ -6,7 +6,7 @@ export class Gaussian {
   pi = 0;
   /** Precision adjusted mean, the precision multiplied by the mean. */
   tau = 0;
-  constructor(mu: number = null, sigma: number = null, pi = 0, tau = 0) {
+  constructor(mu: number | null = null, sigma: number | null = null, pi = 0, tau = 0) {
     // console.log('GAUSSIAN', mu, sigma, pi, tau)
     if (mu !== null) {
       if (sigma === null) {

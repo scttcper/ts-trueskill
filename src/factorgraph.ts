@@ -4,18 +4,18 @@ import * as uuid from 'uuid';
 import { Gaussian } from './mathematics';
 
 export class Variable extends Gaussian {
-  messages: {property: Gaussian} | {} = {};
+  messages: { [key: string]: Gaussian } = {};
 
   constructor() {
     super();
   }
-  set(val) {
+  set(val: Variable | Gaussian) {
     const delta = this.delta(val);
     this.pi = val.pi;
     this.tau = val.tau;
     return delta;
   }
-  delta(other: Variable) {
+  delta(other: Variable | Gaussian) {
     const piDelta = Math.abs(this.pi - other.pi);
     if (piDelta === Infinity) {
       return 0;
@@ -28,10 +28,10 @@ export class Variable extends Gaussian {
     tau = 0,
     message?: Gaussian,
   ) {
-    message = message || new Gaussian(null, null, pi, tau);
+    const newMessage = message || new Gaussian(null, null, pi, tau);
     const oldMessage = this.messages[factor.toString()];
-    this.messages[factor.toString()] = message;
-    const res = this.set(this.div(oldMessage).mul(message));
+    this.messages[factor.toString()] = newMessage;
+    const res = this.set(this.div(oldMessage).mul(newMessage));
     return res;
   }
   updateValue(factor: TruncateFactor | PriorFactor, pi = 0, tau = 0, value?: Gaussian) {
@@ -80,7 +80,7 @@ export class Factor {
 export class PriorFactor extends Factor {
   val;
   dynamic: number;
-  constructor(v, val, dynamic = 0) {
+  constructor(v: Variable, val, dynamic = 0) {
     super([v]);
     this.val = val;
     this.dynamic = dynamic;

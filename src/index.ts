@@ -39,7 +39,7 @@ export function calcDrawMargin(drawProbability: number, size: number, env?: True
 /**
  * Makes a size map of each teams.
  */
-function _teamSizes(ratingGroups) {
+function _teamSizes(ratingGroups: Rating[][]) {
   const teamSizes = [0];
   for (const group of ratingGroups) {
     teamSizes.push(group.length + teamSizes[teamSizes.length - 1]);
@@ -127,12 +127,12 @@ export class TrueSkill {
    * The non-draw version of "V" function.
    * "V" calculates a variation of a mean.
    */
-  v_win(diff, drawMargin) {
+  v_win(diff: number, drawMargin: number) {
     const x = diff - drawMargin;
     const denom = this.cdf(x);
     return denom ? (this.pdf(x) / denom) : -x;
   }
-  v_draw(diff, drawMargin) {
+  v_draw(diff: number, drawMargin: number) {
     const absDiff = Math.abs(diff);
     const [a, b] = [drawMargin - absDiff, -drawMargin - absDiff];
     const denom = this.cdf(a) - this.cdf(b);
@@ -143,7 +143,7 @@ export class TrueSkill {
    * The non-draw version of "W" function.
    * "W" calculates a variation of a standard deviation.
    */
-  w_win(diff, drawMargin) {
+  w_win(diff: number, drawMargin: number) {
     const x = diff - drawMargin;
     const v = this.v_win(diff, drawMargin);
     const w = v * (v + x);
@@ -153,7 +153,7 @@ export class TrueSkill {
     throw new Error('floating point error');
   }
   /** The draw version of "W" function. */
-  w_draw(diff, drawMargin) {
+  w_draw(diff: number, drawMargin: number) {
     const absDiff = Math.abs(diff);
     const a = drawMargin - absDiff;
     const b = -drawMargin - absDiff;
@@ -166,10 +166,12 @@ export class TrueSkill {
   }
 
   /** Recalculates ratings by the ranking table */
-  rate(ratingGroups: Rating[][] | any[],
-       ranks: any[] = null,
-       weights: any[] = null,
-       minDelta = DELTA): Rating[][] | any[] {
+  rate(
+    ratingGroups: Rating[][] | any[],
+    ranks: any[] = null,
+    weights: any[] = null,
+    minDelta = DELTA,
+  ): Rating[][] | any[] {
     let keys;
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
     weights = this.validate_weights(ratingGroups, weights);
@@ -360,19 +362,21 @@ export class TrueSkill {
     const teamDiffVars: Variable[] = _.range(groupSize - 1).map(() => new Variable());
     const teamSizes = _teamSizes(ratingGroups);
     // layer builders
-    const buildRatingLayer = (): PriorFactor[] => {
-      const z = _.zip(ratingVars, flattenRatings);
-      return z.map(([ratingVar, rating]) => {
-        return new PriorFactor(ratingVar, rating, this.tau);
-      });
+    const buildRatingLayer = () => {
+      const pf: PriorFactor[] = [];
+      for (let idx = 0; idx < ratingVars.length; idx++) {
+        pf.push(new PriorFactor(ratingVars[idx], flattenRatings[idx], this.tau));
+      }
+      return pf;
     };
-    const buildPerfLayer = (): LikelihoodFactor[] => {
-      const z = _.zip(ratingVars, perfVars);
-      return z.map(([ratingVar, perfVar]) => {
-        return new LikelihoodFactor(ratingVar, perfVar, this.beta ** 2);
-      });
+    const buildPerfLayer = () => {
+      const lf: LikelihoodFactor[] = [];
+      for (let idx = 0; idx < ratingVars.length; idx++) {
+        lf.push(new LikelihoodFactor(ratingVars[idx], perfVars[idx], this.beta ** 2));
+      }
+      return lf;
     };
-    const buildTeamPerfLayer = (): SumFactor[] => {
+    const buildTeamPerfLayer = () => {
       let team = 0;
       return teamPerfVars.map((teamPerfVar) => {
         const start = team > 0 ? teamSizes[team - 1] : 0;
@@ -383,7 +387,7 @@ export class TrueSkill {
         return new SumFactor(teamPerfVar, childPerfVars, coeffs);
       });
     };
-    const buildTeamDiffLayer = (): SumFactor[] => {
+    const buildTeamDiffLayer = () => {
       let team = 0;
       return teamDiffVars.map((teamDiffVar) => {
         const sl = teamPerfVars.slice(team, team + 2);
@@ -391,7 +395,7 @@ export class TrueSkill {
         return new SumFactor(teamDiffVar, sl, [1, -1]);
       });
     };
-    const buildTruncLayer = (): TruncateFactor[] => {
+    const buildTruncLayer = () => {
       let x = 0;
       return teamDiffVars.map((teamDiffVar) => {
         // static draw probability
@@ -527,9 +531,13 @@ export class TrueSkill {
 /**
  * A shortcut to rate just 2 players in a head-to-head match
  */
-export function rate_1vs1(rating1: Rating, rating2: Rating,
-                          drawn = false, minDelta = DELTA,
-                          env?: TrueSkill): [Rating, Rating] {
+export function rate_1vs1(
+  rating1: Rating,
+  rating2: Rating,
+  drawn = false,
+  minDelta = DELTA,
+  env?: TrueSkill,
+): [Rating, Rating] {
   if (!env) {
     env = global_env();
   }
