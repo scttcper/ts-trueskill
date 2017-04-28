@@ -2,22 +2,15 @@
   "compilerOptions": {
     "declaration": true,
     "sourceMap": true,
-    "noImplicitAny": false,
-    "noResolve": false,
     "target": "es5",
     "lib": ["es6"],
     "module": "commonjs",
-    "moduleResolution": "node",
     "outDir": "build",
-    "types" : ["node", "mocha"]
+    "strict": true,
+    "types" : ["mocha"]
   },
-  "exclude": [
-    "node_modules",
-    "build"
-  ],
   "include": [
     "src/**/*",
     "test/**/*"
-  ],
-  "compileOnSave": false
+  ]
 }

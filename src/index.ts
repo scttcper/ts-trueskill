@@ -99,7 +99,13 @@ export class TrueSkill {
   backend: any;
   gaussian: any;
 
-  constructor(mu?: number, sigma?: number, beta?: number, tau?: number, drawProbability?: number) {
+  constructor(
+    mu?: number | null,
+    sigma?: number | null,
+    beta?: number | null,
+    tau?: number | null,
+    drawProbability?: number | null,
+  ) {
     this.mu = mu || MU;
     this.sigma = sigma || SIGMA;
     this.beta = beta || BETA;
@@ -168,13 +174,12 @@ export class TrueSkill {
   /** Recalculates ratings by the ranking table */
   rate(
     ratingGroups: Rating[][] | any[],
-    ranks: any[] = null,
-    weights: any[] = null,
+    ranks: any[] | null = null,
+    weights: number[][] | null = null,
     minDelta = DELTA,
   ): Rating[][] | any[] {
-    let keys;
-    [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    weights = this.validate_weights(ratingGroups, weights);
+    const [newRatingGroups, keys] = this.validateRatingGroups(ratingGroups);
+    weights = this.validate_weights(newRatingGroups, weights);
     const groupSize = ratingGroups.length;
     if (ranks === null) {
       ranks = _.range(groupSize);
@@ -182,7 +187,7 @@ export class TrueSkill {
       throw new Error('Wrong ranks');
     }
     // sort rating groups by rank
-    let zip = _.zip(ratingGroups, ranks, weights);
+    let zip = _.zip(newRatingGroups, ranks, weights);
     let n = 0;
     zip = zip.map((el) => {
       const res = [n, el];
@@ -210,7 +215,7 @@ export class TrueSkill {
     const transformedGroups = [];
     const trimmed = teamSizes.slice(0, teamSizes.length - 1);
     for (const [start, end] of _.zip([0].concat(trimmed), teamSizes)) {
-      const group = [];
+      const group: Rating[] = [];
       ratingLayer.slice(start, end).map((f: PriorFactor) => {
         group.push(new Rating(f.v.mu, f.v.sigma));
       });
@@ -236,15 +241,14 @@ export class TrueSkill {
    *   }
    */
   quality(ratingGroups: Rating[][], weights?: number[][]) {
-    let keys: string[][] | null;
-    [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    weights = this.validate_weights(ratingGroups, weights, keys);
+    const [newRatingGroups, keys] = this.validateRatingGroups(ratingGroups);
+    const newWeights = this.validate_weights(ratingGroups, weights, keys);
     const flattenRatings = _.flatten(ratingGroups);
-    const flattenWeights = _.flatten(weights);
+    const flattenWeights = _.flatten(newWeights);
     const length = flattenRatings.length;
     // a vector of all of the skill means
     const meanMatrix = math.matrix(flattenRatings.map((r) => [r.mu]));
-    function fnVarianceMatrix(height, width) {
+    function fnVarianceMatrix(height: number, width: number) {
       const variances = flattenRatings.map((r) => r.sigma ** 2);
       const matrix = math.matrix().resize([height, width]);
       let i = 0;
@@ -259,8 +263,8 @@ export class TrueSkill {
       let t = 0;
       let r = 0;
       const zipped = _.zip(
-        ratingGroups.slice(0, ratingGroups.length - 1),
-        ratingGroups.slice(1),
+        newRatingGroups.slice(0, newRatingGroups.length - 1),
+        newRatingGroups.slice(1),
       );
       const matrix = math.matrix();
       for (const [cur, next] of zipped) {
@@ -304,7 +308,7 @@ export class TrueSkill {
    * Validates a ratingGroups argument. It should contain more than
    * 2 groups and all groups must not be empty.
    */
-  validateRatingGroups(ratingGroups: Rating[][]): [Rating[][], string[][] | null] {
+  validateRatingGroups(ratingGroups: Rating[][] | any[]): [Rating[][], string[][] | null] {
     if (ratingGroups.length < 2) {
       throw new Error('Need multiple rating groups');
     }
@@ -316,26 +320,25 @@ export class TrueSkill {
         throw new Error('Rating cannot be a rating group');
       }
     }
-    if (!_.isArray(ratingGroups[0])) {
+    if (!Array.isArray(ratingGroups[0])) {
       const keys: string[][] = [];
-      const dictRatingGroups = ratingGroups;
-      ratingGroups = [];
-      for (const dictRatingGroup of dictRatingGroups) {
-        const ratingGroup = [];
-        const keyGroup = [];
-        _.forEach(dictRatingGroup, (rating, key) => {
+      const newRatingGroups: Rating[][] = [];
+      for (const dictRatingGroup of ratingGroups) {
+        const ratingGroup: Rating[] = [];
+        const keyGroup: string[] = [];
+        _.forEach(dictRatingGroup, (rating, key: string) => {
           ratingGroup.push(rating);
           keyGroup.push(key);
         });
-        ratingGroups.push(ratingGroup);
+        newRatingGroups.push(ratingGroup);
         keys.push(keyGroup);
       }
-      return [ratingGroups, keys];
+      return [newRatingGroups, keys];
     }
     return [ratingGroups, null];
   }
 
-  validate_weights(ratingGroups: Rating[][], weights?: number[][], keys?: string[][] | null): number[][] {
+  validate_weights(ratingGroups: Rating[][], weights?: number[][] | null, keys?: string[][] | null): number[][] {
     if (!weights) {
       return ratingGroups.map((n) => {
         return _.fill(Array(n.length), 1);
@@ -520,7 +523,7 @@ export class TrueSkill {
    * Taken from https://github.com/sublee/trueskill/issues/1
    */
   winProbability(a: Rating[], b: Rating[]) {
-    const deltaMu = _.sumBy(a, 'mu') - _.sumBy(b, 'mu');
+    const deltaMu = _.sumBy(a, 'mu') - _.sumBy(b, _.identity('mu'));
     const sumSigma = _.sum(a.map((x) => x.sigma ** 2)) + _.sum(b.map((x) => x.sigma ** 2));
     const playerCount = a.length + b.length;
     const denominator = Math.sqrt(playerCount * (BETA * BETA) + sumSigma);
@@ -575,11 +578,11 @@ export function global_env(): TrueSkill {
  * Setup the global environment defaults
  */
 export function setup(
-  mu = MU,
-  sigma = SIGMA,
-  beta = BETA,
-  tau = TAU,
-  drawProbability = DRAW_PROBABILITY,
+  mu: number | null = MU,
+  sigma: number | null = SIGMA,
+  beta: number | null = BETA,
+  tau: number | null = TAU,
+  drawProbability: number | null = DRAW_PROBABILITY,
   env?: TrueSkill,
 ) {
   if (!env) {
@@ -594,8 +597,8 @@ export function setup(
  */
 export function rate(
   ratingGroups: Rating[][] | any[],
-  ranks?: any[],
-  weights?: any[],
+  ranks?: any[] | null,
+  weights?: any[] | null,
   minDelta = DELTA,
 ): Rating[][] {
   return global_env().rate(ratingGroups, ranks, weights, minDelta);
