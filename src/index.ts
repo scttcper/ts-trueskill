@@ -236,7 +236,7 @@ export class TrueSkill {
    *   }
    */
   quality(ratingGroups: Rating[][], weights?: number[][]) {
-    let keys: string[][];
+    let keys: string[][] | null;
     [ratingGroups, keys] = this.validateRatingGroups(ratingGroups);
     weights = this.validate_weights(ratingGroups, weights, keys);
     const flattenRatings = _.flatten(ratingGroups);
@@ -264,7 +264,7 @@ export class TrueSkill {
       );
       const matrix = math.matrix();
       for (const [cur, next] of zipped) {
-        let x;
+        let x = 0;
         for (x of _.range(t, t + cur.length)) {
           matrix.set([r, x], flattenWeights[x]);
           t += 1;
@@ -335,7 +335,7 @@ export class TrueSkill {
     return [ratingGroups, null];
   }
 
-  validate_weights(ratingGroups: Rating[][], weights?: number[][], keys?: string[][]): number[][] {
+  validate_weights(ratingGroups: Rating[][], weights?: number[][], keys?: string[][] | null): number[][] {
     if (!weights) {
       return ratingGroups.map((n) => {
         return _.fill(Array(n.length), 1);
@@ -349,7 +349,7 @@ export class TrueSkill {
   factorGraphBuilders(
     ratingGroups: Rating[][],
     ranks: any[],
-    weights: any[],
+    weights: number[][],
   ): [() => PriorFactor[], () => LikelihoodFactor[], () => SumFactor[], () => SumFactor[], () => TruncateFactor[]] {
     const flattenRatings = _.flatten(ratingGroups);
     const flattenWeights = _.flatten(weights);
@@ -405,11 +405,11 @@ export class TrueSkill {
         let vFunc;
         let wFunc;
         if (ranks[x] === ranks[x + 1]) {
-          vFunc = (a, b) => this.v_draw(a, b);
-          wFunc = (a, b) => this.w_draw(a, b);
+          vFunc = (a: number, b: number) => this.v_draw(a, b);
+          wFunc = (a: number, b: number) => this.w_draw(a, b);
         } else {
-          vFunc = (a, b) => this.v_win(a, b);
-          wFunc = (a, b) => this.w_win(a, b);
+          vFunc = (a: number, b: number) => this.v_win(a, b);
+          wFunc = (a: number, b: number) => this.w_win(a, b);
         }
         x++;
         return new TruncateFactor(teamDiffVar, vFunc, wFunc, drawMargin);
@@ -594,8 +594,8 @@ export function setup(
  */
 export function rate(
   ratingGroups: Rating[][] | any[],
-  ranks?,
-  weights?,
+  ranks?: any[],
+  weights?: any[],
   minDelta = DELTA,
 ): Rating[][] {
   return global_env().rate(ratingGroups, ranks, weights, minDelta);

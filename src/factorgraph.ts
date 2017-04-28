@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 import * as uuid from 'uuid';
 
+import { Rating } from './index';
 import { Gaussian } from './mathematics';
 
 export class Variable extends Gaussian {
@@ -78,9 +79,9 @@ export class Factor {
 }
 
 export class PriorFactor extends Factor {
-  val;
+  val: Rating;
   dynamic: number;
-  constructor(v: Variable, val, dynamic = 0) {
+  constructor(v: Variable, val: Rating, dynamic = 0) {
     super([v]);
     this.val = val;
     this.dynamic = dynamic;
@@ -95,14 +96,14 @@ export class PriorFactor extends Factor {
 export class LikelihoodFactor extends Factor {
   mean: Variable;
   value: Variable;
-  variance;
-  constructor(meanVar: Variable, valueVar: Variable, variance) {
+  variance: number;
+  constructor(meanVar: Variable, valueVar: Variable, variance: number) {
     super([meanVar, valueVar]);
     this.mean = meanVar;
     this.value = valueVar;
     this.variance = variance;
   }
-  calc_a(v) {
+  calc_a(v: Gaussian) {
     return 1.0 / (1.0 + this.variance * v.pi);
   }
   down() {
