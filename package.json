@@ -18,22 +18,22 @@
   "dependencies": {
     "gaussian": "^1.1.0",
     "lodash": "^4.17.4",
-    "mathjs": "^3.12.1",
+    "mathjs": "^3.12.3",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
     "@types/chai": "^3.5.2",
     "@types/gaussian": "^1.1.1",
-    "@types/lodash": "^4.14.63",
+    "@types/lodash": "^4.14.64",
     "@types/mathjs": "^0.0.34",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.14",
+    "@types/node": "^7.0.18",
     "@types/uuid": "^2.0.29",
     "chai": "^3.5.0",
     "mocha": "^3.3.0",
-    "nyc": "^10.3.0",
-    "ts-node": "^3.0.2",
-    "tslint": "^5.1.0",
+    "nyc": "^10.3.2",
+    "ts-node": "^3.0.4",
+    "tslint": "^5.2.0",
     "typedoc": "^0.6.0",
     "typescript": "^2.3.2"
   },

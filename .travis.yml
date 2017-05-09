@@ -2,10 +2,8 @@ sudo: false
 language: node_js
 node_js:
   - "7"
-install:
-  - yarn
 script:
-  - yarn coverage
+  - npm run coverage
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - bash ghpages.sh
