@@ -6,12 +6,12 @@ if [[ $TRAVIS_BRANCH != 'master' ]]; then
 	exit 0
 fi
 echo "creating build"
-yarn docs
+npm run docs
 echo "finished build"
 git config --global user.email "$PUSH_EMAIL"
 git config --global user.name "Travis CI"
 git config --global push.default simple
-yarn global add gh-pages
+npm install -g gh-pages
 echo "Pushing to github pages"
 git config --global user.email "$PUSH_EMAIL"
 git config --global user.name "Travis CI"
