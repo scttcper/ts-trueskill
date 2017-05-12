@@ -18,7 +18,7 @@
   "dependencies": {
     "gaussian": "^1.1.0",
     "lodash": "^4.17.4",
-    "mathjs": "^3.12.3",
+    "mathjs": "^3.13.1",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
