@@ -5,14 +5,11 @@ if [[ $TRAVIS_BRANCH != 'master' ]]; then
 	echo "this is not master"
 	exit 0
 fi
-echo "creating build"
 npm run docs
 echo "finished build"
+npm install -g gh-pages
 git config --global user.email "$PUSH_EMAIL"
 git config --global user.name "Travis CI"
 git config --global push.default simple
-npm install -g gh-pages
 echo "Pushing to github pages"
-git config --global user.email "$PUSH_EMAIL"
-git config --global user.name "Travis CI"
-gh-pages -r "https://$PUSH_TOKEN@github.com/$TRAVIS_REPO_SLUG.git" -d docs
+gh-pages -r "https://$PUSH_TOKEN@github.com/$TRAVIS_REPO_SLUG.git" -d dist
