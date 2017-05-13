@@ -6,11 +6,11 @@ script:
   - npm run coverage
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - npm run docs
 deploy:
   provider: pages
   skip_cleanup: true
   local_dir: docs
+  script: npm run docs
   github_token: $PUSH_TOKEN
   on:
     branch: master
