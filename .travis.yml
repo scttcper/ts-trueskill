@@ -6,4 +6,11 @@ script:
   - npm run coverage
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - bash ghpages.sh
+  - npm run docs
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: docs
+  github_token: $PUSH_TOKEN # Set in travis-ci.org dashboard
+  on:
+    branch: master
