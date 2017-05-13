@@ -11,6 +11,6 @@ deploy:
   provider: pages
   skip_cleanup: true
   local_dir: docs
-  github_token: $PUSH_TOKEN # Set in travis-ci.org dashboard
+  github_token: $PUSH_TOKEN
   on:
     branch: master
