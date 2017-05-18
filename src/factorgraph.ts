@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as uuid from 'uuid';
+import { v1 as uuid } from 'uuid';
 
 import { Rating } from './index';
 import { Gaussian } from './mathematics';
@@ -10,7 +10,7 @@ export class Variable extends Gaussian {
   constructor() {
     super();
   }
-  set(val: Variable | Gaussian) {
+  setVal(val: Variable | Gaussian) {
     const delta = this.delta(val);
     this.pi = val.pi;
     this.tau = val.tau;
@@ -29,11 +29,11 @@ export class Variable extends Gaussian {
     tau = 0,
     message?: Gaussian,
   ) {
-    const newMessage = message || new Gaussian(null, null, pi, tau);
-    const oldMessage = this.messages[factor.toString()];
-    this.messages[factor.toString()] = newMessage;
-    const res = this.set(this.div(oldMessage).mul(newMessage));
-    return res;
+    const newMessage = message ? message : new Gaussian(null, null, pi, tau);
+    const str = factor.toString();
+    const oldMessage = this.messages[str];
+    this.messages[str] = newMessage;
+    return this.setVal(this.div(oldMessage).mul(newMessage));
   }
   updateValue(factor: TruncateFactor | PriorFactor, pi = 0, tau = 0, value?: Gaussian) {
     if (!value) {
@@ -41,7 +41,7 @@ export class Variable extends Gaussian {
     }
     const oldMessage = this.messages[factor.toString()];
     this.messages[factor.toString()] = value.mul(oldMessage).div(this);
-    return this.set(value);
+    return this.setVal(value);
   }
   toString() {
     const count = Object.keys(this.messages).length;
@@ -52,13 +52,12 @@ export class Variable extends Gaussian {
 }
 
 export class Factor {
-  uuid = uuid.v4();
+  uuid = uuid();
   vars: Variable[];
   constructor(vars: Variable[]) {
     this.vars = vars;
-    for (const v of vars) {
-      v.messages[this.toString()] = new Gaussian();
-    }
+    const k = this.toString();
+    vars.map((v) => v.messages[k] = new Gaussian());
   }
   down() {
     return 0;
@@ -130,29 +129,29 @@ export class SumFactor extends Factor {
     this.coeffs = coeffs;
   }
   down() {
-    const msgs: Gaussian[] = this.terms.map((v) => v.messages[this.toString()]);
+    const k = this.toString();
+    const msgs: Gaussian[] = this.terms.map((v) => v.messages[k]);
     return this.update(this.sum, this.terms, msgs, this.coeffs);
   }
   up(index = 0) {
     const coeff = this.coeffs[index];
-    const coeffs = [];
-    for (let x = 0; x < this.coeffs.length; x++) {
-      const c = this.coeffs[x];
-      let p;
+    let x = 0;
+    const coeffs = this.coeffs.map((c) => {
+      let p = -c / coeff;
       if (x === index) {
         p = 1.0 / coeff;
-      } else {
-        p = -c / coeff;
       }
-      p = (typeof p === 'number' && isFinite(p)) ? p : 0;
+      p = (_.isFinite(p)) ? p : 0;
       if (coeff === 0) {
         p = 0;
       }
-      coeffs.push(p);
-    }
+      x = x + 1;
+      return p;
+    });
     const vals = _.clone(this.terms);
     vals[index] = this.sum;
-    const msgs: Gaussian[] = vals.map((v) => v.messages[this.toString()]);
+    const k = this.toString();
+    const msgs: Gaussian[] = vals.map((v) => v.messages[k]);
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
   update(v: Variable, vals: Variable[], msgs: Gaussian[], coeffs: number[]) {
@@ -164,7 +163,7 @@ export class SumFactor extends Factor {
       const coeff = coeffs[i];
       const div = val.div(msg);
       mu += coeff * div.mu;
-      if (typeof piInv !== 'number' || !isFinite(piInv)) {
+      if (!_.isFinite(piInv)) {
         continue;
       }
       piInv += coeff ** 2 / div.pi;

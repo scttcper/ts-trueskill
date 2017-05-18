@@ -7,10 +7,9 @@
     "module": "commonjs",
     "outDir": "build",
     "strict": true,
-    "types" : ["mocha"]
+    "types" : ["node"]
   },
   "include": [
-    "src/**/*",
-    "test/**/*"
+    "src/**/*"
   ]
 }
