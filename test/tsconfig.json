@@ -4,5 +4,5 @@
     "types" : ["node", "mocha"],
     "baseUrl": ""
   },
-  "include": ["./*"]
+  "include": ["*"]
 }

@@ -11,11 +11,11 @@
     "clean": "rimraf build coverage docs benchmark-out .nyc_output",
     "build": "npm run clean; tsc -p .",
     "build:watch": "tsc -p . -w",
-    "test": "mocha --require ./test/tshook.js test/*.spec.ts",
+    "test": "mocha --require test/tshook.js test/*.spec.ts",
     "coverage": "nyc npm test",
     "docs": "typedoc --gitRevision master --out docs --exclude \"**/*+(spec).ts\"; touch docs/.nojekyll",
     "lint": "tslint \"src/**/*.ts\"",
-    "benchmark": "npm run build; tsc -p benchmark; node --inspect --debug-brk benchmark-out"
+    "benchmark": "npm run build; tsc -p benchmark; node benchmark-out"
   },
   "dependencies": {
     "gaussian": "^1.1.0",
