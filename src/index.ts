@@ -478,7 +478,6 @@ export class TrueSkill {
     if (minDelta <= 0) {
       throw new Error('minDelta must be greater than 0');
     }
-    const layers = [];
     const ratingLayer: PriorFactor[] = this.buildRatingLayer(ratingVars, flattenRatings);
     const perfLayer: LikelihoodFactor[] = this.buildPerfLayer(ratingVars, perfVars);
     const teamPerfLayer: SumFactor[] = this.buildTeamPerfLayer(
@@ -487,14 +486,12 @@ export class TrueSkill {
       teamSizes,
       flattenWeights,
     );
-    layers.push(ratingLayer, perfLayer, teamPerfLayer);
     ratingLayer.map((f) => f.down());
     perfLayer.map((f) => f.down());
     teamPerfLayer.map((f) => f.down());
     // arrow #1, #2, #3
     const teamDiffLayer: SumFactor[] = this.buildTeamDiffLayer(teamPerfVars, teamDiffVars);
     const truncLayer: TruncateFactor[] = this.buildTruncLayer(teamDiffVars, sortedRanks, sortedRatingGroups);
-    layers.push(teamDiffLayer, truncLayer);
     const teamDiffLen = teamDiffLayer.length;
     for (let index = 0; index <= 10; index++) {
       let delta = 0;
@@ -527,7 +524,7 @@ export class TrueSkill {
     // up the remainder of the black arrows
     teamPerfLayer.map((f) => _.range(f.vars.length - 1).map((x) => f.up(x)));
     perfLayer.map((f) => f.up());
-    return layers;
+    return [ratingLayer, perfLayer, teamPerfLayer, teamDiffLayer, truncLayer];
   }
 }
 
