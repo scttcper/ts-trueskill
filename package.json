@@ -12,7 +12,7 @@
     "build": "npm run clean; tsc -p .",
     "build:watch": "tsc -p . -w",
     "test": "mocha --require test/tshook.js test/*.spec.ts",
-    "coverage": "nyc npm test",
+    "coverage": "nyc npm run test",
     "docs": "typedoc --gitRevision master --out docs --exclude \"**/*+(spec).ts\"; touch docs/.nojekyll",
     "lint": "tslint \"src/**/*.ts\"",
     "benchmark": "npm run build; tsc -p benchmark; node benchmark-out"
@@ -45,7 +45,7 @@
     "sourceMap": true,
     "instrument": true,
     "require": [
-      "ts-node/register"
+      "./test/tshook.js"
     ],
     "include": [
       "src/**/*.ts"
