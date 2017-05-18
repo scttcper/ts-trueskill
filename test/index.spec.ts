@@ -15,7 +15,7 @@ import { Gaussian } from '../src/mathematics';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map((size) => {
-    const r = new Array(size).fill(0);
+    const r = _.fill(Array(size), 0);
     if (env) {
       return r.map(() => env.createRating());
     }
@@ -24,7 +24,7 @@ function generateTeams(sizes: number[], env?: TrueSkill) {
 }
 
 function generateIndividual(size: number) {
-  return generateTeams(Array(size).fill(1));
+  return generateTeams(_.fill(Array(size), 1));
 }
 
 function compareRating(result: Rating[][], expected: number[][]) {

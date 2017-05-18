@@ -43,9 +43,7 @@ export function calcDrawMargin(drawProbability: number, size: number, env?: True
  */
 function _teamSizes(ratingGroups: Rating[][]) {
   const teamSizes = [0];
-  for (const group of ratingGroups) {
-    teamSizes.push(group.length + teamSizes[teamSizes.length - 1]);
-  }
+  ratingGroups.map((group) => teamSizes.push(group.length + teamSizes[teamSizes.length - 1]));
   teamSizes.shift();
   return teamSizes;
 }
@@ -143,9 +141,7 @@ export class TrueSkill {
       position++;
       return res;
     });
-    const sorting = _.orderBy(positions, (x) => {
-      return x[1][1];
-    });
+    const sorting = _.orderBy(positions, (x) => x[1][1]);
     const sortedRatingGroups: Rating[][] = [];
     const sortedRanks: number[] = [];
     const sortedWeights: number[][] = [];
@@ -167,77 +163,28 @@ export class TrueSkill {
     const teamDiffVars: Variable[] = _.range(groupSize - 1).map(() => new Variable());
     const teamSizes = _teamSizes(sortedRatingGroups);
     // layer builders
-    const buildRatingLayer = () => {
-      const pf: PriorFactor[] = [];
-      for (let idx = 0; idx < ratingVars.length; idx++) {
-        pf.push(new PriorFactor(ratingVars[idx], flattenRatings[idx], this.tau));
-      }
-      return pf;
-    };
-    const buildPerfLayer = () => {
-      const lf: LikelihoodFactor[] = [];
-      for (let idx = 0; idx < ratingVars.length; idx++) {
-        lf.push(new LikelihoodFactor(ratingVars[idx], perfVars[idx], this.beta ** 2));
-      }
-      return lf;
-    };
-    const buildTeamPerfLayer = () => {
-      let team = 0;
-      return teamPerfVars.map((teamPerfVar) => {
-        const start = team > 0 ? teamSizes[team - 1] : 0;
-        const end = teamSizes[team];
-        team++;
-        const childPerfVars = perfVars.slice(start, end);
-        const coeffs = flattenWeights.slice(start, end);
-        return new SumFactor(teamPerfVar, childPerfVars, coeffs);
-      });
-    };
-    const buildTeamDiffLayer = () => {
-      let team = 0;
-      return teamDiffVars.map((teamDiffVar) => {
-        const sl = teamPerfVars.slice(team, team + 2);
-        team++;
-        return new SumFactor(teamDiffVar, sl, [1, -1]);
-      });
-    };
-    const buildTruncLayer = () => {
-      let x = 0;
-      return teamDiffVars.map((teamDiffVar) => {
-        // static draw probability
-        const drawProbability = this.drawProbability;
-        const lengths = sortedRatingGroups.slice(x, x + 2).map((n) => n.length);
-        const drawMargin = calcDrawMargin(drawProbability, _.sum(lengths), this);
-        let vFunc;
-        let wFunc;
-        if (sortedRanks[x] === sortedRanks[x + 1]) {
-          vFunc = (a: number, b: number) => this.v_draw(a, b);
-          wFunc = (a: number, b: number) => this.w_draw(a, b);
-        } else {
-          vFunc = (a: number, b: number) => this.v_win(a, b);
-          wFunc = (a: number, b: number) => this.w_win(a, b);
-        }
-        x++;
-        return new TruncateFactor(teamDiffVar, vFunc, wFunc, drawMargin);
-      });
-    };
     const layers = this.runSchedule(
-      buildRatingLayer,
-      buildPerfLayer,
-      buildTeamPerfLayer,
-      buildTeamDiffLayer,
-      buildTruncLayer,
+      ratingVars,
+      flattenRatings,
+      perfVars,
+      teamPerfVars,
+      teamSizes,
+      flattenWeights,
+      teamDiffVars,
+      sortedRanks,
+      sortedRatingGroups,
       minDelta,
     );
     const ratingLayer: any[] = layers[0];
     const transformedGroups: Rating[][] = [];
     const trimmed = teamSizes.slice(0, teamSizes.length - 1);
-    for (const [start, end] of _.zip([0].concat(trimmed), teamSizes)) {
+    _.zip([0].concat(trimmed), teamSizes).map(([start, end]) => {
       const group: Rating[] = [];
       ratingLayer.slice(start, end).map((f: PriorFactor) => {
         group.push(new Rating(f.v.mu, f.v.sigma));
       });
       transformedGroups.push(group);
-    }
+    });
     const pulled = sorting.map(([x, zz]) => x);
     const pulledTranformedGroups: Array<[number, Rating[]]> = [];
     for (let idx = 0; idx < pulled.length; idx++) {
@@ -453,38 +400,101 @@ export class TrueSkill {
     return weights;
   }
 
+  private buildRatingLayer(ratingVars: Variable[], flattenRatings: Rating[]) {
+    const pf: PriorFactor[] = [];
+    for (let idx = 0; idx < ratingVars.length; idx++) {
+      pf.push(new PriorFactor(ratingVars[idx], flattenRatings[idx], this.tau));
+    }
+    return pf;
+  }
+
+  private buildPerfLayer(ratingVars: Variable[], perfVars: Variable[]) {
+    const lf: LikelihoodFactor[] = [];
+    for (let idx = 0; idx < ratingVars.length; idx++) {
+      lf.push(new LikelihoodFactor(ratingVars[idx], perfVars[idx], this.beta ** 2));
+    }
+    return lf;
+  }
+  private buildTeamPerfLayer(
+    teamPerfVars: Variable[],
+    perfVars: Variable[],
+    teamSizes: number[],
+    flattenWeights: number[],
+   ) {
+    let team = 0;
+    return teamPerfVars.map((teamPerfVar) => {
+      const start = team > 0 ? teamSizes[team - 1] : 0;
+      const end = teamSizes[team];
+      team = team + 1;
+      return new SumFactor(
+        teamPerfVar,
+        perfVars.slice(start, end),
+        flattenWeights.slice(start, end),
+      );
+    });
+  }
+  private buildTeamDiffLayer(teamPerfVars: Variable[], teamDiffVars: Variable[]) {
+    let team = 0;
+    return teamDiffVars.map((teamDiffVar) => {
+      const sl = teamPerfVars.slice(team, team + 2);
+      team++;
+      return new SumFactor(teamDiffVar, sl, [1, -1]);
+    });
+  }
+  private buildTruncLayer(teamDiffVars: Variable[], sortedRanks: number[], sortedRatingGroups: Rating[][]) {
+    let x = 0;
+    return teamDiffVars.map((teamDiffVar) => {
+      // static draw probability
+      const drawProbability = this.drawProbability;
+      const lengths = sortedRatingGroups.slice(x, x + 2).map((n) => n.length);
+      const drawMargin = calcDrawMargin(drawProbability, _.sum(lengths), this);
+      let vFunc = (a: number, b: number) => this.v_win(a, b);
+      let wFunc = (a: number, b: number) => this.w_win(a, b);
+      if (sortedRanks[x] === sortedRanks[x + 1]) {
+        vFunc = (a: number, b: number) => this.v_draw(a, b);
+        wFunc = (a: number, b: number) => this.w_draw(a, b);
+      }
+      x++;
+      return new TruncateFactor(teamDiffVar, vFunc, wFunc, drawMargin);
+    });
+  }
+
   /**
    * Sends messages within every nodes of the factor graph
    * until the result is reliable.
    */
   private runSchedule(
-    buildRatingLayer: () => PriorFactor[],
-    buildPerfLayer: () => LikelihoodFactor[],
-    buildTeamPerfLayer: () => SumFactor[],
-    buildTeamDiffLayer: () => SumFactor[],
-    buildTruncLayer: () => TruncateFactor[],
+    ratingVars: Variable[],
+    flattenRatings: Rating[],
+    perfVars: Variable[],
+    teamPerfVars: Variable[],
+    teamSizes: number[],
+    flattenWeights: number[],
+    teamDiffVars: Variable[],
+    sortedRanks: number[],
+    sortedRatingGroups: Rating[][],
     minDelta = DELTA,
   ) {
     if (minDelta <= 0) {
       throw new Error('minDelta must be greater than 0');
     }
-    const layers = [];
-    const ratingLayer: PriorFactor[] = buildRatingLayer();
-    const perfLayer: LikelihoodFactor[] = buildPerfLayer();
-    const teamPerfLayer: SumFactor[] = buildTeamPerfLayer();
-    layers.push(ratingLayer, perfLayer, teamPerfLayer);
-    for (const layer of [ratingLayer, perfLayer, teamPerfLayer]) {
-      for (const f of layer) {
-        f.down();
-      }
-    }
+    const ratingLayer: PriorFactor[] = this.buildRatingLayer(ratingVars, flattenRatings);
+    const perfLayer: LikelihoodFactor[] = this.buildPerfLayer(ratingVars, perfVars);
+    const teamPerfLayer: SumFactor[] = this.buildTeamPerfLayer(
+      teamPerfVars,
+      perfVars,
+      teamSizes,
+      flattenWeights,
+    );
+    ratingLayer.map((f) => f.down());
+    perfLayer.map((f) => f.down());
+    teamPerfLayer.map((f) => f.down());
     // arrow #1, #2, #3
-    const teamDiffLayer: SumFactor[] = buildTeamDiffLayer();
-    const truncLayer: TruncateFactor[] = buildTruncLayer();
-    layers.push(teamDiffLayer, truncLayer);
+    const teamDiffLayer: SumFactor[] = this.buildTeamDiffLayer(teamPerfVars, teamDiffVars);
+    const truncLayer: TruncateFactor[] = this.buildTruncLayer(teamDiffVars, sortedRanks, sortedRatingGroups);
     const teamDiffLen = teamDiffLayer.length;
     for (let index = 0; index <= 10; index++) {
-      let delta;
+      let delta = 0;
       if (teamDiffLen === 1) {
         // only two teams
         teamDiffLayer[0].down();
@@ -492,16 +502,16 @@ export class TrueSkill {
       } else {
         // multiple teams
         delta = 0;
-        for (const z of _.range(teamDiffLen - 1)) {
+        _.range(teamDiffLen - 1).map((z) => {
           teamDiffLayer[z].down();
           delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(1);
-        }
-        for (const z of _.range(teamDiffLen - 1, 0, -1)) {
+        });
+        _.range(teamDiffLen - 1, 0, -1).map((z) => {
           teamDiffLayer[z].down();
           delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(0);
-        }
+        });
       }
       // repeat until too small update
       if (delta <= minDelta) {
@@ -512,15 +522,9 @@ export class TrueSkill {
     teamDiffLayer[0].up(0);
     teamDiffLayer[teamDiffLen - 1].up(1);
     // up the remainder of the black arrows
-    for (const f of teamPerfLayer) {
-      for (const x of _.range(f.vars.length - 1)) {
-        f.up(x);
-      }
-    }
-    for (const f of perfLayer) {
-      f.up();
-    }
-    return layers;
+    teamPerfLayer.map((f) => _.range(f.vars.length - 1).map((x) => f.up(x)));
+    perfLayer.map((f) => f.up());
+    return [ratingLayer, perfLayer, teamPerfLayer, teamDiffLayer, truncLayer];
   }
 }
 

@@ -2,18 +2,20 @@
   "name": "ts-trueskill",
   "version": "1.2.0",
   "description": "Port of python trueskill package in TypeScript",
-  "main": "src/index.js",
-  "typings": "src/index.d.ts",
+  "main": "./index.js",
+  "typings": "./index.d.ts",
   "repository": "https://github.com/scttcper/ts-trueskill.git",
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -p .",
+    "clean": "rimraf build coverage docs benchmark-out .nyc_output",
+    "build": "npm run clean; tsc -p .",
     "build:watch": "tsc -p . -w",
-    "test": "mocha --require ts-node/register test/*.spec.ts",
-    "coverage": "nyc npm test",
+    "test": "mocha --require test/tshook.js test/*.spec.ts",
+    "coverage": "nyc npm run test",
     "docs": "typedoc --gitRevision master --out docs --exclude \"**/*+(spec).ts\"; touch docs/.nojekyll",
-    "lint": "tslint \"src/**/*.ts\""
+    "lint": "tslint \"src/**/*.ts\"",
+    "benchmark": "npm run build; tsc -p benchmark; node benchmark-out"
   },
   "dependencies": {
     "gaussian": "^1.1.0",
@@ -22,6 +24,7 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "@types/benchmark": "^1.0.30",
     "@types/chai": "^3.5.2",
     "@types/gaussian": "^1.1.1",
     "@types/lodash": "^4.14.64",
@@ -29,6 +32,7 @@
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.18",
     "@types/uuid": "^2.0.29",
+    "benchmark": "^2.1.4",
     "chai": "^3.5.0",
     "mocha": "^3.4.1",
     "nyc": "^10.3.2",
@@ -41,7 +45,7 @@
     "sourceMap": true,
     "instrument": true,
     "require": [
-      "ts-node/register"
+      "./test/tshook.js"
     ],
     "include": [
       "src/**/*.ts"
