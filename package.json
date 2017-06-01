@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@types/benchmark": "^1.0.30",
-    "@types/chai": "^3.5.2",
+    "@types/chai": "^4.0.0",
     "@types/gaussian": "^1.1.1",
     "@types/lodash": "^4.14.64",
     "@types/mathjs": "^0.0.34",
