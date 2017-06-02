@@ -25,22 +25,22 @@
   },
   "devDependencies": {
     "@types/benchmark": "^1.0.30",
-    "@types/chai": "^3.5.2",
+    "@types/chai": "^4.0.0",
     "@types/gaussian": "^1.1.1",
     "@types/lodash": "^4.14.64",
     "@types/mathjs": "^0.0.34",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.18",
+    "@types/node": "^7.0.23",
     "@types/uuid": "^2.0.29",
     "benchmark": "^2.1.4",
-    "chai": "^4.0.0",
+    "chai": "^4.0.1",
     "mocha": "^3.4.1",
-    "nyc": "^10.3.2",
+    "nyc": "^11.0.1",
     "rimraf": "^2.6.1",
     "ts-node": "^3.0.4",
-    "tslint": "^5.2.0",
+    "tslint": "^5.4.2",
     "typedoc": "^0.7.0",
-    "typescript": "^2.3.2"
+    "typescript": "^2.3.4"
   },
   "nyc": {
     "sourceMap": true,
