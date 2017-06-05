@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 import * as uuid from 'uuid/v1';
 
-import { Rating } from './index';
 import { Gaussian } from './mathematics';
+import { Rating } from './rating';
 
 export class Variable extends Gaussian {
   messages: { [key: string]: Gaussian } = {};

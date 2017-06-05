@@ -10,6 +10,8 @@ import {
   Variable,
 } from './factorgraph';
 import { Gaussian } from './mathematics';
+import { VarianceMatrix, RotatedAMatrix } from './quality-helper';
+import { Rating } from './rating';
 
 /** Default initial mean of ratings. */
 const MU = 25;
@@ -49,34 +51,6 @@ function _teamSizes(ratingGroups: Rating[][]) {
 }
 
 /**
- * The default mu and sigma value follows the global environment's settings.
- * If you don't want to use the global, use `TrueSkill.createRating` to
- * create the rating object.
- */
-export class Rating extends Gaussian {
-  constructor(mu?: number | Gaussian | [number, number], sigma?: number) {
-    if (Array.isArray(mu)) {
-      [mu, sigma] = mu;
-    } else if (mu instanceof Gaussian) {
-      sigma = mu.sigma;
-      mu = mu.mu;
-    }
-    if (!mu) {
-      mu = global_env().mu;
-    }
-    if (!sigma) {
-      sigma = global_env().sigma;
-    }
-    super(mu, sigma);
-  }
-  toString() {
-    const mu = this.mu.toFixed(3);
-    const sigma = this.sigma.toFixed(3);
-    return `Rating(mu=${mu}, sigma=${sigma})`;
-  }
-}
-
-/**
  * Implements a TrueSkill environment.  An environment could have
  * customized constants.  Every games have not same design and may need to
  * customize TrueSkill constants.
@@ -109,11 +83,8 @@ export class TrueSkill {
     this.sigma = sigma || SIGMA;
     this.beta = beta || BETA;
     this.tau = tau || TAU;
-    if (drawProbability === undefined || drawProbability === null) {
-      this.drawProbability = DRAW_PROBABILITY;
-    } else {
-      this.drawProbability = drawProbability;
-    }
+    this.drawProbability = (drawProbability === undefined || drawProbability === null) ?
+      DRAW_PROBABILITY : drawProbability;
   }
 
   /** Recalculates ratings by the ranking table */
@@ -216,48 +187,15 @@ export class TrueSkill {
     const length = flattenRatings.length;
     // a vector of all of the skill means
     const meanMatrix = math.matrix(flattenRatings.map((r) => [r.mu]));
-    function fnVarianceMatrix(height: number, width: number) {
-      const variances = flattenRatings.map((r) => r.sigma ** 2);
-      const matrix = math.matrix().resize([height, width]);
-      let i = 0;
-      for (const f of variances) {
-        matrix.set([i, i], f);
-        i++;
-      }
-      return matrix;
-    }
-    const varianceMatrix = fnVarianceMatrix(length, length);
-    function fn_rotatedAMatrix() {
-      let t = 0;
-      let r = 0;
-      const zipped = _.zip(
-        newRatingGroups.slice(0, newRatingGroups.length - 1),
-        newRatingGroups.slice(1),
-      );
-      const matrix = math.matrix();
-      for (const [cur, next] of zipped) {
-        let x = 0;
-        for (x of _.range(t, t + cur.length)) {
-          matrix.set([r, x], flattenWeights[x]);
-          t += 1;
-        }
-        x += 1;
-        for (const d of _.range(x, x + next.length)) {
-          matrix.set([r, d], -flattenWeights[d]);
-        }
-        r++;
-      }
-      return matrix;
-    }
-    const rotatedAMatrix = fn_rotatedAMatrix();
+    const varianceMatrix = VarianceMatrix(flattenRatings, length, length);
+    const rotatedAMatrix = RotatedAMatrix(newRatingGroups, flattenWeights);
     const aMatrix = math.transpose(rotatedAMatrix);
     // match quality further derivation
-    const modifiedRotatedAMatrix = rotatedAMatrix.map((value, index, matrix) => {
-      return this.beta ** 2 * value;
-    });
+    const modifiedRotatedAMatrix = rotatedAMatrix
+      .map((value, index, matrix) => this.beta ** 2 * value);
+    const start = math.multiply(math.transpose(meanMatrix), aMatrix);
     const ata = math.multiply(modifiedRotatedAMatrix, aMatrix);
     const atsa = math.multiply(rotatedAMatrix, math.multiply(varianceMatrix, aMatrix));
-    const start = math.multiply(math.transpose(meanMatrix), aMatrix);
     const middle: any = math.add(ata, atsa);
     const end = math.multiply(rotatedAMatrix, meanMatrix);
     // make result
@@ -275,8 +213,8 @@ export class TrueSkill {
   /**
    * Initializes new `Rating` object, but it fixes default mu and
    * sigma to the environment's.
-   * >>> env = TrueSkill(mu=0, sigma=1)
-   * >>> env.createRating()
+   * var env = TrueSkill(mu=0, sigma=1)
+   * var env.createRating()
    * trueskill.Rating(mu=0.000, sigma=1.000)
    */
   createRating(mu = this.mu, sigma = this.sigma) {
@@ -560,6 +498,7 @@ export function quality_1vs1(
   }
   return env.quality([[rating1], [rating2]]);
 }
+
 /**
  * Gets the `TrueSkill` object which is the global environment.
  */

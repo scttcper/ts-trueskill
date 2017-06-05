@@ -1,0 +1,11 @@
+{
+  "extends": [
+    "tslint:latest",
+    "../tslint.json"
+  ],
+  "rules": {
+    "only-arrow-functions": false,
+    "one-variable-per-declaration": false,
+    "no-console": false
+  }
+}
