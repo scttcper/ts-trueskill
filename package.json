@@ -31,7 +31,7 @@
     "@types/mathjs": "^0.0.34",
     "@types/mocha": "^2.2.41",
     "@types/node": "^7.0.27",
-    "@types/uuid": "^3.3.28",
+    "@types/uuid": "^3.0.0",
     "benchmark": "^2.1.4",
     "chai": "^4.0.1",
     "mocha": "^3.4.2",

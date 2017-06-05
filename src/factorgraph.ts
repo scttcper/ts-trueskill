@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { v1 as uuid } from 'uuid';
+import * as uuid from 'uuid/v1';
 
 import { Rating } from './index';
 import { Gaussian } from './mathematics';
