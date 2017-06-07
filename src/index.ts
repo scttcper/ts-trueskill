@@ -10,7 +10,7 @@ import {
   Variable,
 } from './factorgraph';
 import { Gaussian } from './mathematics';
-import { VarianceMatrix, RotatedAMatrix } from './quality-helper';
+import { RotatedAMatrix, VarianceMatrix } from './quality-helper';
 import { Rating } from './rating';
 
 /** Default initial mean of ratings. */
