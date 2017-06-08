@@ -2,16 +2,16 @@ import { expect } from 'chai';
 import * as _ from 'lodash';
 
 import {
+  Gaussian,
   quality,
   quality_1vs1,
   rate,
   rate_1vs1,
+  Rating,
   setup,
   TrueSkill,
   winProbability,
-} from '../src/index';
-import { Gaussian } from '../src/mathematics';
-import { Rating } from '../src/rating';
+} from '../src';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map((size) => {

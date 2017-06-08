@@ -1,5 +1,5 @@
-import { global_env } from './index';
 import { Gaussian } from './mathematics';
+import { global_env } from './trueskill';
 
 /**
  * The default mu and sigma value follows the global environment's settings.
