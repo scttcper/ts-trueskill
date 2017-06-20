@@ -30,7 +30,7 @@
     "@types/lodash": "^4.14.65",
     "@types/mathjs": "^0.0.34",
     "@types/mocha": "^2.2.41",
-    "@types/node": "^7.0.29",
+    "@types/node": "^8.0.1",
     "@types/uuid": "^3.0.0",
     "benchmark": "^2.1.4",
     "chai": "^4.0.2",
