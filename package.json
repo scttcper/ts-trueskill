@@ -15,7 +15,7 @@
     "coverage": "nyc npm run test",
     "docs": "typedoc --gitRevision master --out docs --exclude \"**/*+(spec).ts\"; touch docs/.nojekyll",
     "lint": "tslint \"src/**/*.ts\"",
-    "benchmark": "npm run build; tsc -p benchmark; node benchmark-out"
+    "benchmark": "npm run build; tsc -p benchmark; node benchmark-out/benchmark"
   },
   "dependencies": {
     "gaussian": "^1.1.0",
