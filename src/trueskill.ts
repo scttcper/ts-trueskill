@@ -100,7 +100,7 @@ export class TrueSkill {
     if (ranks && ranks.length !== groupSize) {
       throw new Error('Wrong ranks');
     }
-    const newRanks = ranks ? ranks : _.range(groupSize);
+    const newRanks = ranks ? ranks : Array.from({length: groupSize}, (z, i) => i);
     // sort rating groups by rank
     const zip: Array<[Rating[], number, number[]]> = [];
     for (let idx = 0; idx < newRatingGroups.length; idx++) {
@@ -128,10 +128,13 @@ export class TrueSkill {
     const flattenWeights = _.flatten(sortedWeights);
     const size = flattenRatings.length;
     // create variables
-    const ratingVars: Variable[] = _.range(size).map(() => new Variable());
-    const perfVars: Variable[] = _.range(size).map(() => new Variable());
-    const teamPerfVars: Variable[] = _.range(groupSize).map(() => new Variable());
-    const teamDiffVars: Variable[] = _.range(groupSize - 1).map(() => new Variable());
+    const fill = Array.from({length: size}, (z, i) => i);
+    const ratingVars: Variable[] = fill.map(() => new Variable());
+    const perfVars: Variable[] = fill.map(() => new Variable());
+    const teamPerfVars: Variable[] = Array.from({length: groupSize}, (z, i) => i)
+      .map(() => new Variable());
+    const teamDiffVars: Variable[] = Array.from({length: groupSize - 1}, (z, i) => i)
+      .map(() => new Variable());
     const teamSizes = _teamSizes(sortedRatingGroups);
     // layer builders
     const layers = this.runSchedule(
@@ -161,7 +164,7 @@ export class TrueSkill {
     for (let idx = 0; idx < pulled.length; idx++) {
       pulledTranformedGroups.push([pulled[idx], transformedGroups[idx]]);
     }
-    const unsorting = _.sortBy(pulledTranformedGroups, (zi) => zi[0]);
+    const unsorting = pulledTranformedGroups.sort((a, b) => a[0] - b[0]);
     if (!keys) {
       return unsorting.map((k) => k[1]);
     }
@@ -330,9 +333,8 @@ export class TrueSkill {
     keys?: string[][] | null,
   ): number[][] {
     if (!weights) {
-      return ratingGroups.map((n) => {
-        return _.fill(Array(n.length), 1);
-      });
+      return ratingGroups
+        .map((n) => Array(n.length).fill(1));
     }
     // TODO: weights is dict?
     return weights;
@@ -440,16 +442,16 @@ export class TrueSkill {
       } else {
         // multiple teams
         delta = 0;
-        _.range(teamDiffLen - 1).map((z) => {
+        for (let z = 0; z < teamDiffLen - 1; z++) {
           teamDiffLayer[z].down();
           delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(1);
-        });
-        _.range(teamDiffLen - 1, 0, -1).map((z) => {
+        }
+        for (let z = teamDiffLen - 1; z > 0; z--) {
           teamDiffLayer[z].down();
           delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(0);
-        });
+        }
       }
       // repeat until too small update
       if (delta <= minDelta) {
@@ -460,8 +462,14 @@ export class TrueSkill {
     teamDiffLayer[0].up(0);
     teamDiffLayer[teamDiffLen - 1].up(1);
     // up the remainder of the black arrows
-    teamPerfLayer.map((f) => _.range(f.vars.length - 1).map((x) => f.up(x)));
-    perfLayer.map((f) => f.up());
+    for (const f of teamPerfLayer) {
+      for (let x = 0; x < f.vars.length - 1; x++) {
+        f.up(x);
+      }
+    }
+    for (const f of perfLayer) {
+      f.up();
+    }
     return [ratingLayer, perfLayer, teamPerfLayer, teamDiffLayer, truncLayer];
   }
 }

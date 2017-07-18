@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import * as math from 'mathjs';
 
 import { Rating } from './rating';
@@ -24,14 +23,17 @@ export function RotatedAMatrix(
   let r = 0;
   const matrix = math.matrix();
   for (let i = 0; i < newRatingGroups.length - 1; i++) {
-    let x = 0;
-    for (x of _.range(t, t + newRatingGroups[i].length)) {
-      matrix.set([r, x], flattenWeights[x]);
-      t += 1;
+    const setter = Array
+      .from({ length: newRatingGroups[i].length }, (m, n) => n + t)
+      .map((z) => {
+        matrix.set([r, z], flattenWeights[z]);
+        t += 1;
+        return z;
+      });
+    const x = setter[setter.length - 1] + 1;
+    for (let d = x; d < newRatingGroups[i + 1].length + x; d++) {
+      matrix.set([r, d], -flattenWeights[d]);
     }
-    x += 1;
-    _.range(x, x + newRatingGroups[i + 1].length)
-      .map((d) => matrix.set([r, d], -flattenWeights[d]));
     r++;
   }
   return matrix;

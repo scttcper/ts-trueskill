@@ -13,7 +13,7 @@ import {
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map((size) => {
-    const r = _.fill(Array(size), 0);
+    const r = Array(size).fill(0);
     if (env) {
       return r.map(() => env.createRating());
     }
@@ -22,7 +22,7 @@ function generateTeams(sizes: number[], env?: TrueSkill) {
 }
 
 function generateIndividual(size: number) {
-  return generateTeams(_.fill(Array(size), 1));
+  return generateTeams(Array(size).fill(1));
 }
 
 const suite = new Benchmark.Suite();
