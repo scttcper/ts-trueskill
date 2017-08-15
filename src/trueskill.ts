@@ -151,18 +151,16 @@ export class TrueSkill {
     );
     const ratingLayer: any[] = layers[0];
     const transformedGroups: Rating[][] = [];
-    const trimmed = teamSizes.slice(0, teamSizes.length - 1);
-    _.zip([0].concat(trimmed), teamSizes).map(([start, end]) => {
-      const group: Rating[] = [];
-      ratingLayer.slice(start, end).map((f: PriorFactor) => {
-        group.push(new Rating(f.v.mu, f.v.sigma));
-      });
+    const trimmed = [0].concat(teamSizes.slice(0, teamSizes.length - 1));
+    for (let idx = 0; idx < teamSizes.length; idx++) {
+      const group = ratingLayer
+        .slice(trimmed[idx], teamSizes[idx])
+        .map((f: PriorFactor) => new Rating(f.v.mu, f.v.sigma));
       transformedGroups.push(group);
-    });
-    const pulled = sorting.map(([x, zz]) => x);
+    }
     const pulledTranformedGroups: Array<[number, Rating[]]> = [];
-    for (let idx = 0; idx < pulled.length; idx++) {
-      pulledTranformedGroups.push([pulled[idx], transformedGroups[idx]]);
+    for (let idx = 0; idx < sorting.length; idx++) {
+      pulledTranformedGroups.push([sorting[idx][0], transformedGroups[idx]]);
     }
     const unsorting = pulledTranformedGroups.sort((a, b) => a[0] - b[0]);
     if (!keys) {
