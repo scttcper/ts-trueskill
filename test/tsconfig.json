@@ -2,7 +2,11 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "types" : ["node", "mocha"],
-    "baseUrl": ""
+    "baseUrl": "./",
+    "target": "es6"
   },
-  "include": ["*"]
+  "include": [
+    "**/*.spec.ts"
+  ],
+  "exclude": []
 }

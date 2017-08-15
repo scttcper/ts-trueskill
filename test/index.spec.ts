@@ -320,8 +320,8 @@ describe('TrueSkill', function() {
     expect(p1.sigma).to.be.closeTo(7.171, 0.001);
     expect(p2.mu).to.be.closeTo(20.604, 0.001);
     expect(p2.sigma).to.be.closeTo(7.171, 0.001);
-    const quality = quality_1vs1(new Rating(), new Rating());
-    expect(quality).to.be.closeTo(0.447, 0.01);
+    const q = quality_1vs1(new Rating(), new Rating());
+    expect(q).to.be.closeTo(0.447, 0.01);
   });
 });
 
