@@ -149,11 +149,10 @@ export class TrueSkill {
       sortedRatingGroups,
       minDelta,
     );
-    const ratingLayer: any[] = layers[0];
     const transformedGroups: Rating[][] = [];
     const trimmed = [0].concat(teamSizes.slice(0, teamSizes.length - 1));
     for (let idx = 0; idx < teamSizes.length; idx++) {
-      const group = ratingLayer
+      const group = layers
         .slice(trimmed[idx], teamSizes[idx])
         .map((f: PriorFactor) => new Rating(f.v.mu, f.v.sigma));
       transformedGroups.push(group);
@@ -339,19 +338,13 @@ export class TrueSkill {
   }
 
   private buildRatingLayer(ratingVars: Variable[], flattenRatings: Rating[]) {
-    const pf: PriorFactor[] = [];
-    for (let idx = 0; idx < ratingVars.length; idx++) {
-      pf.push(new PriorFactor(ratingVars[idx], flattenRatings[idx], this.tau));
-    }
-    return pf;
+    const t = this.tau;
+    return ratingVars.map((n, idx) => new PriorFactor(n, flattenRatings[idx], t));
   }
 
   private buildPerfLayer(ratingVars: Variable[], perfVars: Variable[]) {
-    const lf: LikelihoodFactor[] = [];
-    for (let idx = 0; idx < ratingVars.length; idx++) {
-      lf.push(new LikelihoodFactor(ratingVars[idx], perfVars[idx], this.beta ** 2));
-    }
-    return lf;
+    const b = this.beta ** 2;
+    return ratingVars.map((n, idx) => new LikelihoodFactor(n, perfVars[idx], b));
   }
   private buildTeamPerfLayer(
     teamPerfVars: Variable[],
@@ -468,7 +461,7 @@ export class TrueSkill {
     for (const f of perfLayer) {
       f.up();
     }
-    return [ratingLayer, perfLayer, teamPerfLayer, teamDiffLayer, truncLayer];
+    return ratingLayer;
   }
 }
 
