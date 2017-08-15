@@ -52,12 +52,11 @@ export class Variable extends Gaussian {
 }
 
 export class Factor {
-  uuid = uuid();
-  vars: Variable[];
-  constructor(vars: Variable[]) {
-    this.vars = vars;
+  private uuid: string;
+  constructor(public vars: Variable[]) {
+    this.uuid = uuid();
     const k = this.toString();
-    vars.map((v) => v.messages[k] = new Gaussian());
+    vars.forEach((v) => v.messages[k] = new Gaussian());
   }
   down() {
     return 0;
@@ -78,12 +77,8 @@ export class Factor {
 }
 
 export class PriorFactor extends Factor {
-  val: Rating;
-  dynamic: number;
-  constructor(v: Variable, val: Rating, dynamic = 0) {
+  constructor(v: Variable, private val: Rating, private dynamic = 0) {
     super([v]);
-    this.val = val;
-    this.dynamic = dynamic;
   }
   down() {
     const sigma = Math.sqrt(this.val.sigma ** 2 + this.dynamic ** 2);
@@ -93,14 +88,12 @@ export class PriorFactor extends Factor {
 }
 
 export class LikelihoodFactor extends Factor {
-  mean: Variable;
-  value: Variable;
-  variance: number;
-  constructor(meanVar: Variable, valueVar: Variable, variance: number) {
-    super([meanVar, valueVar]);
-    this.mean = meanVar;
-    this.value = valueVar;
-    this.variance = variance;
+  constructor(
+    private mean: Variable,
+    private value: Variable,
+    private variance: number,
+  ) {
+    super([mean, value]);
   }
   calc_a(v: Gaussian) {
     return 1.0 / (1.0 + this.variance * v.pi);
@@ -118,15 +111,12 @@ export class LikelihoodFactor extends Factor {
 }
 
 export class SumFactor extends Factor {
-  sum: Variable;
-  terms: Variable[];
-  coeffs: number[];
-
-  constructor(sumVar: Variable, termVars: Variable[], coeffs: number[]) {
-    super([sumVar].concat(termVars));
-    this.sum = sumVar;
-    this.terms = termVars;
-    this.coeffs = coeffs;
+  constructor(
+    private sum: Variable,
+    private terms: Variable[],
+    private coeffs: number[],
+  ) {
+    super([sum].concat(terms));
   }
   down() {
     const k = this.toString();
@@ -175,19 +165,13 @@ export class SumFactor extends Factor {
 }
 
 export class TruncateFactor extends Factor {
-  vFunc: (a: number, b: number) => number;
-  wFunc: (a: number, b: number) => number;
-  drawMargin: number;
   constructor(
     v: Variable,
-    vFunc: (a: number, b: number) => number,
-    wFunc: (a: number, b: number) => number,
-    drawMargin: number,
+    private vFunc: (a: number, b: number) => number,
+    private wFunc: (a: number, b: number) => number,
+    private drawMargin: number,
   ) {
     super([v]);
-    this.vFunc = vFunc;
-    this.wFunc = wFunc;
-    this.drawMargin = drawMargin;
   }
   up() {
     const val = this.v;

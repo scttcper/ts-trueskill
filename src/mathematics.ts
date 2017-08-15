@@ -2,15 +2,13 @@
  * A model for the normal distribution.
  */
 export class Gaussian {
-  /** Precision, the inverse of the variance. */
-  pi = 0;
-  /** Precision adjusted mean, the precision multiplied by the mean. */
-  tau = 0;
   constructor(
     mu: number | null = null,
     sigma: number | null = null,
-    pi = 0,
-    tau = 0,
+    /** Precision, the inverse of the variance. */
+    public pi = 0,
+    /** Precision adjusted mean, the precision multiplied by the mean. */
+    public tau = 0,
   ) {
     // console.log('GAUSSIAN', mu, sigma, pi, tau)
     if (mu !== null) {
