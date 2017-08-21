@@ -20,17 +20,17 @@
   "dependencies": {
     "gaussian": "^1.1.0",
     "lodash": "^4.17.4",
-    "mathjs": "^3.16.1",
+    "mathjs": "^3.16.2",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
     "@types/benchmark": "^1.0.30",
-    "@types/chai": "^4.0.3",
+    "@types/chai": "^4.0.4",
     "@types/gaussian": "^1.1.1",
-    "@types/lodash": "^4.14.72",
-    "@types/mathjs": "^0.0.34",
-    "@types/mocha": "^2.2.41",
-    "@types/node": "^8.0.22",
+    "@types/lodash": "^4.14.74",
+    "@types/mathjs": "^0.0.35",
+    "@types/mocha": "^2.2.42",
+    "@types/node": "^8.0.24",
     "@types/uuid": "^3.4.0",
     "benchmark": "^2.1.4",
     "chai": "^4.1.1",
