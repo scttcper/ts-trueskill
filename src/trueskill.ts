@@ -312,7 +312,7 @@ export class TrueSkill {
       for (const dictRatingGroup of ratingGroups) {
         const ratingGroup: Rating[] = [];
         const keyGroup: string[] = [];
-        _.forEach(dictRatingGroup, (rating, key: string) => {
+        _.forEach(dictRatingGroup, (rating: Rating, key: string) => {
           ratingGroup.push(rating);
           keyGroup.push(key);
         });
