@@ -28,8 +28,7 @@ Built into es5 and published with typings. Available on [npm](https://www.npmjs.
 npm install ts-trueskill
 ```
 
-### Basic Use in Typescript
-
+### Basic Use  
 2 vs 2 example:
 ```typescript
 import { rate, Rating, quality } from 'ts-trueskill';
@@ -50,26 +49,10 @@ console.log(rated2.toString()) // team 2 went down in rating
 1 vs 1 example:
 ```typescript
 import { Rating, quality_1vs1, rate_1vs1 } from 'ts-trueskill';
-const r1 = new Rating(40, 4);
-const r2 = new Rating(10, 4);
-const q = quality_1vs1(r1, r2); // quality will be low from large difference in scores
-const [new_r1, new_r2] = rate_1vs1(r1, r2); // get new ratings after r1 wins
-```
-
-### Basic Use in node
-```javascript
-const trueskill = require("ts-trueskill");
-const team1 = [new trueskill.Rating(), new trueskill.Rating()];
-const team2 = [new trueskill.Rating(), new trueskill.Rating()];
-// Assumes the first team was the winner by default
-const q = trueskill.quality([team1, team2]);
-// q is quality of the match with the players at their current rating
-const [rated1, rated2] = trueskill.rate([team1, team2]);
-// rated1 and rated2 are now arrays with updated scores from result of match 
-console.log(rated1.toString()) // team 1 went up in rating
-// >> Rating(mu=28.108, sigma=7.774),Rating(mu=28.108, sigma=7.774)
-console.log(rated2.toString()) // team 2 went down in rating
-// >> Rating(mu=21.892, sigma=7.774),Rating(mu=21.892, sigma=7.774)
+const p1 = new Rating(40, 4); // 1P's skill
+const p2 = new Rating(10, 4); // 2P's skill
+const q = quality_1vs1(p1, p2); // quality will be low from large difference in scores
+const [new_r1, new_r2] = rate_1vs1(p1, p2); // get new ratings after p1 wins
 ```
 
 ### Differences from python version
