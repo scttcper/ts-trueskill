@@ -1,34 +1,22 @@
 # ts-trueskill
 > TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee.  
 
-[![npm][npm-img]][npm-url]
-[![build status][build-img]][build-url]
-[![coverage status][coverage-img]][coverage-url]
-[![greenkeeper][greenkeeper-image]][greenkeeper-url]
-
-[npm-img]: https://img.shields.io/npm/v/ts-trueskill.svg?maxAge=3600  
-[npm-url]: https://www.npmjs.com/package/ts-trueskill  
-[build-img]: https://img.shields.io/travis/scttcper/ts-trueskill.svg  
-[build-url]: https://travis-ci.org/scttcper/ts-trueskill  
-[coverage-img]: https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg  
-[coverage-url]: https://codecov.io/gh/scttcper/ts-trueskill  
-[greenkeeper-image]: https://badges.greenkeeper.io/scttcper/ts-trueskill.svg  
-[greenkeeper-url]: https://greenkeeper.io/  
-
-### Docs
-https://scttcper.github.io/ts-trueskill/  
+[![npm][https://img.shields.io/npm/v/ts-trueskill.svg?maxAge=3600]][https://www.npmjs.com/package/ts-trueskill]
+[![build status][https://img.shields.io/travis/scttcper/ts-trueskill.svg]][https://travis-ci.org/scttcper/ts-trueskill]
+[![coverage status][https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg]][https://codecov.io/gh/scttcper/ts-trueskill]
+[![greenkeeper][https://badges.greenkeeper.io/scttcper/ts-trueskill.svg  ]][https://greenkeeper.io/]
 
 ### What's TrueSkill™
 [TrueSkill](http://research.microsoft.com/en-us/projects/trueskill) is a rating system for players of a game. It was developed, patented, and trademarked by Microsoft Research and has been used on Xbox LIVE for ranking and matchmaking service. This system quantifies players’ TRUE skill points by the Bayesian inference algorithm. It also works well with any type of match rule including N:N team game or free-for-all.
 Read about [how the trueskill model works](https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/)
 
-### Installation
+### Install
 Built into es5 and published with typings. Available on [npm](https://www.npmjs.com/package/ts-trueskill):
 ```bash
 npm install ts-trueskill
 ```
 
-### Basic Use  
+### Use  
 2 vs 2 example:
 ```typescript
 import { rate, Rating, quality } from 'ts-trueskill';
@@ -46,14 +34,18 @@ console.log(rated2.toString()) // team 2 went down in rating
 // >> Rating(mu=21.892, sigma=7.774),Rating(mu=21.892, sigma=7.774)
 ```
 
-1 vs 1 example:
+1 vs 1 example:  
+using shortcut functions for 1vs1 matches
 ```typescript
 import { Rating, quality_1vs1, rate_1vs1 } from 'ts-trueskill';
 const p1 = new Rating(40, 4); // 1P's skill
 const p2 = new Rating(10, 4); // 2P's skill
 const q = quality_1vs1(p1, p2); // quality will be low from large difference in scores
-const [new_r1, new_r2] = rate_1vs1(p1, p2); // get new ratings after p1 wins
+const [newP1, newP2] = rate_1vs1(p1, p2); // get new ratings after p1 wins
 ```
+
+### API
+https://scttcper.github.io/ts-trueskill/  
 
 ### Differences from python version
 - Does not support multiple backends
