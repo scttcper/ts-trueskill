@@ -1,6 +1,6 @@
 {
   "name": "ts-trueskill",
-  "version": "1.4.7",
+  "version": "1.4.8",
   "description": "Port of python trueskill package in TypeScript",
   "main": "./index.js",
   "typings": "./index.d.ts",
