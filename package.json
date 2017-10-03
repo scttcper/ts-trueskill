@@ -1,6 +1,6 @@
 {
   "name": "ts-trueskill",
-  "version": "1.4.8",
+  "version": "1.4.12",
   "description": "Port of python trueskill package in TypeScript",
   "main": "./index.js",
   "typings": "./index.d.ts",
@@ -8,8 +8,9 @@
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf build coverage docs benchmark-out .nyc_output",
-    "build": "npm run clean; tsc -p .",
+    "prebuild": "rimraf build coverage docs benchmark-out .nyc_output",
+    "build": "tsc -p . && cp package.json build && cp README.md build && cp LICENSE build",
+    "release": "cd build && npm publish",
     "build:watch": "tsc -p . -w",
     "test": "mocha --require test/tshook.js test/*.spec.ts",
     "coverage": "nyc npm run test",
