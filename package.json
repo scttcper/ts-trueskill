@@ -14,7 +14,7 @@
     "build:watch": "tsc -p . -w",
     "test": "mocha --require test/tshook.js test/*.spec.ts",
     "coverage": "nyc npm run test",
-    "docs": "typedoc --gitRevision master --out docs --exclude \"**/*+(spec).ts\"; touch docs/.nojekyll",
+    "docs": "typedoc --gitRevision master --out docs src; touch docs/.nojekyll",
     "lint": "tslint -p tsconfig.json --type-check \"src/**/*.ts\"",
     "benchmark": "npm run build; tsc -p benchmark; node benchmark-out/benchmark"
   },
