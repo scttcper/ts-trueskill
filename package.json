@@ -1,6 +1,6 @@
 {
   "name": "ts-trueskill",
-  "version": "1.4.12",
+  "version": "1.4.13",
   "description": "Port of python trueskill package in TypeScript",
   "main": "./index.js",
   "typings": "./index.d.ts",
@@ -21,27 +21,27 @@
   "dependencies": {
     "gaussian": "^1.1.0",
     "lodash": "^4.17.4",
-    "mathjs": "^3.16.4",
+    "mathjs": "^3.16.5",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
     "@types/benchmark": "^1.0.30",
     "@types/chai": "^4.0.4",
     "@types/gaussian": "^1.1.1",
-    "@types/lodash": "^4.14.77",
+    "@types/lodash": "^4.14.80",
     "@types/mathjs": "^0.0.35",
-    "@types/mocha": "^2.2.43",
-    "@types/node": "^8.0.32",
-    "@types/uuid": "^3.4.2",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^8.0.47",
+    "@types/uuid": "^3.4.3",
     "benchmark": "^2.1.4",
     "chai": "^4.1.2",
     "mocha": "^4.0.1",
     "nyc": "^11.2.1",
     "rimraf": "^2.6.2",
     "ts-node": "^3.3.0",
-    "tslint": "^5.7.0",
+    "tslint": "^5.8.0",
     "typedoc": "^0.9.0",
-    "typescript": "^2.5.3"
+    "typescript": "^2.6.1"
   },
   "nyc": {
     "sourceMap": true,
