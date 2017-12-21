@@ -6,6 +6,15 @@
     "max-classes-per-file": false,
     "no-var-requires": false,
     "no-empty": false,
-    "prefer-for-of": false
+    "prefer-for-of": false,
+    "no-unused-variable": true,
+    "ordered-imports": [
+      true,
+      {
+        "import-sources-order": "lowercase-last",
+        "named-imports-order": "lowercase-first"
+      }
+    ],
+    "cyclomatic-complexity": [true, 20]
   }
 }

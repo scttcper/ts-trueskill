@@ -22,9 +22,11 @@ npm install ts-trueskill
 import { rate, Rating, quality } from 'ts-trueskill';
 const team1 = [new Rating(), new Rating()];
 const team2 = [new Rating(), new Rating()];
-// Assumes the first team was the winner by default
-const q = quality([team1, team2]);
+
 // q is quality of the match with the players at their current rating
+const q = quality([team1, team2]);
+
+// Assumes the first team was the winner by default
 const [rated1, rated2] = rate([team1, team2]); // rate also takes weights of winners or draw
 // rated1 and rated2 are now arrays with updated scores from result of match
 

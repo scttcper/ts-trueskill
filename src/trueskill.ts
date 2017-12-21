@@ -116,6 +116,7 @@ export class TrueSkill {
     const sortedRatingGroups: Rating[][] = [];
     const sortedRanks: number[] = [];
     const sortedWeights: number[][] = [];
+    // tslint:disable-next-line:no-unused-variable
     for (const [x, [g, r, w]] of sorting) {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
