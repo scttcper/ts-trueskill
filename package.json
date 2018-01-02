@@ -29,7 +29,7 @@
     "@types/chai": "^4.0.10",
     "@types/gaussian": "^1.1.1",
     "@types/lodash": "^4.14.91",
-    "@types/mathjs": "^0.0.35",
+    "@types/mathjs": "^0.0.36",
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.5.2",
     "@types/uuid": "^3.4.3",
