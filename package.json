@@ -46,24 +46,10 @@
   "nyc": {
     "sourceMap": true,
     "instrument": true,
-    "require": [
-      "./test/tshook.js"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "extension": [
-      ".ts"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
+    "include": ["src/**/*.ts"],
+    "extension": [".ts"],
+    "reporter": ["lcov", "text"],
     "exclude": []
   },
-  "keywords": [
-    "typescript",
-    "trueskill",
-    "player skill"
-  ]
+  "keywords": ["typescript", "trueskill", "player skill"]
 }
