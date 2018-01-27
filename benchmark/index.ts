@@ -1,3 +1,4 @@
+/* tslint:disable:no-implicit-dependencies */
 import * as Benchmark from 'benchmark';
 import * as _ from 'lodash';
 import {
@@ -5,14 +6,14 @@ import {
   quality_1vs1,
   rate,
   rate_1vs1,
-  Rating,
   setup,
-  TrueSkill,
   winProbability,
+  Rating,
+  TrueSkill,
 } from '../src';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
-  return sizes.map((size) => {
+  return sizes.map(size => {
     const r = Array(size).fill(0);
     if (env) {
       return r.map(() => env.createRating());
