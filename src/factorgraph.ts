@@ -35,7 +35,12 @@ export class Variable extends Gaussian {
     this.messages[str] = newMessage;
     return this.setVal(this.div(oldMessage).mul(newMessage));
   }
-  updateValue(factor: TruncateFactor | PriorFactor, pi = 0, tau = 0, value?: Gaussian) {
+  updateValue(
+    factor: TruncateFactor | PriorFactor,
+    pi = 0,
+    tau = 0,
+    value?: Gaussian,
+  ) {
     if (!value) {
       value = new Gaussian(null, null, pi, tau);
     }
@@ -56,7 +61,7 @@ export class Factor {
   constructor(public vars: Variable[]) {
     this.uuid = uuid();
     const k = this.toString();
-    vars.forEach((v) => v.messages[k] = new Gaussian());
+    vars.forEach((v) => (v.messages[k] = new Gaussian()));
   }
   down() {
     return 0;
@@ -131,7 +136,7 @@ export class SumFactor extends Factor {
       if (x === index) {
         p = 1.0 / coeff;
       }
-      p = (_.isFinite(p)) ? p : 0;
+      p = _.isFinite(p) ? p : 0;
       if (coeff === 0) {
         p = 0;
       }
@@ -180,7 +185,7 @@ export class TruncateFactor extends Factor {
     const sqrtPi = Math.sqrt(div.pi);
     const v = this.vFunc(div.tau / sqrtPi, this.drawMargin * sqrtPi);
     const w = this.wFunc(div.tau / sqrtPi, this.drawMargin * sqrtPi);
-    const denom = (1.0 - w);
+    const denom = 1.0 - w;
     const pi = div.pi / denom;
     const tau = (div.tau + sqrtPi * v) / denom;
     return val.updateValue(this, pi, tau);
