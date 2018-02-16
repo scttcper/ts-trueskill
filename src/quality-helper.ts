@@ -23,13 +23,14 @@ export function RotatedAMatrix(
   let r = 0;
   const matrix = math.matrix();
   for (let i = 0; i < newRatingGroups.length - 1; i++) {
-    const setter = Array
-      .from({ length: newRatingGroups[i].length }, (m, n) => n + t)
-      .map((z) => {
-        matrix.set([r, z], flattenWeights[z]);
-        t += 1;
-        return z;
-      });
+    const setter = Array.from(
+      { length: newRatingGroups[i].length },
+      (m, n) => n + t,
+    ).map((z) => {
+      matrix.set([r, z], flattenWeights[z]);
+      t += 1;
+      return z;
+    });
     const x = setter[setter.length - 1] + 1;
     for (let d = x; d < newRatingGroups[i + 1].length + x; d++) {
       matrix.set([r, d], -flattenWeights[d]);
