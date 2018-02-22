@@ -4,7 +4,6 @@
 [![npm](https://img.shields.io/npm/v/ts-trueskill.svg?maxAge=3600)](https://www.npmjs.com/package/ts-trueskill)
 [![build status](https://img.shields.io/travis/scttcper/ts-trueskill.svg)](https://travis-ci.org/scttcper/ts-trueskill)
 [![coverage status](https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg)](https://codecov.io/gh/scttcper/ts-trueskill)
-[![greenkeeper](https://badges.greenkeeper.io/scttcper/ts-trueskill.svg)](https://greenkeeper.io/)
 
 ### What's TrueSkill™
 [TrueSkill](http://research.microsoft.com/en-us/projects/trueskill) is a rating system for players of a game. It was developed, patented, and trademarked by Microsoft Research and has been used on Xbox LIVE for ranking and matchmaking service. This system quantifies players’ TRUE skill points by the Bayesian inference algorithm. It also works well with any type of match rule including N:N team game or free-for-all.
