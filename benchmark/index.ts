@@ -6,11 +6,10 @@ import {
   quality_1vs1,
   rate,
   rate_1vs1,
-  setup,
   winProbability,
   Rating,
   TrueSkill,
-} from '../src';
+} from '../src/publicApi';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map((size) => {

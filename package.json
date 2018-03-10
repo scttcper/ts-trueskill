@@ -1,63 +1,121 @@
 {
   "name": "ts-trueskill",
-  "version": "1.4.18",
+  "version": "1.5.0",
   "description": "Port of python trueskill package in TypeScript",
-  "main": "./index.js",
-  "typings": "./index.d.ts",
+  "main": "./dist/publicApi.ts",
+  "module": "./dist/publicApi.umd.ts",
+  "types": "./dist/index.d.ts",
   "repository": "https://github.com/scttcper/ts-trueskill.git",
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "prebuild": "rimraf build coverage docs benchmark-out .nyc_output",
-    "build": "tsc -p . && cp package.json build && cp README.md build && cp LICENSE build",
-    "release": "cd build && npm publish",
-    "build:watch": "tsc -p . -w",
-    "test": "mocha --require ts-node/register test/*.spec.ts",
-    "coverage": "nyc npm run test",
-    "docs": "typedoc --gitRevision master --out docs src; touch docs/.nojekyll",
-    "lint": "tslint -p tsconfig.json --format codeFrame \"src/**/*.ts\"",
-    "benchmark": "npm run build; tsc -p benchmark; node benchmark-out/benchmark"
+    "benchmark": "npm run build; tsc -p benchmark; node benchmark-out/benchmark",
+    "lint": "tslint -p tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
+    "lint:fix": "tslint -p tsconfig.json -t codeFrame --fix 'src/**/*.ts' 'test/**/*.ts'",
+    "lint-staged": "lint-staged",
+    "prebuild": "rimraf dist",
+    "start": "microbundle watch",
+    "build": "microbundle --entry=src/publicApi.ts --external=all",
+    "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file src && touch docs/.nojekyll",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:prod": "npm run test -- --coverage --no-cache",
+    "commit": "git-cz",
+    "commitlint": "commitlint -e $GIT_PARAMS",
+    "travis-deploy-once": "travis-deploy-once",
+    "semantic-release": "cd dist/package-dist && semantic-release"
   },
   "dependencies": {
     "gaussian": "^1.1.0",
-    "lodash": "^4.17.5",
     "mathjs": "^4.0.0",
+    "tslib": "^1.9.0",
+    "lodash": "^4.17.5",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
-    "@types/benchmark": "1.0.31",
-    "@types/chai": "4.1.2",
-    "@types/gaussian": "1.1.1",
-    "@types/lodash": "4.14.104",
+    "@commitlint/cli": "^6.1.3",
+    "@commitlint/config-conventional": "^6.1.3",
+    "@types/benchmark": "^1.0.31",
+    "@types/fs-extra": "^5.0.1",
+    "@types/jest": "^22.2.0",
+    "@types/lodash": "^4.14.104",
     "@types/mathjs": "0.0.38",
-    "@types/mocha": "2.2.48",
-    "@types/node": "9.4.6",
-    "@types/uuid": "3.4.3",
-    "benchmark": "2.1.4",
-    "chai": "4.1.2",
-    "mocha": "5.0.4",
-    "nyc": "11.4.1",
-    "prettier": "1.11.1",
-    "rimraf": "2.6.2",
-    "ts-node": "5.0.1",
-    "tslint": "5.9.1",
-    "typedoc": "0.11.0",
-    "typescript": "2.7.2"
+    "@types/node": "^9.4.7",
+    "@types/rimraf": "^2.0.2",
+    "@types/shelljs": "^0.7.8",
+    "@types/uuid": "^3.4.3",
+    "benchmark": "^2.1.4",
+    "commitizen": "^2.9.6",
+    "cz-conventional-changelog": "^2.1.0",
+    "fs-extra": "^5.0.0",
+    "husky": "^0.15.0-rc.8",
+    "jest": "^22.4.2",
+    "lint-staged": "^7.0.0",
+    "microbundle": "^0.4.4",
+    "prettier": "^1.11.1",
+    "prompt": "^1.0.0",
+    "replace-in-file": "^3.2.0",
+    "rimraf": "^2.6.2",
+    "rollup": "^0.56.5",
+    "rollup-plugin-sourcemaps": "^0.4.2",
+    "semantic-release": "^15.0.2",
+    "travis-deploy-once": "^4.4.0",
+    "ts-jest": "^22.4.1",
+    "ts-node": "^5.0.1",
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.9.0",
+    "tslint-config-standard": "^7.0.0",
+    "typedoc": "^0.11.1",
+    "typescript": "^2.7.2"
   },
-  "nyc": {
-    "sourceMap": true,
-    "instrument": true,
-    "include": [
-      "src/**/*.ts"
+  "release": {
+    "branch": "master"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint-staged",
+      "commit-msg": "npm run commitlint"
+    }
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
     ],
-    "extension": [
-      ".ts"
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/node_modules/",
+      "<rootDir>/test/"
     ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
-    "exclude": []
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": -10
+      }
+    },
+    "collectCoverage": true
   },
   "keywords": [
     "typescript",

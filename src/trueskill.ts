@@ -1,4 +1,3 @@
-import * as gaussian from 'gaussian';
 import * as _ from 'lodash';
 import * as math from 'mathjs';
 
@@ -9,26 +8,10 @@ import {
   TruncateFactor,
   Variable,
 } from './factorgraph';
-import { Gaussian } from './mathematics';
+import Gaussian from './gaussian';
+import { SkillGaussian } from './mathematics';
 import { RotatedAMatrix, VarianceMatrix } from './quality-helper';
 import { Rating } from './rating';
-
-/** Default initial mean of ratings. */
-const MU = 25;
-/** Default initial standard deviation of ratings. */
-const SIGMA = MU / 3;
-/** Default distance that guarantees about 76% chance of winning. */
-const BETA = SIGMA / 2;
-/** Default dynamic factor. */
-const TAU = SIGMA / 100;
-/** Default draw probability of the game. */
-const DRAW_PROBABILITY = 0.1;
-/** A basis to check reliability of the result. */
-const DELTA = 0.0001;
-/** stores set global environment */
-export let trueskill: TrueSkill;
-/** reuseable gaussian */
-const gaus = gaussian(0, 1);
 
 /**
  * Calculates a draw-margin from the given drawProbability
@@ -36,12 +19,11 @@ const gaus = gaussian(0, 1);
 export function calcDrawMargin(
   drawProbability: number,
   size: number,
-  env?: TrueSkill,
+  env: TrueSkill = new TrueSkill(),
 ) {
-  if (!env) {
-    env = global_env();
-  }
-  return gaus.ppf((drawProbability + 1) / 2) * Math.sqrt(size) * env.beta;
+  return (
+    env.guassian.ppf((drawProbability + 1) / 2) * Math.sqrt(size) * env.beta
+  );
 }
 
 /**
@@ -68,31 +50,36 @@ function _teamSizes(ratingGroups: Rating[][]) {
  *
  * For more details of the constants, see `The Math Behind TrueSkill`_ by
  * Jeff Moser.
- *
  */
 export class TrueSkill {
-  mu: number;
-  sigma: number;
-  beta: number;
-  tau: number;
-  drawProbability: number;
-  backend: any;
-
+  sigma!: number;
+  beta!: number;
+  tau!: number;
+  /**
+   * @param mu initial mean of ratings
+   * @param sigma initial standard deviation of ratings
+   * @param beta distance that guarantees about 76% chance of winning
+   * @param tau dynamic factor
+   * @param drawProbability draw probability of the game
+   * @param guassian reuseable gaussian
+   */
   constructor(
-    mu?: number | null,
-    sigma?: number | null,
-    beta?: number | null,
-    tau?: number | null,
-    drawProbability?: number | null,
+    public mu: number = 25,
+    sigma?: number,
+    beta?: number,
+    tau?: number,
+    public drawProbability: number = 0.1,
+    public guassian = new Gaussian(0, 1),
   ) {
-    this.mu = mu || MU;
-    this.sigma = sigma || SIGMA;
-    this.beta = beta || BETA;
-    this.tau = tau || TAU;
-    this.drawProbability =
-      drawProbability === undefined || drawProbability === null
-        ? DRAW_PROBABILITY
-        : drawProbability;
+    if (sigma === null || sigma === undefined) {
+      this.sigma = mu / 3;
+    }
+    if (beta === null || beta === undefined) {
+      this.beta = this.sigma / 2;
+    }
+    if (tau === null || tau === undefined) {
+      this.tau = this.sigma / 100;
+    }
   }
 
   /** Recalculates ratings by the ranking table */
@@ -100,7 +87,7 @@ export class TrueSkill {
     ratingGroups: Rating[][] | any[],
     ranks: number[] | null = null,
     weights: number[][] | null = null,
-    minDelta = DELTA,
+    minDelta = 0.0001,
   ): Rating[][] | any[] {
     const [newRatingGroups, keys] = this.validateRatingGroups(ratingGroups);
     weights = this.validate_weights(newRatingGroups, weights);
@@ -249,13 +236,6 @@ export class TrueSkill {
   }
 
   /**
-   * Registers the environment as the global environment.
-   */
-  make_as_global() {
-    return setup(undefined, undefined, undefined, undefined, undefined, this);
-  }
-
-  /**
    * Taken from https://github.com/sublee/trueskill/issues/1
    */
   winProbability(a: Rating[], b: Rating[]) {
@@ -263,8 +243,10 @@ export class TrueSkill {
     const sumSigma =
       _.sum(a.map((x) => x.sigma ** 2)) + _.sum(b.map((x) => x.sigma ** 2));
     const playerCount = a.length + b.length;
-    const denominator = Math.sqrt(playerCount * (BETA * BETA) + sumSigma);
-    return gaus.cdf(deltaMu / denominator);
+    const denominator = Math.sqrt(
+      playerCount * (this.beta * this.beta) + sumSigma,
+    );
+    return this.guassian.cdf(deltaMu / denominator);
   }
 
   /**
@@ -273,14 +255,14 @@ export class TrueSkill {
    */
   private v_win(diff: number, drawMargin: number) {
     const x = diff - drawMargin;
-    const denom = gaus.cdf(x);
-    return denom ? gaus.pdf(x) / denom : -x;
+    const denom = this.guassian.cdf(x);
+    return denom ? this.guassian.pdf(x) / denom : -x;
   }
   private v_draw(diff: number, drawMargin: number) {
     const absDiff = Math.abs(diff);
     const [a, b] = [drawMargin - absDiff, -drawMargin - absDiff];
-    const denom = gaus.cdf(a) - gaus.cdf(b);
-    const numer = gaus.pdf(b) - gaus.pdf(a);
+    const denom = this.guassian.cdf(a) - this.guassian.cdf(b);
+    const numer = this.guassian.pdf(b) - this.guassian.pdf(a);
     return (denom ? numer / denom : a) * (diff < 0 ? -1 : +1);
   }
   /**
@@ -301,12 +283,14 @@ export class TrueSkill {
     const absDiff = Math.abs(diff);
     const a = drawMargin - absDiff;
     const b = -drawMargin - absDiff;
-    const denom = gaus.cdf(a) - gaus.cdf(b);
+    const denom = this.guassian.cdf(a) - this.guassian.cdf(b);
     if (!denom) {
       throw new Error('Floating point error');
     }
     const v = this.v_draw(absDiff, drawMargin);
-    return v ** 2 + (a * gaus.pdf(a) - b * gaus.pdf(b)) / denom;
+    return (
+      v ** 2 + (a * this.guassian.pdf(a) - b * this.guassian.pdf(b)) / denom
+    );
   }
 
   /**
@@ -435,7 +419,7 @@ export class TrueSkill {
     teamDiffVars: Variable[],
     sortedRanks: number[],
     sortedRatingGroups: Rating[][],
-    minDelta = DELTA,
+    minDelta = 0.0001,
   ) {
     if (minDelta <= 0) {
       throw new Error('minDelta must be greater than 0');
@@ -516,12 +500,9 @@ export function rate_1vs1(
   rating1: Rating,
   rating2: Rating,
   drawn = false,
-  minDelta = DELTA,
-  env?: TrueSkill,
+  minDelta = 0.0001,
+  env: TrueSkill = new TrueSkill(),
 ): [Rating, Rating] {
-  if (!env) {
-    env = global_env();
-  }
   const ranks = [0, drawn ? 0 : 1];
   const teams = env.rate([[rating1], [rating2]], ranks, undefined, minDelta);
   return [teams[0][0], teams[1][0]];
@@ -534,41 +515,9 @@ export function rate_1vs1(
 export function quality_1vs1(
   rating1: Rating,
   rating2: Rating,
-  env?: TrueSkill,
+  env: TrueSkill = new TrueSkill(),
 ) {
-  if (!env) {
-    env = global_env();
-  }
   return env.quality([[rating1], [rating2]]);
-}
-
-/**
- * Gets the `TrueSkill` object which is the global environment.
- */
-export function global_env(): TrueSkill {
-  if (trueskill) {
-    return trueskill;
-  }
-  setup();
-  return trueskill;
-}
-
-/**
- * Setup the global environment defaults
- */
-export function setup(
-  mu: number | null = MU,
-  sigma: number | null = SIGMA,
-  beta: number | null = BETA,
-  tau: number | null = TAU,
-  drawProbability: number | null = DRAW_PROBABILITY,
-  env?: TrueSkill,
-) {
-  if (!env) {
-    env = new TrueSkill(mu, sigma, beta, tau, drawProbability);
-  }
-  trueskill = env;
-  return env;
 }
 
 /**
@@ -578,13 +527,18 @@ export function rate(
   ratingGroups: Rating[][] | any[],
   ranks?: any[] | null,
   weights?: any[] | null,
-  minDelta = DELTA,
+  minDelta = 0.0001,
+  env: TrueSkill = new TrueSkill(),
 ): Rating[][] {
-  return global_env().rate(ratingGroups, ranks, weights, minDelta);
+  return env.rate(ratingGroups, ranks, weights, minDelta);
 }
 
-export function winProbability(a: Rating[], b: Rating[]) {
-  return global_env().winProbability(a, b);
+export function winProbability(
+  a: Rating[],
+  b: Rating[],
+  env: TrueSkill = new TrueSkill(),
+) {
+  return env.winProbability(a, b);
 }
 
 /**
@@ -594,13 +548,14 @@ export function winProbability(a: Rating[], b: Rating[]) {
 export function quality(
   ratingGroups: Rating[][] | any[],
   weights?: number[][],
+  env: TrueSkill = new TrueSkill(),
 ) {
-  return global_env().quality(ratingGroups, weights);
+  return env.quality(ratingGroups, weights);
 }
 
 /**
  * A proxy function for TrueSkill.expose of the global environment.
  */
-export function expose(rating: Rating) {
-  return global_env().expose(rating);
+export function expose(rating: Rating, env: TrueSkill = new TrueSkill()) {
+  return env.expose(rating);
 }

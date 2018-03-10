@@ -1,13 +1,11 @@
 {
-  "extends": "tslint:latest",
+  "extends": [
+    "tslint-config-standard",
+    "tslint-config-prettier"
+  ],
   "rules": {
+    "semicolon": [true, "always"],
     "quotemark": [true, "single", "avoid-escape"],
-    "member-access": false,
-    "max-classes-per-file": false,
-    "no-var-requires": false,
-    "no-empty": false,
-    "prefer-for-of": false,
-    "no-unused-variable": true,
     "ordered-imports": [
       true,
       {
@@ -15,6 +13,6 @@
         "named-imports-order": "lowercase-first"
       }
     ],
-    "cyclomatic-complexity": [true, 20]
+    "no-unused-variable": true
   }
 }

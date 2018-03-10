@@ -1,7 +1,7 @@
 /**
  * A model for the normal distribution.
  */
-export class Gaussian {
+export class SkillGaussian {
   constructor(
     mu: number | null = null,
     sigma: number | null = null,
@@ -34,15 +34,15 @@ export class Gaussian {
     }
     return Infinity;
   }
-  mul(other: Gaussian) {
+  mul(other: SkillGaussian) {
     const pi = this.pi + other.pi;
     const tau = this.tau + other.tau;
-    return new Gaussian(null, null, pi, tau);
+    return new SkillGaussian(null, null, pi, tau);
   }
-  div(other: Gaussian) {
+  div(other: SkillGaussian) {
     const pi = this.pi - other.pi;
     const tau = this.tau - other.tau;
-    return new Gaussian(null, null, pi, tau);
+    return new SkillGaussian(null, null, pi, tau);
   }
   toString() {
     const mu = this.mu.toPrecision(3);
