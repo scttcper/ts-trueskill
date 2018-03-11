@@ -11,7 +11,7 @@ export class Rating extends SkillGaussian {
       sigma = mu.sigma;
       mu = mu.mu;
     }
-    if (sigma === null || sigma === undefined) {
+    if (sigma === undefined) {
       sigma = mu / 3;
     }
     super(mu, sigma);

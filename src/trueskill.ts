@@ -9,7 +9,6 @@ import {
   TruncateFactor,
   Variable,
 } from './factorgraph';
-import { SkillGaussian } from './mathematics';
 import { RotatedAMatrix, VarianceMatrix } from './quality-helper';
 import { Rating } from './rating';
 
@@ -71,13 +70,13 @@ export class TrueSkill {
     public drawProbability: number = 0.1,
     public guassian = new Gaussian(0, 1),
   ) {
-    if (sigma === null || sigma === undefined) {
+    if (sigma === undefined) {
       this.sigma = mu / 3;
     }
-    if (beta === null || beta === undefined) {
+    if (beta === undefined) {
       this.beta = this.sigma / 2;
     }
-    if (tau === null || tau === undefined) {
+    if (tau === undefined) {
       this.tau = this.sigma / 100;
     }
   }

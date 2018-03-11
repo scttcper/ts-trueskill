@@ -6,6 +6,7 @@
   "rules": {
     "semicolon": [true, "always"],
     "quotemark": [true, "single", "avoid-escape"],
+    "no-use-before-declare": false,
     "ordered-imports": [
       true,
       {

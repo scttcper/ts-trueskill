@@ -11,8 +11,8 @@
   "sideEffects": false,
   "scripts": {
     "benchmark": "npm run build; tsc -p benchmark; node benchmark-out/benchmark",
-    "lint": "tslint -p tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
-    "lint:fix": "tslint -p tsconfig.json -t codeFrame --fix 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "tslint -p tsconfig.json -t stylish 'src/**/*.ts' 'test/**/*.ts'",
+    "lint:fix": "tslint -p tsconfig.json -t stylish --fix 'src/**/*.ts' 'test/**/*.ts'",
     "lint-staged": "lint-staged",
     "prebuild": "rimraf dist",
     "build": "tsc -p tsconfig.json && tsc -p tsconfig.esm.json && tsc -p tsconfig.umd.json && ts-node ./build.ts",
