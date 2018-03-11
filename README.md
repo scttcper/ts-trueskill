@@ -17,7 +17,7 @@ npm install ts-trueskill
 
 ### Use  
 2 vs 2 example:
-```typescript
+```ts
 import { rate, Rating, quality } from 'ts-trueskill';
 const team1 = [new Rating(), new Rating()];
 const team2 = [new Rating(), new Rating()];
@@ -37,7 +37,7 @@ console.log(rated2.toString()) // team 2 went down in rating
 
 1 vs 1 example:  
 using shortcut functions for 1vs1 matches
-```typescript
+```ts
 import { Rating, quality_1vs1, rate_1vs1 } from 'ts-trueskill';
 const p1 = new Rating(40, 4); // 1P's skill
 const p2 = new Rating(10, 4); // 2P's skill
