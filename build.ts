@@ -30,7 +30,7 @@ const moduleInputOptions: InputOptions = {
 };
 const moduleOutputOptions: OutputOptions = {
   ...umdOutputOptions,
-  file: './dist/package-dist/bundles/ts-trueskill.esm5.js',
+  file: './dist/package-dist/bundles/ts-trueskill.es2015.js',
   format: 'es',
 };
 

@@ -3,7 +3,7 @@
   "version": "1.5.0",
   "description": "Port of python trueskill package in TypeScript",
   "main": "./bundles/ts-trueskill.umd.js",
-  "module": "./bundles/ts-trueskill.es5.js",
+  "module": "./bundles/ts-trueskill.es2015.js",
   "typings": "./public_api.d.ts",
   "repository": "https://github.com/scttcper/ts-trueskill.git",
   "author": "Scott Cooper <scttcper@gmail.com>",
