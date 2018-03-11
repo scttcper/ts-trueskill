@@ -48,8 +48,8 @@ function _teamSizes(ratingGroups: Rating[][]) {
  *
  * const env = new TrueSkill(draw_probability=0.60)
  *
- * For more details of the constants, see `The Math Behind TrueSkill`_ by
- * Jeff Moser.
+ * For more details of the constants, see [The Math Behind TrueSkill by
+ * Jeff Moser](http://www.moserware.com/assets/computing-your-skill/The%20Math%20Behind%20TrueSkill.pdf).
  */
 export class TrueSkill {
   sigma!: number;
