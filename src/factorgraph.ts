@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import { v1 as uuid } from 'uuid';
 
 import { SkillGaussian } from './mathematics';
@@ -138,14 +137,14 @@ export class SumFactor extends Factor {
       if (x === index) {
         p = 1.0 / coeff;
       }
-      p = _.isFinite(p) ? p : 0;
+      p = Number.isFinite(p) ? p : 0;
       if (coeff === 0) {
         p = 0;
       }
       x = x + 1;
       return p;
     });
-    const vals = _.clone(this.terms);
+    const vals = [...this.terms];
     vals[index] = this.sum;
     const k = this.toString();
     const msgs: SkillGaussian[] = vals.map((v) => v.messages[k]);
@@ -165,7 +164,7 @@ export class SumFactor extends Factor {
       const coeff = coeffs[i];
       const div = val.div(msg);
       mu += coeff * div.mu;
-      if (!_.isFinite(piInv)) {
+      if (!Number.isFinite(piInv)) {
         continue;
       }
       piInv += coeff ** 2 / div.pi;

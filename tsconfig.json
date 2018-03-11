@@ -9,11 +9,11 @@
     "noImplicitAny": false,
     "strict": true,
     "sourceMap": true,
-    "target": "ES2015",
+    "target": "es5",
     "typeRoots": ["./node_modules/@types"],
     "outDir": "dist/package-dist"
   },
   "files": [
-    "./src/publicApi"
+    "./src/public_api"
   ]
 }

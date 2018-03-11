@@ -7,6 +7,6 @@
     "declaration": false
   },
   "files": [
-    "./src/publicApi"
+    "./src/public_api"
   ]
 }

@@ -1,5 +1,6 @@
-import * as _ from 'lodash';
+import { flatten, zipObject } from 'lodash';
 import * as math from 'mathjs';
+import { Gaussian } from 'ts-gaussian';
 
 import {
   LikelihoodFactor,
@@ -8,7 +9,6 @@ import {
   TruncateFactor,
   Variable,
 } from './factorgraph';
-import Gaussian from './gaussian';
 import { SkillGaussian } from './mathematics';
 import { RotatedAMatrix, VarianceMatrix } from './quality-helper';
 import { Rating } from './rating';
@@ -109,7 +109,7 @@ export class TrueSkill {
       position++;
       return res;
     });
-    const sorting = _.orderBy(positions, (x) => x[1][1]);
+    const sorting = positions.sort((a, b) => a[1][1] - b[1][1]);
     const sortedRatingGroups: Rating[][] = [];
     const sortedRanks: number[] = [];
     const sortedWeights: number[][] = [];
@@ -122,8 +122,8 @@ export class TrueSkill {
       sortedWeights.push(max);
     }
     // build factor graph
-    const flattenRatings = _.flatten(sortedRatingGroups);
-    const flattenWeights = _.flatten(sortedWeights);
+    const flattenRatings = flatten(sortedRatingGroups);
+    const flattenWeights = flatten(sortedWeights);
     const size = flattenRatings.length;
     // create variables
     const fill = Array.from({ length: size }, (z, i) => i);
@@ -168,7 +168,7 @@ export class TrueSkill {
       return unsorting.map((k) => k[1]);
     }
     return unsorting.map((v) => {
-      return _.zipObject(keys[v[0]], v[1]);
+      return zipObject(keys[v[0]], v[1]);
     });
   }
 
@@ -184,8 +184,8 @@ export class TrueSkill {
   quality(ratingGroups: Rating[][], weights?: number[][]) {
     const [newRatingGroups, keys] = this.validateRatingGroups(ratingGroups);
     const newWeights = this.validate_weights(ratingGroups, weights, keys);
-    const flattenRatings = _.flatten(ratingGroups);
-    const flattenWeights = _.flatten(newWeights);
+    const flattenRatings = flatten(ratingGroups);
+    const flattenWeights = flatten(newWeights);
     const length = flattenRatings.length;
     // a vector of all of the skill means
     const meanMatrix = math.matrix(flattenRatings.map((r) => [r.mu]));
@@ -239,9 +239,11 @@ export class TrueSkill {
    * Taken from https://github.com/sublee/trueskill/issues/1
    */
   winProbability(a: Rating[], b: Rating[]) {
-    const deltaMu = _.sumBy(a, 'mu') - _.sumBy(b, _.identity('mu'));
+    const deltaMu =
+      a.reduce((t, cur) => t + cur.mu, 0) - b.reduce((t, cur) => t + cur.mu, 0);
     const sumSigma =
-      _.sum(a.map((x) => x.sigma ** 2)) + _.sum(b.map((x) => x.sigma ** 2));
+      a.reduce((t, n) => n.sigma ** 2 + t, 0) +
+      b.reduce((t, n) => n.sigma ** 2 + t, 0);
     const playerCount = a.length + b.length;
     const denominator = Math.sqrt(
       playerCount * (this.beta * this.beta) + sumSigma,
@@ -315,12 +317,8 @@ export class TrueSkill {
       const keys: string[][] = [];
       const newRatingGroups: Rating[][] = [];
       for (const dictRatingGroup of ratingGroups) {
-        const ratingGroup: Rating[] = [];
-        const keyGroup: string[] = [];
-        _.forEach(dictRatingGroup, (rating: Rating, key: string) => {
-          ratingGroup.push(rating);
-          keyGroup.push(key);
-        });
+        const keyGroup: string[] = Object.keys(dictRatingGroup);
+        const ratingGroup: Rating[] = keyGroup.map((n) => dictRatingGroup[n]);
         newRatingGroups.push(ratingGroup);
         keys.push(keyGroup);
       }
@@ -393,7 +391,11 @@ export class TrueSkill {
       // static draw probability
       const drawProbability = this.drawProbability;
       const lengths = sortedRatingGroups.slice(x, x + 2).map((n) => n.length);
-      const drawMargin = calcDrawMargin(drawProbability, _.sum(lengths), this);
+      const drawMargin = calcDrawMargin(
+        drawProbability,
+        lengths.reduce((t, n) => t + n, 0),
+        this,
+      );
       let vFunc = (a: number, b: number) => this.v_win(a, b);
       let wFunc = (a: number, b: number) => this.w_win(a, b);
       if (sortedRanks[x] === sortedRanks[x + 1]) {

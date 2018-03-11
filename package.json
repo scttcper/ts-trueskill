@@ -8,6 +8,7 @@
   "repository": "https://github.com/scttcper/ts-trueskill.git",
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
+  "sideEffects": false,
   "scripts": {
     "benchmark": "npm run build; tsc -p benchmark; node benchmark-out/benchmark",
     "lint": "tslint -p tsconfig.json -t codeFrame 'src/**/*.ts' 'test/**/*.ts'",
@@ -25,10 +26,10 @@
     "semantic-release": "cd dist/package-dist && semantic-release"
   },
   "dependencies": {
-    "gaussian": "^1.1.0",
-    "mathjs": "^4.0.0",
-    "tslib": "^1.9.0",
     "lodash": "^4.17.5",
+    "mathjs": "^4.0.0",
+    "ts-gaussian": "^1.0.3",
+    "tslib": "^1.9.0",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
@@ -36,10 +37,10 @@
     "@commitlint/config-conventional": "^6.1.3",
     "@types/benchmark": "^1.0.31",
     "@types/fs-extra": "^5.0.1",
-    "@types/jest": "^22.1.4",
+    "@types/jest": "^22.2.0",
     "@types/lodash": "^4.14.104",
     "@types/mathjs": "^0.0.38",
-    "@types/node": "^9.4.6",
+    "@types/node": "^9.4.7",
     "@types/uuid": "^3.4.3",
     "benchmark": "^2.1.4",
     "commitizen": "^2.9.6",
@@ -50,16 +51,16 @@
     "lint-staged": "^7.0.0",
     "prettier": "^1.11.1",
     "rimraf": "^2.6.2",
-    "rollup": "^0.56.4",
+    "rollup": "^0.56.5",
     "rollup-plugin-sourcemaps": "^0.4.2",
-    "semantic-release": "^15.0.0",
-    "travis-deploy-once": "^4.3.4",
+    "semantic-release": "^15.0.2",
+    "travis-deploy-once": "^4.4.0",
     "ts-jest": "^22.4.1",
     "ts-node": "^5.0.1",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.9.0",
     "tslint-config-standard": "^7.0.0",
-    "typedoc": "^0.11.0",
+    "typedoc": "^0.11.1",
     "typescript": "^2.7.2"
   },
   "release": {
@@ -101,14 +102,6 @@
       "<rootDir>/node_modules/",
       "<rootDir>/test/"
     ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 80,
-        "functions": 80,
-        "lines": 80,
-        "statements": -10
-      }
-    },
     "collectCoverage": true
   },
   "keywords": [

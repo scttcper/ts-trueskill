@@ -1,16 +1,15 @@
-import * as _ from 'lodash';
+import { flatten, merge } from 'lodash';
 
 import {
   quality,
   quality_1vs1,
   rate,
   rate_1vs1,
-  setup,
   winProbability,
-  Gaussian,
   Rating,
+  SkillGaussian,
   TrueSkill,
-} from '../src/publicApi';
+} from '../src/public_api';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map((size) => {
@@ -27,7 +26,7 @@ function generateIndividual(size: number) {
 }
 
 function compareRating(result: Rating[][], expected: number[][]) {
-  const res = _.flatten(result);
+  const res = flatten(result);
   expect(result).toBeInstanceOf(Array);
   for (let team = 0; team < res.length; team++) {
     expect(res[team].mu).toBeCloseTo(expected[team][0], 0.01);
@@ -343,7 +342,7 @@ describe('TrueSkill', function() {
     ]);
     let r: any = {};
     rated.forEach((n) => {
-      r = _.merge(r, n);
+      r = merge(r, n);
     });
     expect(r.alice.mu).toBeCloseTo(36.771, 0.001);
     expect(r.alice.sigma).toBeCloseTo(5.749, 0.001);
@@ -375,9 +374,9 @@ describe('TrueSkill', function() {
 
 describe('Gaussian', function() {
   it('should test valid gaussian', function() {
-    const fn = () => new Gaussian(0);
+    const fn = () => new SkillGaussian(0);
     expect(fn).toThrow(TypeError);
-    const fn1 = () => new Gaussian(0, 0);
+    const fn1 = () => new SkillGaussian(0, 0);
     expect(fn1).toThrow(Error);
   });
 });
