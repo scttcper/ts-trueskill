@@ -7,6 +7,7 @@
     "semicolon": [true, "always"],
     "quotemark": [true, "single", "avoid-escape"],
     "no-use-before-declare": false,
+    "strict-type-predicates": false,
     "ordered-imports": [
       true,
       {
