@@ -70,13 +70,13 @@ export class TrueSkill {
     public drawProbability: number = 0.1,
     public guassian = new Gaussian(0, 1),
   ) {
-    if (sigma === undefined) {
+    if (sigma === undefined || sigma === null) {
       this.sigma = mu / 3;
     }
-    if (beta === undefined) {
+    if (beta === undefined || beta === null) {
       this.beta = this.sigma / 2;
     }
-    if (tau === undefined) {
+    if (tau === undefined || tau === null) {
       this.tau = this.sigma / 100;
     }
   }
