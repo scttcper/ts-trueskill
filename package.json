@@ -26,10 +26,9 @@
     "semantic-release": "cd dist/package-dist && semantic-release"
   },
   "dependencies": {
-    "lodash": "^4.17.5",
-    "mathjs": "^4.0.0",
-    "ts-gaussian": "^1.0.4",
-    "tslib": "^1.9.0",
+    "lodash": "^4.17.10",
+    "mathjs": "^4.1.2",
+    "ts-gaussian": "^1.1.0",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
@@ -38,9 +37,9 @@
     "@types/benchmark": "1.0.31",
     "@types/fs-extra": "5.0.2",
     "@types/jest": "22.2.3",
-    "@types/lodash": "4.14.107",
+    "@types/lodash": "4.14.108",
     "@types/mathjs": "3.20.0",
-    "@types/node": "9.6.5",
+    "@types/node": "9.6.6",
     "@types/uuid": "3.4.3",
     "benchmark": "2.1.4",
     "commitizen": "2.9.6",
@@ -48,20 +47,20 @@
     "fs-extra": "5.0.0",
     "husky": "0.15.0-rc.13",
     "jest": "22.4.3",
-    "lint-staged": "7.0.4",
+    "lint-staged": "7.0.5",
     "prettier": "1.12.1",
     "rimraf": "2.6.2",
-    "rollup": "0.58.0",
+    "rollup": "0.58.2",
     "rollup-plugin-sourcemaps": "0.4.2",
     "semantic-release": "15.1.7",
     "travis-deploy-once": "4.4.1",
-    "ts-jest": "22.4.3",
-    "ts-node": "5.0.1",
+    "ts-jest": "22.4.4",
+    "ts-node": "6.0.1",
     "tslint": "5.9.1",
-    "tslint-config-prettier": "1.10.0",
+    "tslint-config-prettier": "1.12.0",
     "tslint-config-standard": "7.0.0",
     "typedoc": "0.11.1",
-    "typescript": "2.8.1"
+    "typescript": "2.8.3"
   },
   "release": {
     "branch": "master"
