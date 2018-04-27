@@ -4,40 +4,27 @@ import { copySync } from 'fs-extra';
 import { rollup, OutputOptions, RollupFileOptions } from 'rollup';
 import * as sourceMaps from 'rollup-plugin-sourcemaps';
 
-// UMD input output
-const umdInputOptions: RollupFileOptions = {
-  input: `dist/umd/public_api.js`,
+// ESM5 input output
+const moduleInputOptions: RollupFileOptions = {
+  input: `dist/esm5/public_api.js`,
   external: ['tslib', 'ts-gaussian', 'mathjs', 'uuid', 'lodash'],
   plugins: [sourceMaps()],
 };
-const umdOutputOptions: OutputOptions = {
-  file: './dist/package-dist/bundles/ts-trueskill.umd.js',
+const moduleOutputOptions: OutputOptions = {
+  file: './dist/package-dist/bundles/ts-trueskill.es2015.js',
+  format: 'es',
   name: 'trueskill',
   globals: {
-    tslib: 'tslib',
     lodash: '_',
     uuid: 'uuid',
     mathjs: 'math',
     'ts-gaussian': 'gaussian',
   },
-  format: 'umd',
   sourcemap: true,
-};
-// ESM5 input output
-const moduleInputOptions: RollupFileOptions = {
-  ...umdInputOptions,
-  input: `dist/esm5/public_api.js`,
-};
-const moduleOutputOptions: OutputOptions = {
-  ...umdOutputOptions,
-  file: './dist/package-dist/bundles/ts-trueskill.es2015.js',
-  format: 'es',
 };
 
 async function build() {
-  // create bundles
-  const umd = await rollup(umdInputOptions);
-  await umd.write(umdOutputOptions);
+  // create bundle
   const mod = await rollup(moduleInputOptions);
   await mod.write(moduleOutputOptions);
 
