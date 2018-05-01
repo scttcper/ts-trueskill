@@ -13,7 +13,6 @@ const moduleInputOptions: RollupFileOptions = {
 const moduleOutputOptions: OutputOptions = {
   file: './dist/package-dist/bundles/ts-trueskill.es2015.js',
   format: 'es',
-  name: 'trueskill',
   globals: {
     lodash: '_',
     uuid: 'uuid',
