@@ -39,7 +39,7 @@
     "@types/jest": "22.2.3",
     "@types/lodash": "4.14.109",
     "@types/mathjs": "3.20.0",
-    "@types/node": "9.6.8",
+    "@types/node": "9.6.20",
     "@types/uuid": "3.4.3",
     "benchmark": "2.1.4",
     "commitizen": "2.9.6",
