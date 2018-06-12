@@ -43,9 +43,9 @@ function _teamSizes(ratingGroups: Rating[][]) {
  * customize TrueSkill constants.
  *
  * For example, 60% of matches in your game have finished as draw then you
- * should set ``draw_probability`` to 0.60::
+ * should set ``draw_probability`` to 0.60
  *
- * const env = new TrueSkill(draw_probability=0.60)
+ * const env = new TrueSkill(undefined, undefined, undefined, undefined, 0.6);
  *
  * For more details of the constants, see [The Math Behind TrueSkill by
  * Jeff Moser](http://www.moserware.com/assets/computing-your-skill/The%20Math%20Behind%20TrueSkill.pdf).
