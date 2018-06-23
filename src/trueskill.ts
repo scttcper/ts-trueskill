@@ -1,5 +1,5 @@
 import { flatten, zipObject } from 'lodash';
-import * as math from 'mathjs';
+import { add, det, exp, inv, matrix, multiply, sqrt, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
 
 import {
@@ -187,31 +187,25 @@ export class TrueSkill {
     const flattenWeights = flatten(newWeights);
     const length = flattenRatings.length;
     // a vector of all of the skill means
-    const meanMatrix = math.matrix(flattenRatings.map((r) => [r.mu]));
+    const meanMatrix = matrix(flattenRatings.map((r) => [r.mu]));
     const varianceMatrix = VarianceMatrix(flattenRatings, length, length);
     const rotatedAMatrix = RotatedAMatrix(newRatingGroups, flattenWeights);
-    const aMatrix = math.transpose(rotatedAMatrix);
+    const aMatrix = transpose(rotatedAMatrix);
     // match quality further derivation
     const modifiedRotatedAMatrix = rotatedAMatrix.map(
       (value, index, matrix) => this.beta ** 2 * value,
     );
-    const start = math.multiply(math.transpose(meanMatrix), aMatrix);
-    const ata = math.multiply(modifiedRotatedAMatrix, aMatrix);
-    const atsa = math.multiply(
-      rotatedAMatrix,
-      math.multiply(varianceMatrix, aMatrix),
-    );
-    const middle: any = math.add(ata, atsa);
-    const end = math.multiply(rotatedAMatrix, meanMatrix);
+    const start = multiply(transpose(meanMatrix), aMatrix);
+    const ata = multiply(modifiedRotatedAMatrix, aMatrix);
+    const atsa = multiply(rotatedAMatrix, multiply(varianceMatrix, aMatrix));
+    const middle: any = add(ata, atsa);
+    const end = multiply(rotatedAMatrix, meanMatrix);
     // make result
-    const eArg = math.det(
-      math.multiply(
-        math.multiply([[-0.5]], math.multiply(start, math.inv(middle))),
-        end,
-      ),
+    const eArg = det(
+      multiply(multiply([[-0.5]], multiply(start, inv(middle))), end),
     );
-    const sArg = math.det(ata) / math.det(middle);
-    return math.exp(eArg) * math.sqrt(sArg);
+    const sArg = det(ata) / det(middle);
+    return exp(eArg) * sqrt(sArg);
   }
 
   /**

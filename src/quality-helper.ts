@@ -1,4 +1,4 @@
-import * as math from 'mathjs';
+import { matrix as mMatrix } from 'mathjs';
 
 import { Rating } from './rating';
 
@@ -7,7 +7,7 @@ export function VarianceMatrix(
   height: number,
   width: number,
 ) {
-  const matrix = math.matrix().resize([height, width]);
+  const matrix = mMatrix().resize([height, width]);
   const variances = flattenRatings.map((r) => r.sigma ** 2);
   for (let i = 0; i < variances.length; i++) {
     matrix.set([i, i], variances[i]);
@@ -21,7 +21,7 @@ export function RotatedAMatrix(
 ) {
   let t = 0;
   let r = 0;
-  const matrix = math.matrix();
+  const matrix = mMatrix();
   for (let i = 0; i < newRatingGroups.length - 1; i++) {
     const setter = Array.from(
       { length: newRatingGroups[i].length },
