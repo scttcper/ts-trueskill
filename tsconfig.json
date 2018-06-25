@@ -1,16 +1,15 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "declaration": true,
     "lib": ["es2017"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noImplicitAny": false,
-    "strict": true,
-    "sourceMap": true,
     "target": "es2015",
-    "typeRoots": ["./node_modules/@types"],
-    "outDir": "dist/package-dist"
+    "module": "commonjs",
+    "strict": true,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "declaration": true,
+    "outDir": "./dist",
+    "sourceMap": true
   },
   "files": [
     "./src/public_api"

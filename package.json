@@ -13,9 +13,10 @@
     "benchmark": "npm run build; tsc -p benchmark; node benchmark-out/benchmark",
     "lint": "tslint -p tsconfig.json -t stylish 'src/**/*.ts' 'test/**/*.ts'",
     "lint:fix": "tslint -p tsconfig.json -t stylish --fix 'src/**/*.ts' 'test/**/*.ts'",
-    "lint-staged": "lint-staged",
     "prebuild": "rimraf dist",
-    "build": "tsc -p tsconfig.json && tsc -p tsconfig.esm.json && ts-node ./build.ts",
+    "build": "npm run build-es6; npm run build-cmjs; ts-node build",
+    "build-es6": "tsc -P ./tsconfig-build.json --outDir 'dist/es' --module es2015 -d false --moduleResolution node",
+    "build-cmjs": "tsc -P ./tsconfig-build.json",
     "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file src && touch docs/.nojekyll",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -27,7 +28,7 @@
   "dependencies": {
     "lodash": "^4.17.10",
     "mathjs": "^5.0.0",
-    "ts-gaussian": "^1.1.1",
+    "ts-gaussian": "^1.1.3",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
@@ -44,8 +45,6 @@
     "fs-extra": "6.0.1",
     "jest": "23.1.0",
     "rimraf": "2.6.2",
-    "rollup": "0.61.1",
-    "rollup-plugin-sourcemaps": "0.4.2",
     "semantic-release": "15.6.0",
     "travis-deploy-once": "5.0.0",
     "ts-jest": "22.4.6",
