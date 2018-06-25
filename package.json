@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Port of python trueskill package in TypeScript",
   "main": "./public_api.js",
-  "module": "./bundles/ts-trueskill.es2015.js",
+  "module": "./es/public_api.js",
   "typings": "./public_api.d.ts",
   "sideEffects": false,
   "repository": "scttcper/ts-trueskill",
