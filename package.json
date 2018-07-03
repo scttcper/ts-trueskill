@@ -23,7 +23,7 @@
     "test:prod": "npm run test -- --coverage --no-cache",
     "commit": "git-cz",
     "travis-deploy-once": "travis-deploy-once",
-    "semantic-release": "cd dist/package-dist && semantic-release"
+    "semantic-release": "cd dist && semantic-release"
   },
   "dependencies": {
     "lodash": "^4.17.10",
