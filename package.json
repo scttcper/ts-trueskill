@@ -66,17 +66,10 @@
   "jest": {
     "testURL": "http://localhost",
     "transform": {
-      ".ts": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      ".ts": "ts-jest"
     },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "<rootDir>/test/"
-    ],
+    "testRegex": "(/test/.*|\\.(spec))\\.ts$",
+    "moduleFileExtensions": ["ts", "js"],
     "collectCoverage": true
   },
   "keywords": [
