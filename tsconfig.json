@@ -3,19 +3,17 @@
   "compilerOptions": {
     "lib": ["es2017"],
     "target": "es2015",
-    "module": "commonjs",
+    "module": "es2015",
     "strict": true,
     "noImplicitAny": false,
-    "noUnusedLocals": false,
-    "declaration": true,
-    "outDir": "./dist",
     "sourceMap": true
   },
   "files": [
     "./src/public_api"
   ],
 	"typedocOptions": {
-		"out": "docs",
+    "out": "docs",
+    "entryPoint": "TrueSkill",
 		"mode": "file",
 		"target": "ES6",
 		"module": "commonjs",
@@ -30,5 +28,9 @@
 		"theme": "minimal",
 		"hideGenerator": true,
 		"readme": "none"
-	}
+  },
+  "exclude": [
+		"node_modules",
+		"dist"
+	]
 }

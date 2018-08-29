@@ -1,34 +1,36 @@
 {
   "name": "ts-trueskill",
-  "version": "0.0.0",
+  "version": "0.0.0-placeholder",
   "description": "Port of python trueskill package in TypeScript",
-  "main": "./public_api.js",
-  "module": "./es/public_api.js",
-  "typings": "./public_api.d.ts",
+  "source": "src/public_api.ts",
+  "main": "./dist/trueskill.js",
+  "module": "./dist/trueskill.m.js",
+  "typings": "./dist/public_api.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "sideEffects": false,
   "repository": "scttcper/ts-trueskill",
   "author": "Scott Cooper <scttcper@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "benchmark": "npm run build; tsc -p benchmark; node benchmark-out/benchmark",
+    "benchmark": "ts-node -P ./benchmark/tsconfig.json benchmark/index.ts",
     "lint": "tslint -p tsconfig.json -t stylish 'src/**/*.ts' 'test/**/*.ts'",
     "lint:fix": "tslint -p tsconfig.json -t stylish --fix 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
-    "build": "npm run build-es6; npm run build-cmjs; ts-node build",
-    "build-es6": "tsc -P ./tsconfig-build.json --outDir 'dist/es' --module es2015 -d false --moduleResolution node",
-    "build-cmjs": "tsc -P ./tsconfig-build.json",
+    "build": "microbundle build --compress false --name=trueskill --format cjs,es --target node",
     "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file src && touch docs/.nojekyll",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:prod": "npm run test -- --coverage --no-cache",
     "commit": "git-cz",
     "travis-deploy-once": "travis-deploy-once",
-    "semantic-release": "cd dist && semantic-release"
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "lodash": "^4.17.10",
-    "mathjs": "^5.0.4",
-    "ts-gaussian": "^1.1.4",
+    "mathjs": "^5.1.1",
+    "ts-gaussian": "^1.1.5",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
@@ -37,22 +39,22 @@
     "@types/jest": "23.3.1",
     "@types/lodash": "4.14.116",
     "@types/mathjs": "4.4.1",
-    "@types/node": "10.5.5",
+    "@types/node": "10.9.3",
     "@types/uuid": "3.4.3",
     "benchmark": "2.1.4",
     "commitizen": "2.10.1",
     "cz-conventional-changelog": "2.1.0",
-    "fs-extra": "7.0.0",
-    "jest": "23.4.2",
+    "jest": "23.5.0",
+    "microbundle": "^0.6.0",
     "rimraf": "2.6.2",
-    "semantic-release": "15.9.3",
-    "travis-deploy-once": "5.0.1",
-    "ts-jest": "23.1.2",
-    "ts-node": "7.0.0",
+    "semantic-release": "15.9.12",
+    "travis-deploy-once": "5.0.4",
+    "ts-jest": "23.1.4",
+    "ts-node": "7.0.1",
     "tslint": "5.11.0",
-    "tslint-config-prettier": "1.14.0",
+    "tslint-config-prettier": "1.15.0",
     "tslint-config-standard": "7.1.0",
-    "typedoc": "0.11.1",
+    "typedoc": "0.12.0",
     "typescript": "3.0.1"
   },
   "release": {
@@ -69,7 +71,10 @@
       ".ts": "ts-jest"
     },
     "testRegex": "(/test/.*|\\.(spec))\\.ts$",
-    "moduleFileExtensions": ["ts", "js"],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
     "collectCoverage": true
   },
   "keywords": [

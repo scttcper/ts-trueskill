@@ -1,8 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../benchmark-out",
-    "baseUrl": ""
+    "module": "commonjs"
   },
   "include": ["./*"]
 }
