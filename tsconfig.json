@@ -32,5 +32,9 @@
   "exclude": [
 		"node_modules",
 		"dist"
-	]
+	],
+  "include": [
+    "./src/**/*.ts",
+    "./test/**/*.ts"
+  ]
 }
