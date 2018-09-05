@@ -3,12 +3,9 @@
   "version": "0.0.0-placeholder",
   "description": "Port of python trueskill package in TypeScript",
   "source": "src/public_api.ts",
-  "main": "./dist/trueskill.js",
-  "module": "./dist/trueskill.m.js",
-  "typings": "./dist/public_api.d.ts",
-  "files": [
-    "dist/*"
-  ],
+  "main": "./ts-trueskill.js",
+  "module": "./ts-trueskill.m.js",
+  "typings": "./public_api.d.ts",
   "sideEffects": false,
   "repository": "scttcper/ts-trueskill",
   "author": "Scott Cooper <scttcper@gmail.com>",
@@ -18,19 +15,20 @@
     "lint": "tslint -p tsconfig.json -t stylish 'src/**/*.ts' 'test/**/*.ts'",
     "lint:fix": "tslint -p tsconfig.json -t stylish --fix 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
-    "build": "microbundle build --compress false --name=trueskill --format cjs,es --target node",
+    "build": "microbundle build --compress false --format cjs,es --target node -o dist",
     "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file src && touch docs/.nojekyll",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:prod": "npm run test -- --coverage --no-cache",
     "commit": "git-cz",
     "travis-deploy-once": "travis-deploy-once",
-    "semantic-release": "semantic-release"
+    "presemantic-release": "cp package.json dist && cp LICENSE dist && cp README.md dist",
+    "semantic-release": "cd dist && semantic-release"
   },
   "dependencies": {
     "lodash": "^4.17.10",
     "mathjs": "^5.1.1",
-    "ts-gaussian": "^1.1.5",
+    "ts-gaussian": "^1.1.9",
     "uuid": "^3.3.2"
   },
   "devDependencies": {

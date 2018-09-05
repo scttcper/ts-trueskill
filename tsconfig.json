@@ -9,7 +9,7 @@
     "sourceMap": true
   },
   "files": [
-    "./src/public_api"
+    "./src/public_api.ts"
   ],
 	"typedocOptions": {
     "out": "docs",
@@ -28,13 +28,5 @@
 		"theme": "minimal",
 		"hideGenerator": true,
 		"readme": "none"
-  },
-  "exclude": [
-		"node_modules",
-		"dist"
-	],
-  "include": [
-    "./src/**/*.ts",
-    "./test/**/*.ts"
-  ]
+  }
 }
