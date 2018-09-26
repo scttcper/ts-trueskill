@@ -7,11 +7,9 @@
     "module": "es2015",
     "strict": true,
     "noImplicitAny": false,
+    "esModuleInterop": true,
     "sourceMap": true
   },
-  "files": [
-    "./src/public_api.ts"
-  ],
 	"typedocOptions": {
     "out": "docs",
     "entryPoint": "TrueSkill",

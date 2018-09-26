@@ -1,5 +1,5 @@
 import { flatten, zipObject } from 'lodash';
-import { add, det, exp, inv, matrix, multiply, sqrt, transpose } from 'mathjs';
+import { add, det, exp, inv, matrix, multiply, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
 
 import {
@@ -205,7 +205,7 @@ export class TrueSkill {
       multiply(multiply([[-0.5]], multiply(start, inv(middle))), end),
     );
     const sArg = det(ata) / det(middle);
-    return exp(eArg) * sqrt(sArg);
+    return exp(eArg) * Math.sqrt(sArg);
   }
 
   /**
