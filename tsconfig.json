@@ -12,7 +12,6 @@
   },
   "typedocOptions": {
     "out": "docs",
-    "entryPoint": "TrueSkill",
     "mode": "file",
     "target": "ES6",
     "module": "commonjs",
