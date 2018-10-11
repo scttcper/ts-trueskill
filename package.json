@@ -5,7 +5,7 @@
   "source": "src/public_api.ts",
   "main": "./ts-trueskill.js",
   "module": "./ts-trueskill.m.js",
-  "typings": "./public_api.d.ts",
+  "typings": "./src/public_api.d.ts",
   "sideEffects": false,
   "repository": "scttcper/ts-trueskill",
   "author": "Scott Cooper <scttcper@gmail.com>",
@@ -22,7 +22,7 @@
     "test:prod": "npm run test -- --coverage --no-cache",
     "commit": "git-cz",
     "travis-deploy-once": "travis-deploy-once",
-    "presemantic-release": "cp package.json dist && cp LICENSE dist && cp README.md dist",
+    "presemantic-release": "cp package.json dist && cp LICENSE dist && cp README.md dist && rimraf dist/test dist/benchmark",
     "semantic-release": "cd dist && semantic-release"
   },
   "dependencies": {
