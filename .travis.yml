@@ -11,11 +11,9 @@ after_success:
   - npm run build:docs
 deploy:
   provider: pages
-  edge:
-    branch: pages-ivar-set
-  skip_cleanup: true
-  local_dir: docs
-  github_token: $GH_TOKEN
+  skip-cleanup: true
+  local-dir: docs
+  github-token: $GH_TOKEN
   on:
     branch: master
 notifications:
