@@ -2,19 +2,21 @@
  * A model for the normal distribution.
  */
 export class SkillGaussian {
+  /**
+   * @param pi - Precision, the inverse of the variance.
+   * @param tau - Precision adjusted mean, the precision multiplied by the mean
+   */
   constructor(
     mu: number | null = null,
     sigma: number | null = null,
-    /** Precision, the inverse of the variance. */
     public pi = 0,
-    /** Precision adjusted mean, the precision multiplied by the mean. */
     public tau = 0,
   ) {
-    // console.log('GAUSSIAN', mu, sigma, pi, tau)
     if (mu !== null) {
       if (sigma === null) {
         throw new TypeError('sigma argument is needed');
-      } else if (sigma === 0) {
+      }
+      if (sigma === 0) {
         throw new Error('sigma**2 should be greater than 0');
       }
       pi = sigma ** -2;
@@ -24,7 +26,9 @@ export class SkillGaussian {
     this.tau = tau;
   }
 
-  /** A property which returns the mean. */
+  /**
+   * A property which returns the mean.
+   */
   get mu() {
     return this.pi && this.tau / this.pi;
   }

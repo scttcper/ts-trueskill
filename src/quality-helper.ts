@@ -25,7 +25,7 @@ export function RotatedAMatrix(
   for (let i = 0; i < newRatingGroups.length - 1; i++) {
     const setter = Array.from(
       { length: newRatingGroups[i].length },
-      (m, n) => n + t,
+      (_, n) => n + t,
     ).map((z) => {
       matrix.set([r, z], flattenWeights[z]);
       t += 1;

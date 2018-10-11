@@ -58,7 +58,8 @@ export class Variable extends SkillGaussian {
 }
 
 export class Factor {
-  private uuid: string;
+  readonly uuid: string;
+
   constructor(public vars: Variable[]) {
     this.uuid = uuid();
     const k = this.toString();
@@ -83,7 +84,7 @@ export class Factor {
 }
 
 export class PriorFactor extends Factor {
-  constructor(v: Variable, private val: Rating, private dynamic = 0) {
+  constructor(v: Variable, readonly val: Rating, readonly dynamic = 0) {
     super([v]);
   }
   down() {
@@ -95,14 +96,14 @@ export class PriorFactor extends Factor {
 
 export class LikelihoodFactor extends Factor {
   constructor(
-    private mean: Variable,
-    private value: Variable,
-    private variance: number,
+    readonly mean: Variable,
+    readonly value: Variable,
+    readonly variance: number,
   ) {
     super([mean, value]);
   }
   calc_a(v: SkillGaussian) {
-    return 1.0 / (1.0 + this.variance * v.pi);
+    return 1.0 / (this.variance * v.pi + 1.0);
   }
   down() {
     const msg = this.mean.div(this.mean.messages[this.toString()]);
@@ -118,15 +119,15 @@ export class LikelihoodFactor extends Factor {
 
 export class SumFactor extends Factor {
   constructor(
-    private sum: Variable,
-    private terms: Variable[],
-    private coeffs: number[],
+    readonly sum: Variable,
+    readonly terms: Variable[],
+    readonly coeffs: number[],
   ) {
     super([sum].concat(terms));
   }
   down() {
     const k = this.toString();
-    const msgs: SkillGaussian[] = this.terms.map((v) => v.messages[k]);
+    const msgs = this.terms.map((v) => v.messages[k]);
     return this.update(this.sum, this.terms, msgs, this.coeffs);
   }
   up(index = 0) {
@@ -147,7 +148,7 @@ export class SumFactor extends Factor {
     const vals = [...this.terms];
     vals[index] = this.sum;
     const k = this.toString();
-    const msgs: SkillGaussian[] = vals.map((v) => v.messages[k]);
+    const msgs = vals.map((v) => v.messages[k]);
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
   update(
@@ -178,9 +179,9 @@ export class SumFactor extends Factor {
 export class TruncateFactor extends Factor {
   constructor(
     v: Variable,
-    private vFunc: (a: number, b: number) => number,
-    private wFunc: (a: number, b: number) => number,
-    private drawMargin: number,
+    readonly vFunc: (a: number, b: number) => number,
+    readonly wFunc: (a: number, b: number) => number,
+    readonly drawMargin: number,
   ) {
     super([v]);
   }

@@ -1,20 +1,11 @@
 {
   "extends": [
-    "tslint-config-standard",
+    "tslint-xo/space",
     "tslint-config-prettier"
   ],
   "rules": {
     "semicolon": [true, "always"],
-    "quotemark": [true, "single", "avoid-escape"],
-    "no-use-before-declare": false,
-    "strict-type-predicates": false,
-    "ordered-imports": [
-      true,
-      {
-        "import-sources-order": "lowercase-last",
-        "named-imports-order": "lowercase-first"
-      }
-    ],
-    "no-unused-variable": true
+    "no-parameter-reassignment": false,
+    "strict-type-predicates": false
   }
 }

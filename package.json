@@ -12,8 +12,8 @@
   "license": "MIT",
   "scripts": {
     "benchmark": "ts-node -P ./benchmark/tsconfig.json benchmark/index.ts",
-    "lint": "tslint -p tsconfig.json -t stylish 'src/**/*.ts' 'test/**/*.ts'",
-    "lint:fix": "tslint -p tsconfig.json -t stylish --fix 'src/**/*.ts' 'test/**/*.ts'",
+    "lint": "tslint -p tsconfig.json -t stylish",
+    "lint:fix": "tslint -p tsconfig.json -t stylish --fix",
     "prebuild": "rimraf dist",
     "build": "microbundle build --compress false --format cjs,es --target node -o dist",
     "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file src && touch docs/.nojekyll",
@@ -27,33 +27,34 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
-    "mathjs": "^5.1.2",
+    "mathjs": "^5.2.0",
     "ts-gaussian": "^1.1.9",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/benchmark": "1.0.31",
     "@types/fs-extra": "5.0.4",
-    "@types/jest": "23.3.2",
-    "@types/lodash": "4.14.116",
+    "@types/jest": "23.3.5",
+    "@types/lodash": "4.14.117",
     "@types/mathjs": "4.4.1",
-    "@types/node": "10.11.0",
+    "@types/node": "10.11.7",
     "@types/uuid": "3.4.4",
     "benchmark": "2.1.4",
-    "commitizen": "2.10.1",
+    "commitizen": "3.0.2",
     "cz-conventional-changelog": "2.1.0",
     "jest": "23.6.0",
     "microbundle": "0.6.0",
     "rimraf": "2.6.2",
-    "semantic-release": "15.9.16",
-    "travis-deploy-once": "5.0.8",
-    "ts-jest": "23.10.1",
+    "semantic-release": "15.9.17",
+    "travis-deploy-once": "5.0.9",
+    "ts-jest": "23.10.4",
     "ts-node": "7.0.1",
     "tslint": "5.11.0",
     "tslint-config-prettier": "1.15.0",
     "tslint-config-standard": "8.0.1",
-    "typedoc": "0.12.0",
-    "typescript": "3.0.3"
+    "tslint-xo": "^0.9.0",
+    "typedoc": "0.13.0",
+    "typescript": "3.1.2"
   },
   "release": {
     "branch": "master"
@@ -64,15 +65,7 @@
     }
   },
   "jest": {
-    "testURL": "http://localhost",
-    "transform": {
-      ".ts": "ts-jest"
-    },
-    "testRegex": "(/test/.*|\\.(spec))\\.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
+    "preset": "ts-jest",
     "collectCoverage": true
   },
   "keywords": [

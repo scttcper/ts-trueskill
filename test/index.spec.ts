@@ -34,8 +34,8 @@ function compareRating(result: Rating[][], expected: number[][]) {
   }
 }
 
-describe('TrueSkill', function() {
-  it('should create rating', function() {
+describe('TrueSkill', () => {
+  it('should create rating', () => {
     const [team1, team2] = generateTeams([5, 5]);
     const rated = rate([team1, team2]);
     expect(rated.length).toEqual(2);
@@ -44,12 +44,12 @@ describe('TrueSkill', function() {
     expect(rated[0].length).toEqual(5);
     expect(rated[1].length).toEqual(5);
   });
-  it('should rate unsorted groups', function() {
+  it('should rate unsorted groups', () => {
     const [t1, t2, t3] = generateTeams([1, 1, 1]);
     const rated = rate([t1, t2, t3], [2, 1, 0]);
     compareRating(rated, [[18.325, 6.656], [25.0, 6.208], [31.675, 6.656]]);
   });
-  it('should test n vs n', function() {
+  it('should test n vs n', () => {
     // 1 vs 1
     let teams = generateTeams([1, 1]);
     expect(quality(teams)).toBeCloseTo(0.447, 0.01);
@@ -86,7 +86,7 @@ describe('TrueSkill', function() {
       [22.802, 8.059],
     ]);
   });
-  it('should test 1 vs n', function() {
+  it('should test 1 vs n', () => {
     const [t1] = generateTeams([1]);
     // 1 vs 2
     let [t2] = generateTeams([2]);
@@ -136,7 +136,7 @@ describe('TrueSkill', function() {
       [9.418, 7.917],
     ]);
   });
-  it('should test individual', function() {
+  it('should test individual', () => {
     // 3 players
     let players = generateIndividual(3);
     expect(quality(players)).toBeCloseTo(0.2, 0.001);
@@ -203,7 +203,7 @@ describe('TrueSkill', function() {
       [9.461, 5.276],
     ]);
   });
-  it('should test multiple teams', function() {
+  it('should test multiple teams', () => {
     // 2 vs 4 vs 2
     let t1 = [new Rating(40, 4), new Rating(45, 3)];
     let t2 = [
@@ -230,7 +230,7 @@ describe('TrueSkill', function() {
     t3 = [new Rating()];
     expect(quality([t1, t2, t3])).toBeCloseTo(0.047, 0.001);
   });
-  it('should test upset', function() {
+  it('should test upset', () => {
     // 1 vs 1
     let t1 = [new Rating()];
     let t2 = [new Rating(50, 12.5)];
@@ -287,13 +287,13 @@ describe('TrueSkill', function() {
       [44.118, 0.983],
     ]);
   });
-  it('should test winProbability', function() {
+  it('should test winProbability', () => {
     // 1 vs 1
     const t1 = [new Rating()];
     const t2 = [new Rating(50, 12.5)];
     expect(winProbability(t1, t2)).toBeCloseTo(0.06, 0.001);
   });
-  it('should test partial play', function() {
+  it('should test partial play', () => {
     const t1 = [new Rating()];
     const t2 = [new Rating(), new Rating()];
     expect(rate([t1, t2], null, [[1], [1, 1]])).toEqual(rate([t1, t2]));
@@ -317,7 +317,7 @@ describe('TrueSkill', function() {
       [21.291, 8.033],
       [17.583, 7.056],
     ]);
-    // match quality of partial play
+    // Match quality of partial play
     const t3 = [new Rating()];
     expect(quality([t1, t2, t3], [[1], [0.25, 0.75], [1]])).toBeCloseTo(
       0.2,
@@ -328,8 +328,8 @@ describe('TrueSkill', function() {
       0.001,
     );
   });
-  it('should test microsoft reasearch example', function() {
-    // http://research.microsoft.com/en-us/projects/trueskill/details.aspx
+  it('should test microsoft reasearch example', () => {
+    // Http://research.microsoft.com/en-us/projects/trueskill/details.aspx
     const rated = rate([
       { alice: new Rating() },
       { bob: new Rating() },
@@ -361,7 +361,7 @@ describe('TrueSkill', function() {
     expect(r.hillary.mu).toBeCloseTo(13.229, 0.001);
     expect(r.hillary.sigma).toBeCloseTo(5.749, 0.001);
   });
-  it('should test 1vs1 shortcuts', function() {
+  it('should test 1vs1 shortcuts', () => {
     const [p1, p2] = rate_1vs1(new Rating(), new Rating());
     expect(p1.mu).toBeCloseTo(29.396, 0.001);
     expect(p1.sigma).toBeCloseTo(7.171, 0.001);
@@ -372,8 +372,8 @@ describe('TrueSkill', function() {
   });
 });
 
-describe('Gaussian', function() {
-  it('should test valid gaussian', function() {
+describe('Gaussian', () => {
+  it('should test valid gaussian', () => {
     const fn = () => new SkillGaussian(0);
     expect(fn).toThrow(TypeError);
     const fn1 = () => new SkillGaussian(0, 0);
@@ -381,8 +381,8 @@ describe('Gaussian', function() {
   });
 });
 
-describe('Rating', function() {
-  it('should print Rating', function() {
+describe('Rating', () => {
+  it('should print Rating', () => {
     expect(new Rating().toString()).toEqual('Rating(mu=25.000, sigma=8.333)');
   });
 });
