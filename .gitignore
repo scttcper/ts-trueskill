@@ -33,4 +33,4 @@ build
 docs
 dist
 benchmark-out
-.rpt2_cache
+.rpt2*
