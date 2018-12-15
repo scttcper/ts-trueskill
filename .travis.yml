@@ -1,20 +1,33 @@
-sudo: false
 language: node_js
-node_js: 10
+
+node_js:
+  - node
+  - lts/*
+
 script:
   - npm run lint
-  - npm run test:prod
+  - npm run test:ci
   - npm run build
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-  - npm run travis-deploy-once "npm run semantic-release"
   - npm run build:docs
+
+jobs:
+  include:
+    - stage: release
+      node_js: lts/*
+      script:
+        - npm run build
+        - npm run semantic-release
+
 deploy:
   provider: pages
-  skip-cleanup: true
-  local-dir: docs
-  github-token: $GH_TOKEN
+  skip_cleanup: true
+  local_dir: docs
+  github_token: $GH_TOKEN
   on:
     branch: master
+
 notifications:
   email: false
