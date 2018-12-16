@@ -25,7 +25,7 @@ jobs:
     - stage: deploy
       node_js: lts/*
       script:
-        - npm run ghpages
+        - npm run build:docs
       deploy:
         provider: pages
         skip_cleanup: true
