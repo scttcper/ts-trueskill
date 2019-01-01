@@ -39,7 +39,7 @@
     "@types/uuid": "3.4.4",
     "benchmark": "2.1.4",
     "jest": "23.6.0",
-    "microbundle": "0.8.3",
+    "microbundle": "0.8.4",
     "rimraf": "2.6.2",
     "semantic-release": "15.13.0",
     "travis-deploy-once": "5.0.11",
