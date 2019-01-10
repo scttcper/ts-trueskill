@@ -1,4 +1,5 @@
-import { flatten, zipObject } from 'lodash';
+import flatten from 'lodash.flatten';
+import zipObject from 'lodash.zipobject';
 import { add, det, exp, inv, matrix, multiply, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
 
@@ -198,7 +199,7 @@ export class TrueSkill {
     const aMatrix = transpose(rotatedAMatrix);
     // Match quality further derivation
     const modifiedRotatedAMatrix = rotatedAMatrix.map(
-      (value, _, __) => this.beta ** 2 * value,
+      (value: number, _: any, __: any) => this.beta ** 2 * value,
     );
     const start = multiply(transpose(meanMatrix), aMatrix);
     const ata = multiply(modifiedRotatedAMatrix, aMatrix);

@@ -1,4 +1,5 @@
-import { flatten, merge } from 'lodash';
+import flatten from 'lodash.flatten';
+import merge from 'lodash.merge';
 
 import {
   quality,
