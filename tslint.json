@@ -6,6 +6,7 @@
   "rules": {
     "semicolon": [true, "always"],
     "no-parameter-reassignment": false,
+    "type-literal-delimiter": false,
     "strict-type-predicates": false
   }
 }
