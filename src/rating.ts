@@ -11,11 +11,14 @@ export class Rating extends SkillGaussian {
       sigma = mu.sigma;
       mu = mu.mu;
     }
+
     if (sigma === undefined) {
       sigma = mu / 3;
     }
+
     super(mu, sigma);
   }
+
   toString() {
     const mu = this.mu.toFixed(3);
     const sigma = this.sigma.toFixed(3);

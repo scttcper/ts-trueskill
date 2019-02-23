@@ -6,36 +6,35 @@ import { Rating } from './rating';
 export class Variable extends SkillGaussian {
   messages: { [key: string]: SkillGaussian } = {};
 
-  constructor() {
-    super();
-  }
   setVal(val: Variable | SkillGaussian) {
     const delta = this.delta(val);
     this.pi = val.pi;
     this.tau = val.tau;
     return delta;
   }
+
   delta(other: Variable | SkillGaussian) {
     const piDelta = Math.abs(this.pi - other.pi);
     if (piDelta === Infinity) {
       return 0;
     }
+
     return Math.max(Math.abs(this.tau - other.tau), Math.sqrt(piDelta));
   }
+
   updateMessage(
     factor: LikelihoodFactor | SumFactor | PriorFactor,
     pi = 0,
     tau = 0,
     message?: SkillGaussian,
   ) {
-    const newMessage = message
-      ? message
-      : new SkillGaussian(null, null, pi, tau);
+    const newMessage = message ? message : new SkillGaussian(null, null, pi, tau);
     const str = factor.toString();
     const oldMessage = this.messages[str];
     this.messages[str] = newMessage;
     return this.setVal(this.div(oldMessage).mul(newMessage));
   }
+
   updateValue(
     factor: TruncateFactor | PriorFactor,
     pi = 0,
@@ -45,10 +44,12 @@ export class Variable extends SkillGaussian {
     if (!value) {
       value = new SkillGaussian(null, null, pi, tau);
     }
+
     const oldMessage = this.messages[factor.toString()];
     this.messages[factor.toString()] = value.mul(oldMessage).div(this);
     return this.setVal(value);
   }
+
   toString() {
     const count = Object.keys(this.messages).length;
     const s = count === 1 ? '' : 's';
@@ -63,20 +64,27 @@ export class Factor {
   constructor(public vars: Variable[]) {
     this.uuid = uuid();
     const k = this.toString();
-    vars.forEach((v) => (v.messages[k] = new SkillGaussian()));
+    vars.forEach(v => {
+      v.messages[k] = new SkillGaussian();
+    });
   }
+
   down() {
     return 0;
   }
+
   up() {
     return 0;
   }
+
   get v() {
     if (this.vars.length !== 1) {
       throw new Error('Too long');
     }
+
     return this.vars[0];
   }
+
   toString() {
     const s = this.vars.length === 1 ? '' : 's';
     return `<Factor with ${this.vars.length} connection${s} ${this.uuid}>`;
@@ -87,8 +95,9 @@ export class PriorFactor extends Factor {
   constructor(v: Variable, readonly val: Rating, readonly dynamic = 0) {
     super([v]);
   }
+
   down() {
-    const sigma = Math.sqrt(this.val.sigma ** 2 + this.dynamic ** 2);
+    const sigma = Math.sqrt(Math.pow(this.val.sigma, 2) + Math.pow(this.dynamic, 2));
     const value = new SkillGaussian(this.val.mu, sigma);
     return this.v.updateValue(this, undefined, undefined, value);
   }
@@ -102,17 +111,20 @@ export class LikelihoodFactor extends Factor {
   ) {
     super([mean, value]);
   }
-  calc_a(v: SkillGaussian) {
-    return 1.0 / (this.variance * v.pi + 1.0);
+
+  calcA(v: SkillGaussian) {
+    return 1.0 / ((this.variance * v.pi) + 1.0);
   }
+
   down() {
     const msg = this.mean.div(this.mean.messages[this.toString()]);
-    const a = this.calc_a(msg);
+    const a = this.calcA(msg);
     return this.value.updateMessage(this, a * msg.pi, a * msg.tau);
   }
+
   up() {
     const msg = this.value.div(this.value.messages[this.toString()]);
-    const a = this.calc_a(msg);
+    const a = this.calcA(msg);
     return this.mean.updateMessage(this, a * msg.pi, a * msg.tau);
   }
 }
@@ -125,32 +137,37 @@ export class SumFactor extends Factor {
   ) {
     super([sum].concat(terms));
   }
+
   down() {
     const k = this.toString();
-    const msgs = this.terms.map((v) => v.messages[k]);
+    const msgs = this.terms.map(v => v.messages[k]);
     return this.update(this.sum, this.terms, msgs, this.coeffs);
   }
+
   up(index = 0) {
     const coeff = this.coeffs[index];
     let x = 0;
-    const coeffs = this.coeffs.map((c) => {
+    const coeffs = this.coeffs.map(c => {
       let p = -c / coeff;
       if (x === index) {
         p = 1.0 / coeff;
       }
+
       p = Number.isFinite(p) ? p : 0;
       if (coeff === 0) {
         p = 0;
       }
-      x = x + 1;
+
+      x += 1;
       return p;
     });
     const vals = [...this.terms];
     vals[index] = this.sum;
     const k = this.toString();
-    const msgs = vals.map((v) => v.messages[k]);
+    const msgs = vals.map(v => v.messages[k]);
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
+
   update(
     v: Variable,
     vals: Variable[],
@@ -168,8 +185,10 @@ export class SumFactor extends Factor {
       if (!Number.isFinite(piInv)) {
         continue;
       }
-      piInv += coeff ** 2 / div.pi;
+
+      piInv += Math.pow(coeff, 2) / div.pi;
     }
+
     const pi = 1.0 / piInv;
     const tau = pi * mu;
     return v.updateMessage(this, pi, tau);
@@ -185,6 +204,7 @@ export class TruncateFactor extends Factor {
   ) {
     super([v]);
   }
+
   up() {
     const val = this.v;
     const msg = this.v.messages[this.toString()];
@@ -194,7 +214,7 @@ export class TruncateFactor extends Factor {
     const w = this.wFunc(div.tau / sqrtPi, this.drawMargin * sqrtPi);
     const denom = 1.0 - w;
     const pi = div.pi / denom;
-    const tau = (div.tau + sqrtPi * v) / denom;
+    const tau = (div.tau + (sqrtPi * v)) / denom;
     return val.updateValue(this, pi, tau);
   }
 }

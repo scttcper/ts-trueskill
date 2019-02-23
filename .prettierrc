@@ -1,5 +1,8 @@
-# .prettierrc
-semi: true
-singleQuote: true
-trailingComma: all
-arrowParens: always
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "printWidth": 100,
+  "arrowParens": "avoid"
+}

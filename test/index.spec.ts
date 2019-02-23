@@ -1,23 +1,25 @@
-import flatten from 'lodash.flatten';
-import merge from 'lodash.merge';
+import { flatten, merge } from 'lodash';
 
 import {
   quality,
+  // eslint-disable-next-line @typescript-eslint/camelcase
   quality_1vs1,
   rate,
+  // eslint-disable-next-line @typescript-eslint/camelcase
   rate_1vs1,
   winProbability,
   Rating,
   SkillGaussian,
   TrueSkill,
-} from '../src/public_api';
+} from '../src';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
-  return sizes.map((size) => {
+  return sizes.map(size => {
     const r = Array(size).fill(0);
     if (env) {
       return r.map(() => env.createRating());
     }
+
     return r.map(() => new Rating());
   });
 }
@@ -45,11 +47,13 @@ describe('TrueSkill', () => {
     expect(rated[0].length).toEqual(5);
     expect(rated[1].length).toEqual(5);
   });
+
   it('should rate unsorted groups', () => {
     const [t1, t2, t3] = generateTeams([1, 1, 1]);
     const rated = rate([t1, t2, t3], [2, 1, 0]);
     compareRating(rated, [[18.325, 6.656], [25.0, 6.208], [31.675, 6.656]]);
   });
+
   it('should test n vs n', () => {
     // 1 vs 1
     let teams = generateTeams([1, 1]);
@@ -87,6 +91,7 @@ describe('TrueSkill', () => {
       [22.802, 8.059],
     ]);
   });
+
   it('should test 1 vs n', () => {
     const [t1] = generateTeams([1]);
     // 1 vs 2
@@ -137,6 +142,7 @@ describe('TrueSkill', () => {
       [9.418, 7.917],
     ]);
   });
+
   it('should test individual', () => {
     // 3 players
     let players = generateIndividual(3);
@@ -204,6 +210,7 @@ describe('TrueSkill', () => {
       [9.461, 5.276],
     ]);
   });
+
   it('should test multiple teams', () => {
     // 2 vs 4 vs 2
     let t1 = [new Rating(40, 4), new Rating(45, 3)];
@@ -231,6 +238,7 @@ describe('TrueSkill', () => {
     t3 = [new Rating()];
     expect(quality([t1, t2, t3])).toBeCloseTo(0.047, 0.001);
   });
+
   it('should test upset', () => {
     // 1 vs 1
     let t1 = [new Rating()];
@@ -288,12 +296,14 @@ describe('TrueSkill', () => {
       [44.118, 0.983],
     ]);
   });
+
   it('should test winProbability', () => {
     // 1 vs 1
     const t1 = [new Rating()];
     const t2 = [new Rating(50, 12.5)];
     expect(winProbability(t1, t2)).toBeCloseTo(0.06, 0.001);
   });
+
   it('should test partial play', () => {
     const t1 = [new Rating()];
     const t2 = [new Rating(), new Rating()];
@@ -329,6 +339,7 @@ describe('TrueSkill', () => {
       0.001,
     );
   });
+
   it('should test microsoft reasearch example', () => {
     // Http://research.microsoft.com/en-us/projects/trueskill/details.aspx
     const rated = rate([
@@ -342,7 +353,7 @@ describe('TrueSkill', () => {
       { hillary: new Rating() },
     ]);
     let r: any = {};
-    rated.forEach((n) => {
+    rated.forEach(n => {
       r = merge(r, n);
     });
     expect(r.alice.mu).toBeCloseTo(36.771, 0.001);
@@ -362,6 +373,7 @@ describe('TrueSkill', () => {
     expect(r.hillary.mu).toBeCloseTo(13.229, 0.001);
     expect(r.hillary.sigma).toBeCloseTo(5.749, 0.001);
   });
+
   it('should test 1vs1 shortcuts', () => {
     const [p1, p2] = rate_1vs1(new Rating(), new Rating());
     expect(p1.mu).toBeCloseTo(29.396, 0.001);

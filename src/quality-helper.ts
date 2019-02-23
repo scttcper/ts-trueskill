@@ -2,23 +2,24 @@ import { matrix as mMatrix } from 'mathjs';
 
 import { Rating } from './rating';
 
-export function VarianceMatrix(
+export function createVarianceMatrix(
   flattenRatings: Rating[],
   height: number,
   width: number,
-): any {
+) {
   const matrix = mMatrix().resize([height, width]);
-  const variances = flattenRatings.map((r) => r.sigma ** 2);
+  const variances = flattenRatings.map(r => r.sigma ** 2);
   for (let i = 0; i < variances.length; i++) {
     matrix.set([i, i], variances[i]);
   }
+
   return matrix;
 }
 
-export function RotatedAMatrix(
+export function createRotatedAMatrix(
   newRatingGroups: Rating[][],
   flattenWeights: number[],
-): any {
+) {
   let t = 0;
   let r = 0;
   const matrix = mMatrix();
@@ -26,7 +27,7 @@ export function RotatedAMatrix(
     const setter = Array.from(
       { length: newRatingGroups[i].length },
       (_, n) => n + t,
-    ).map((z) => {
+    ).map(z => {
       matrix.set([r, z], flattenWeights[z]);
       t += 1;
       return z;
@@ -35,7 +36,9 @@ export function RotatedAMatrix(
     for (let d = x; d < newRatingGroups[i + 1].length + x; d++) {
       matrix.set([r, d], -flattenWeights[d]);
     }
+
     r++;
   }
+
   return matrix;
 }

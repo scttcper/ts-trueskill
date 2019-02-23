@@ -1,4 +1,3 @@
-/* tslint:disable:no-implicit-dependencies */
 import * as Benchmark from 'benchmark';
 
 import {
@@ -6,16 +5,17 @@ import {
   rate,
   Rating,
   TrueSkill,
-} from '../src/public_api';
+} from '../src';
 
 const ts = new TrueSkill();
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
-  return sizes.map((size) => {
+  return sizes.map(size => {
     const r = Array(size).fill(0);
     if (env) {
       return r.map(() => env.createRating());
     }
+
     return r.map(() => new Rating());
   });
 }

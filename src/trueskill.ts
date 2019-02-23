@@ -1,5 +1,4 @@
-import flatten from 'lodash.flatten';
-import zipObject from 'lodash.zipobject';
+import { flatten, zipObject } from 'lodash';
 import { add, det, exp, inv, matrix, multiply, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
 
@@ -10,7 +9,7 @@ import {
   TruncateFactor,
   Variable,
 } from './factorgraph';
-import { RotatedAMatrix, VarianceMatrix } from './quality-helper';
+import { createRotatedAMatrix, createVarianceMatrix } from './quality-helper';
 import { Rating } from './rating';
 
 /**
@@ -32,7 +31,7 @@ export function calcDrawMargin(
  */
 function _teamSizes(ratingGroups: Rating[][]) {
   const teamSizes = [0];
-  ratingGroups.map((group) =>
+  ratingGroups.map(group =>
     teamSizes.push(group.length + teamSizes[teamSizes.length - 1]),
   );
   teamSizes.shift();
@@ -56,6 +55,7 @@ export class TrueSkill {
   sigma!: number;
   beta!: number;
   tau!: number;
+
   /**
    * @param mu initial mean of ratings
    * @param sigma initial standard deviation of ratings
@@ -75,9 +75,11 @@ export class TrueSkill {
     if (sigma === undefined || sigma === null) {
       this.sigma = mu / 3;
     }
+
     if (beta === undefined || beta === null) {
       this.beta = this.sigma / 2;
     }
+
     if (tau === undefined || tau === null) {
       this.tau = this.sigma / 100;
     }
@@ -92,23 +94,24 @@ export class TrueSkill {
     weights: number[][] | null = null,
     minDelta = 0.0001,
   ): Rating[][] | any[] {
-    const [newRatingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    weights = this.validate_weights(newRatingGroups, weights);
+    const [newRatingGroups, keys] = this._validateRatingGroups(ratingGroups);
+    weights = this._validateWeights(newRatingGroups, weights);
     const groupSize = ratingGroups.length;
     if (ranks && ranks.length !== groupSize) {
       throw new Error('Wrong ranks');
     }
-    const newRanks = ranks
-      ? ranks
-      : Array.from({ length: groupSize }, (_, i) => i);
+
+    const newRanks = ranks ?
+      ranks :
+      Array.from({ length: groupSize }, (_, i) => i);
     // Sort rating groups by rank
     const zip: [Rating[], number, number[]][] = [];
     for (let idx = 0; idx < newRatingGroups.length; idx++) {
       zip.push([newRatingGroups[idx], newRanks[idx], weights[idx]]);
     }
+
     let position = 0;
-    const positions = zip.map((el) => {
-      // tslint:disable-next-line:no-unnecessary-type-annotation
+    const positions = zip.map(el => {
       const res: [number, [Rating[], number, number[]]] = [position, el];
       position++;
       return res;
@@ -117,7 +120,7 @@ export class TrueSkill {
     const sortedRatingGroups: Rating[][] = [];
     const sortedRanks: number[] = [];
     const sortedWeights: number[][] = [];
-    // tslint:disable-next-line:no-unused
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [x, [g, r, w]] of sorting) {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
@@ -125,6 +128,7 @@ export class TrueSkill {
       const max = w.map((ww: number) => Math.max(minDelta, ww));
       sortedWeights.push(max);
     }
+
     // Build factor graph
     const flattenRatings = flatten(sortedRatingGroups);
     const flattenWeights = flatten(sortedWeights);
@@ -133,17 +137,15 @@ export class TrueSkill {
     const fill = Array.from({ length: size }, (_, i) => i);
     const ratingVars = fill.map(() => new Variable());
     const perfVars = fill.map(() => new Variable());
-    const teamPerfVars = Array.from(
-      { length: groupSize },
-      (_, i) => i,
-    ).map(() => new Variable());
-    const teamDiffVars = Array.from(
-      { length: groupSize - 1 },
-      (_, i) => i,
-    ).map(() => new Variable());
+    const teamPerfVars = Array.from({ length: groupSize }, (_, i) => i).map(
+      () => new Variable(),
+    );
+    const teamDiffVars = Array.from({ length: groupSize - 1 }, (_, i) => i).map(
+      () => new Variable(),
+    );
     const teamSizes = _teamSizes(sortedRatingGroups);
     // Layer builders
-    const layers = this.runSchedule(
+    const layers = this._runSchedule(
       ratingVars,
       flattenRatings,
       perfVars,
@@ -163,15 +165,18 @@ export class TrueSkill {
         .map((f: PriorFactor) => new Rating(f.v.mu, f.v.sigma));
       transformedGroups.push(group);
     }
+
     const pulledTranformedGroups: [number, Rating[]][] = [];
     for (let idx = 0; idx < sorting.length; idx++) {
       pulledTranformedGroups.push([sorting[idx][0], transformedGroups[idx]]);
     }
+
     const unsorting = pulledTranformedGroups.sort((a, b) => a[0] - b[0]);
     if (!keys) {
-      return unsorting.map((k) => k[1]);
+      return unsorting.map(k => k[1]);
     }
-    return unsorting.map((v) => {
+
+    return unsorting.map(v => {
       return zipObject(keys[v[0]], v[1]);
     });
   }
@@ -186,20 +191,24 @@ export class TrueSkill {
    *   }
    */
   quality(ratingGroups: Rating[][], weights?: number[][]) {
-    // tslint:disable-next-line:no-unused
-    const [newRatingGroups, keys] = this.validateRatingGroups(ratingGroups);
-    const newWeights = this.validate_weights(ratingGroups, weights);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [newRatingGroups, _keys] = this._validateRatingGroups(ratingGroups);
+    const newWeights = this._validateWeights(ratingGroups, weights);
     const flattenRatings = flatten(ratingGroups);
     const flattenWeights = flatten(newWeights);
-    const length = flattenRatings.length;
+    const { length } = flattenRatings;
     // A vector of all of the skill means
-    const meanMatrix = matrix(flattenRatings.map((r) => [r.mu]));
-    const varianceMatrix = VarianceMatrix(flattenRatings, length, length);
-    const rotatedAMatrix = RotatedAMatrix(newRatingGroups, flattenWeights);
+    const meanMatrix = matrix(flattenRatings.map(r => [r.mu]));
+    const varianceMatrix = createVarianceMatrix(flattenRatings, length, length);
+    const rotatedAMatrix = createRotatedAMatrix(
+      newRatingGroups,
+      flattenWeights,
+    );
     const aMatrix = transpose(rotatedAMatrix);
     // Match quality further derivation
     const modifiedRotatedAMatrix = rotatedAMatrix.map(
-      (value: number, _: any, __: any) => this.beta ** 2 * value,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      (value: number, _: any, __: any) => Math.pow(this.beta, 2) * value,
     );
     const start = multiply(transpose(meanMatrix), aMatrix);
     const ata = multiply(modifiedRotatedAMatrix, aMatrix);
@@ -231,7 +240,7 @@ export class TrueSkill {
    */
   expose(rating: Rating) {
     const k = this.mu / this.sigma;
-    return rating.mu - k * rating.sigma;
+    return (rating.mu - k) * rating.sigma;
   }
 
   /**
@@ -241,12 +250,10 @@ export class TrueSkill {
     const deltaMu =
       a.reduce((t, cur) => t + cur.mu, 0) - b.reduce((t, cur) => t + cur.mu, 0);
     const sumSigma =
-      a.reduce((t, n) => n.sigma ** 2 + t, 0) +
-      b.reduce((t, n) => n.sigma ** 2 + t, 0);
+      a.reduce((t, n) => Math.pow(n.sigma, 2) + t, 0) +
+      b.reduce((t, n) => Math.pow(n.sigma, 2) + t, 0);
     const playerCount = a.length + b.length;
-    const denominator = Math.sqrt(
-      playerCount * (this.beta * this.beta) + sumSigma,
-    );
+    const denominator = Math.sqrt(playerCount * ((this.beta * this.beta) + sumSigma));
     return this.guassian.cdf(deltaMu / denominator);
   }
 
@@ -254,12 +261,12 @@ export class TrueSkill {
    * The non-draw version of "V" function.
    * "V" calculates a variation of a mean.
    */
-  private v_win(diff: number, drawMargin: number) {
+  private _vWin(diff: number, drawMargin: number) {
     const x = diff - drawMargin;
     const denom = this.guassian.cdf(x);
     return denom ? this.guassian.pdf(x) / denom : -x;
   }
-  private v_draw(diff: number, drawMargin: number) {
+  private _vDraw(diff: number, drawMargin: number) {
     const absDiff = Math.abs(diff);
     const [a, b] = [drawMargin - absDiff, -drawMargin - absDiff];
     const denom = this.guassian.cdf(a) - this.guassian.cdf(b);
@@ -271,20 +278,21 @@ export class TrueSkill {
    * The non-draw version of "W" function.
    * "W" calculates a variation of a standard deviation.
    */
-  private w_win(diff: number, drawMargin: number) {
+  private _wWin(diff: number, drawMargin: number) {
     const x = diff - drawMargin;
-    const v = this.v_win(diff, drawMargin);
+    const v = this._vWin(diff, drawMargin);
     const w = v * (v + x);
     if (w > 0 && w < 1) {
       return w;
     }
+
     throw new Error('floating point error');
   }
 
   /**
    * The draw version of "W" function.
    */
-  private w_draw(diff: number, drawMargin: number) {
+  private _wDraw(diff: number, drawMargin: number) {
     const absDiff = Math.abs(diff);
     const a = drawMargin - absDiff;
     const b = -drawMargin - absDiff;
@@ -292,8 +300,10 @@ export class TrueSkill {
     if (!denom) {
       throw new Error('Floating point error');
     }
-    const v = this.v_draw(absDiff, drawMargin);
+
+    const v = this._vDraw(absDiff, drawMargin);
     return (
+      // eslint-disable-next-line no-mixed-operators
       v ** 2 + (a * this.guassian.pdf(a) - b * this.guassian.pdf(b)) / denom
     );
   }
@@ -302,68 +312,75 @@ export class TrueSkill {
    * Validates a ratingGroups argument. It should contain more than
    * 2 groups and all groups must not be empty.
    */
-  private validateRatingGroups(
+  private _validateRatingGroups(
     ratingGroups: Rating[][] | any[],
   ): [Rating[][], string[][] | null] {
     if (ratingGroups.length < 2) {
       throw new Error('Need multiple rating groups');
     }
+
     for (const group of ratingGroups) {
       if (group.length === 0) {
         throw new Error('Each group must contain multiple ratings');
       }
+
       if (group instanceof Rating) {
         throw new Error('Rating cannot be a rating group');
       }
     }
+
     if (!Array.isArray(ratingGroups[0])) {
       const keys: string[][] = [];
       const newRatingGroups: Rating[][] = [];
       for (const dictRatingGroup of ratingGroups) {
         const keyGroup = Object.keys(dictRatingGroup);
-        const ratingGroup: Rating[] = keyGroup.map((n) => dictRatingGroup[n]);
+        const ratingGroup: Rating[] = keyGroup.map(n => dictRatingGroup[n]);
         newRatingGroups.push(ratingGroup);
         keys.push(keyGroup);
       }
+
       return [newRatingGroups, keys];
     }
+
     return [ratingGroups, null];
   }
 
-  private validate_weights(
+  private _validateWeights(
     ratingGroups: Rating[][],
     weights?: number[][] | null,
   ): number[][] {
     if (!weights) {
-      return ratingGroups.map((n) => Array(n.length).fill(1));
+      return ratingGroups.map(n => Array(n.length).fill(1));
     }
+
     return weights;
   }
 
-  private buildRatingLayer(ratingVars: Variable[], flattenRatings: Rating[]) {
+  private _buildRatingLayer(ratingVars: Variable[], flattenRatings: Rating[]) {
     const t = this.tau;
     return ratingVars.map(
       (n, idx) => new PriorFactor(n, flattenRatings[idx], t),
     );
   }
 
-  private buildPerfLayer(ratingVars: Variable[], perfVars: Variable[]) {
+  private _buildPerfLayer(ratingVars: Variable[], perfVars: Variable[]) {
     const b = this.beta ** 2;
     return ratingVars.map(
       (n, idx) => new LikelihoodFactor(n, perfVars[idx], b),
     );
   }
-  private buildTeamPerfLayer(
+
+  private _buildTeamPerfLayer(
     teamPerfVars: Variable[],
     perfVars: Variable[],
     teamSizes: number[],
     flattenWeights: number[],
   ) {
     let team = 0;
-    return teamPerfVars.map((teamPerfVar) => {
+    return teamPerfVars.map(teamPerfVar => {
       const start = team > 0 ? teamSizes[team - 1] : 0;
       const end = teamSizes[team];
-      team = team + 1;
+      team += 1;
       return new SumFactor(
         teamPerfVar,
         perfVars.slice(start, end),
@@ -371,38 +388,41 @@ export class TrueSkill {
       );
     });
   }
-  private buildTeamDiffLayer(
+
+  private _buildTeamDiffLayer(
     teamPerfVars: Variable[],
     teamDiffVars: Variable[],
   ) {
     let team = 0;
-    return teamDiffVars.map((teamDiffVar) => {
+    return teamDiffVars.map(teamDiffVar => {
       const sl = teamPerfVars.slice(team, team + 2);
       team++;
       return new SumFactor(teamDiffVar, sl, [1, -1]);
     });
   }
-  private buildTruncLayer(
+
+  private _buildTruncLayer(
     teamDiffVars: Variable[],
     sortedRanks: number[],
     sortedRatingGroups: Rating[][],
   ) {
     let x = 0;
-    return teamDiffVars.map((teamDiffVar) => {
+    return teamDiffVars.map(teamDiffVar => {
       // Static draw probability
-      const drawProbability = this.drawProbability;
-      const lengths = sortedRatingGroups.slice(x, x + 2).map((n) => n.length);
+      const { drawProbability } = this;
+      const lengths = sortedRatingGroups.slice(x, x + 2).map(n => n.length);
       const drawMargin = calcDrawMargin(
         drawProbability,
         lengths.reduce((t, n) => t + n, 0),
         this,
       );
-      let vFunc = (a: number, b: number) => this.v_win(a, b);
-      let wFunc = (a: number, b: number) => this.w_win(a, b);
+      let vFunc = (a: number, b: number) => this._vWin(a, b);
+      let wFunc = (a: number, b: number) => this._wWin(a, b);
       if (sortedRanks[x] === sortedRanks[x + 1]) {
-        vFunc = (a, b) => this.v_draw(a, b);
-        wFunc = (a, b) => this.w_draw(a, b);
+        vFunc = (a, b) => this._vDraw(a, b);
+        wFunc = (a, b) => this._wDraw(a, b);
       }
+
       x++;
       return new TruncateFactor(teamDiffVar, vFunc, wFunc, drawMargin);
     });
@@ -412,7 +432,7 @@ export class TrueSkill {
    * Sends messages within every nodes of the factor graph
    * until the result is reliable.
    */
-  private runSchedule(
+  private _runSchedule(
     ratingVars: Variable[],
     flattenRatings: Rating[],
     perfVars: Variable[],
@@ -427,26 +447,21 @@ export class TrueSkill {
     if (minDelta <= 0) {
       throw new Error('minDelta must be greater than 0');
     }
-    const ratingLayer = this.buildRatingLayer(
-      ratingVars,
-      flattenRatings,
-    );
-    const perfLayer = this.buildPerfLayer(
-      ratingVars,
-      perfVars,
-    );
-    const teamPerfLayer = this.buildTeamPerfLayer(
+
+    const ratingLayer = this._buildRatingLayer(ratingVars, flattenRatings);
+    const perfLayer = this._buildPerfLayer(ratingVars, perfVars);
+    const teamPerfLayer = this._buildTeamPerfLayer(
       teamPerfVars,
       perfVars,
       teamSizes,
       flattenWeights,
     );
-    ratingLayer.map((f) => f.down());
-    perfLayer.map((f) => f.down());
-    teamPerfLayer.map((f) => f.down());
+    ratingLayer.map(f => f.down());
+    perfLayer.map(f => f.down());
+    teamPerfLayer.map(f => f.down());
     // Arrow #1, #2, #3
-    const teamDiffLayer = this.buildTeamDiffLayer(teamPerfVars, teamDiffVars);
-    const truncLayer = this.buildTruncLayer(
+    const teamDiffLayer = this._buildTeamDiffLayer(teamPerfVars, teamDiffVars);
+    const truncLayer = this._buildTruncLayer(
       teamDiffVars,
       sortedRanks,
       sortedRatingGroups,
@@ -466,17 +481,20 @@ export class TrueSkill {
           delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(1);
         }
+
         for (let z = teamDiffLen - 1; z > 0; z--) {
           teamDiffLayer[z].down();
           delta = Math.max(delta, truncLayer[z].up());
           teamDiffLayer[z].up(0);
         }
       }
+
       // Repeat until too small update
       if (delta <= minDelta) {
         break;
       }
     }
+
     // Up both ends
     teamDiffLayer[0].up(0);
     teamDiffLayer[teamDiffLen - 1].up(1);
@@ -486,9 +504,11 @@ export class TrueSkill {
         f.up(x);
       }
     }
+
     for (const f of perfLayer) {
       f.up();
     }
+
     return ratingLayer;
   }
 }
@@ -496,6 +516,7 @@ export class TrueSkill {
 /**
  * A shortcut to rate just 2 players in a head-to-head match
  */
+// eslint-disable-next-line @typescript-eslint/camelcase
 export function rate_1vs1(
   rating1: Rating,
   rating2: Rating,
@@ -512,6 +533,7 @@ export function rate_1vs1(
  * A shortcut to calculate the match quality between 2 players in
  * a head-to-head match
  */
+// eslint-disable-next-line @typescript-eslint/camelcase
 export function quality_1vs1(
   rating1: Rating,
   rating2: Rating,
