@@ -1,4 +1,4 @@
-# ts-trueskill [![npm](https://img.shields.io/npm/v/ts-trueskill.svg?maxAge=3600)](https://www.npmjs.com/package/ts-trueskill) [![build status](https://img.shields.io/travis/scttcper/ts-trueskill.svg)](https://travis-ci.org/scttcper/ts-trueskill) [![coverage status](https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg)](https://codecov.io/gh/scttcper/ts-trueskill)
+# ts-trueskill [![npm](https://img.shields.io/npm/v/ts-trueskill.svg?maxAge=3600)](https://www.npmjs.com/package/ts-trueskill) [![build status](https://circleci.com/gh/scttcper/ts-trueskill.svg?style=svg)](https://circleci.com/gh/scttcper/ts-trueskill) [![coverage status](https://codecov.io/gh/scttcper/ts-trueskill/branch/master/graph/badge.svg)](https://codecov.io/gh/scttcper/ts-trueskill)
 > TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee.  
 
 
