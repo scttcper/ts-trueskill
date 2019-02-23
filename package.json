@@ -4,7 +4,7 @@
   "description": "Port of python trueskill package in TypeScript",
   "main": "./index.js",
   "typings": "./index.d.ts",
-  "module": "./module/index.ts",
+  "module": "./module/index.js",
   "sideEffects": false,
   "repository": "scttcper/ts-trueskill",
   "author": "Scott Cooper <scttcper@gmail.com>",
