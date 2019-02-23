@@ -9,9 +9,9 @@ import {
   rate_1vs1,
   winProbability,
   Rating,
-  SkillGaussian,
   TrueSkill,
 } from '../src';
+import { SkillGaussian } from '../src/mathematics';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map(size => {
