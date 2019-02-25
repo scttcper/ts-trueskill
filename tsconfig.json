@@ -7,10 +7,11 @@
     "module": "commonjs",
     "esModuleInterop": true,
     "strict": true,
-    "declaration": true,
     "noImplicitAny": false,
     "noUnusedLocals": false,
+    "declaration": true,
     "sourceMap": true,
+    "inlineSources": true,
     "outDir": "dist"
   },
   "include": ["src/index.ts"],
