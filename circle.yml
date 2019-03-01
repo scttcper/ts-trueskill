@@ -50,5 +50,9 @@ workflows:
     jobs:
       - test
       - release:
+          filters:
+            branches:
+              only:
+                - master
           requires:
             - test
