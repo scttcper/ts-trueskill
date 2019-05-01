@@ -50,7 +50,7 @@
     "ts-jest": "24.0.2",
     "ts-node": "8.0.3",
     "typedoc": "0.14.2",
-    "typescript": "3.3.3333"
+    "typescript": "3.3.4000"
   },
   "release": {
     "branch": "master"
