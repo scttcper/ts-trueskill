@@ -23,7 +23,7 @@
     "semantic-release": "cd dist && semantic-release"
   },
   "dependencies": {
-    "@types/mathjs": "5.0.0",
+    "@types/mathjs": "5.0.1",
     "lodash": "^4.17.11",
     "mathjs": "^5.5.0",
     "ts-gaussian": "^1.1.11",
