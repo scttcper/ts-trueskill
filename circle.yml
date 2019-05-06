@@ -30,20 +30,18 @@ jobs:
       - checkout
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
-      - add_ssh_keys:
-          fingerprints:
-            - cb:dc:7d:1c:74:04:2b:a3:c4:63:d4:87:b7:5b:08:5a
       - run: npm install
       - run: npm run build
       - run: npm run semantic-release
+      - add_ssh_keys:
+          fingerprints:
+            - cb:dc:7d:1c:74:04:2b:a3:c4:63:d4:87:b7:5b:08:5a
       - run:
           name: Install and configure dependencies
           command: |
-            git config credential.helper "cache --timeout=120"
             git config user.email "scttcper@gmail.com"
             git config user.name "ci-build"
             git push origin --delete gh-pages
-            ssh-add -D
       - run: npm run build:docs
       - run: npx gh-pages -x -d docs -m "update docs [ci skip]" -r https://${GH_TOKEN}@github.com/scttcper/ts-trueskill.git
 
