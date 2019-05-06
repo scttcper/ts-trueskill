@@ -105,7 +105,7 @@ export class TrueSkill {
       ranks :
       Array.from({ length: groupSize }, (_, i) => i);
     // Sort rating groups by rank
-    const zip: [Rating[], number, number[]][] = [];
+    const zip: Array<[Rating[], number, number[]]> = [];
     for (let idx = 0; idx < newRatingGroups.length; idx++) {
       zip.push([newRatingGroups[idx], newRanks[idx], weights[idx]]);
     }
@@ -166,7 +166,7 @@ export class TrueSkill {
       transformedGroups.push(group);
     }
 
-    const pulledTranformedGroups: [number, Rating[]][] = [];
+    const pulledTranformedGroups: Array<[number, Rating[]]> = [];
     for (let idx = 0; idx < sorting.length; idx++) {
       pulledTranformedGroups.push([sorting[idx][0], transformedGroups[idx]]);
     }
