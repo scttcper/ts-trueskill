@@ -44,7 +44,7 @@ const [newP1, newP2] = rate_1vs1(p1, p2); // get new ratings after p1 wins
 ```
 
 ### API
-https://scttcper.github.io/ts-trueskill/  
+https://trueskill.netlify.com/  
 
 ### Differences from python version
 - Does not support multiple backends

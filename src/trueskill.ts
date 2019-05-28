@@ -53,7 +53,9 @@ function _teamSizes(ratingGroups: Rating[][]) {
  */
 export class TrueSkill {
   sigma!: number;
+
   beta!: number;
+
   tau!: number;
 
   /**
@@ -266,6 +268,7 @@ export class TrueSkill {
     const denom = this.guassian.cdf(x);
     return denom ? this.guassian.pdf(x) / denom : -x;
   }
+
   private _vDraw(diff: number, drawMargin: number) {
     const absDiff = Math.abs(diff);
     const [a, b] = [drawMargin - absDiff, -drawMargin - absDiff];
