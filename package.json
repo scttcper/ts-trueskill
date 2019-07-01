@@ -40,7 +40,7 @@
     "@types/uuid": "3.4.4",
     "@typescript-eslint/eslint-plugin": "1.9.0",
     "@typescript-eslint/parser": "1.9.0",
-    "del-cli": "1.1.0",
+    "del-cli": "2.0.0",
     "benchmark": "2.1.4",
     "eslint": "5.16.0",
     "eslint-config-prettier": "4.3.0",
