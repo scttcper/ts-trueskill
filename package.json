@@ -46,7 +46,7 @@
     "eslint-config-prettier": "4.3.0",
     "eslint-config-xo-space": "0.21.0",
     "eslint-config-xo-typescript": "0.12.0",
-    "eslint-plugin-import": "2.17.3",
+    "eslint-plugin-import": "2.18.0",
     "jest": "24.8.0",
     "rimraf": "2.6.3",
     "semantic-release": "15.13.18",
