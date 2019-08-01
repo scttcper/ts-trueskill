@@ -25,7 +25,7 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "@types/mathjs": "6.0.0",
+    "@types/mathjs": "6.0.1",
     "lodash": "^4.17.14",
     "mathjs": "^6.0.3",
     "ts-gaussian": "^1.2.2",
