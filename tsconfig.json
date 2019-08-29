@@ -15,7 +15,6 @@
     "incremental": true,
     "outDir": "dist"
   },
-  "include": ["src/index.ts"],
   "typedocOptions": {
     "out": "docs",
     "mode": "file",

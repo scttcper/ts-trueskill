@@ -1,8 +1,5 @@
 module.exports = {
   root: true,
-  parserOptions: {
-    project: 'tsconfig.eslint.json',
-  },
   env: {
     node: true,
     jest: true,

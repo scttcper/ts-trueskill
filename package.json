@@ -17,7 +17,7 @@
     "lint": "eslint src/**/*.ts test/**/*.ts benchmark/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts test/**/*.ts",
     "prepare": "npm run build",
-    "build": "tsc && tsc -p tsconfig.module.json",
+    "build": "tsc -p tsconfig.build.json && tsc -p tsconfig.module.json",
     "build:docs": "typedoc --out docs --target es6 --theme minimal --mode file src && touch docs/.nojekyll",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -25,9 +25,9 @@
     "semantic-release": "semantic-release"
   },
   "dependencies": {
-    "@types/mathjs": "6.0.1",
+    "@types/mathjs": "6.0.2",
     "lodash": "^4.17.15",
-    "mathjs": "^6.1.0",
+    "mathjs": "^6.2.0",
     "ts-gaussian": "^1.2.2",
     "uuid": "^3.3.3"
   },
@@ -35,24 +35,28 @@
     "@types/benchmark": "1.0.31",
     "@types/fs-extra": "8.0.0",
     "@types/jest": "24.0.18",
-    "@types/lodash": "4.14.137",
+    "@types/lodash": "4.14.138",
     "@types/node": "12.7.2",
     "@types/uuid": "3.4.5",
     "@typescript-eslint/eslint-plugin": "2.0.0",
     "@typescript-eslint/parser": "2.0.0",
     "benchmark": "2.1.4",
-    "eslint": "6.2.1",
+    "eslint": "6.2.2",
     "eslint-config-prettier": "6.1.0",
     "eslint-config-xo-space": "0.21.0",
     "eslint-config-xo-typescript": "0.17.0",
     "eslint-plugin-import": "2.18.2",
     "jest": "24.9.0",
     "rimraf": "3.0.0",
-    "semantic-release": "15.13.21",
+    "semantic-release": "15.13.24",
     "ts-jest": "24.0.2",
     "ts-node": "8.3.0",
     "typedoc": "0.15.0",
-    "typescript": "3.5.3"
+    "typescript": "3.6.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   },
   "release": {
     "branch": "master"
