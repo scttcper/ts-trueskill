@@ -37,7 +37,7 @@
     "@types/jest": "24.0.21",
     "@types/lodash": "4.14.144",
     "@types/node": "12.12.3",
-    "@types/uuid": "3.4.5",
+    "@types/uuid": "3.4.6",
     "@typescript-eslint/eslint-plugin": "2.4.0",
     "@typescript-eslint/parser": "2.4.0",
     "benchmark": "2.1.4",
