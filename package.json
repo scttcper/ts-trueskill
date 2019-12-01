@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/benchmark": "1.0.31",
     "@types/fs-extra": "8.0.1",
-    "@types/jest": "24.0.22",
+    "@types/jest": "24.0.23",
     "@types/lodash": "4.14.146",
     "@types/node": "12.12.7",
     "@types/uuid": "3.4.6",
