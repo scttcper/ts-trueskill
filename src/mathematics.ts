@@ -32,11 +32,11 @@ export class SkillGaussian {
   /**
    * A property which returns the mean.
    */
-  get mu() {
+  get mu(): number {
     return this.pi && this.tau / this.pi;
   }
 
-  get sigma() {
+  get sigma(): number {
     if (this.pi) {
       return Math.sqrt(1 / this.pi);
     }
@@ -44,19 +44,19 @@ export class SkillGaussian {
     return Infinity;
   }
 
-  mul(other: SkillGaussian) {
+  mul(other: SkillGaussian): SkillGaussian {
     const pi = this.pi + other.pi;
     const tau = this.tau + other.tau;
     return new SkillGaussian(null, null, pi, tau);
   }
 
-  div(other: SkillGaussian) {
+  div(other: SkillGaussian): SkillGaussian {
     const pi = this.pi - other.pi;
     const tau = this.tau - other.tau;
     return new SkillGaussian(null, null, pi, tau);
   }
 
-  toString() {
+  toString(): string {
     const mu = this.mu.toPrecision(3);
     const sigma = this.sigma.toPrecision(3);
     return `N(mu=${mu}, sigma=${sigma})`;

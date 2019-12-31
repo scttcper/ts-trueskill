@@ -192,7 +192,7 @@ export class TrueSkill {
    *     console.log('This match seems to be not so fair')
    *   }
    */
-  quality(ratingGroups: Rating[][], weights?: number[][]) {
+  quality(ratingGroups: Rating[][], weights?: number[][]): number {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [newRatingGroups, _keys] = this._validateRatingGroups(ratingGroups);
     const newWeights = this._validateWeights(ratingGroups, weights);
@@ -209,7 +209,6 @@ export class TrueSkill {
     const aMatrix = transpose(rotatedAMatrix);
     // Match quality further derivation
     const modifiedRotatedAMatrix = rotatedAMatrix.map(
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (value: number, _: any, __: any) => Math.pow(this.beta, 2) * value,
     );
     const start = multiply(transpose(meanMatrix), aMatrix);
@@ -232,7 +231,7 @@ export class TrueSkill {
    * var env.createRating()
    * trueskill.Rating(mu=0.000, sigma=1.000)
    */
-  createRating(mu = this.mu, sigma = this.sigma) {
+  createRating(mu = this.mu, sigma = this.sigma): Rating {
     return new Rating(mu, sigma);
   }
 
@@ -240,7 +239,7 @@ export class TrueSkill {
    * Returns the value of the rating exposure.  It starts from 0 and
    * converges to the mean.  Use this as a sort key in a leaderboard
    */
-  expose(rating: Rating) {
+  expose(rating: Rating): number {
     const k = this.mu / this.sigma;
     return (rating.mu - k) * rating.sigma;
   }
@@ -248,7 +247,7 @@ export class TrueSkill {
   /**
    * Taken from https://github.com/sublee/trueskill/issues/1
    */
-  winProbability(a: Rating[], b: Rating[]) {
+  winProbability(a: Rating[], b: Rating[]): number {
     const deltaMu =
       a.reduce((t, cur) => t + cur.mu, 0) - b.reduce((t, cur) => t + cur.mu, 0);
     const sumSigma =

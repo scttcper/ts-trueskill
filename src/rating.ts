@@ -19,7 +19,7 @@ export class Rating extends SkillGaussian {
     super(mu, sigma);
   }
 
-  toString() {
+  toString(): string {
     const mu = this.mu.toFixed(3);
     const sigma = this.sigma.toFixed(3);
     return `Rating(mu=${mu}, sigma=${sigma})`;

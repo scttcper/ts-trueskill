@@ -6,14 +6,14 @@ import { Rating } from './rating';
 export class Variable extends SkillGaussian {
   messages: { [key: string]: SkillGaussian } = {};
 
-  setVal(val: Variable | SkillGaussian) {
+  setVal(val: Variable | SkillGaussian): number {
     const delta = this.delta(val);
     this.pi = val.pi;
     this.tau = val.tau;
     return delta;
   }
 
-  delta(other: Variable | SkillGaussian) {
+  delta(other: Variable | SkillGaussian): number {
     const piDelta = Math.abs(this.pi - other.pi);
     if (piDelta === Infinity) {
       return 0;
@@ -27,7 +27,7 @@ export class Variable extends SkillGaussian {
     pi = 0,
     tau = 0,
     message?: SkillGaussian,
-  ) {
+  ): number {
     const newMessage = message ? message : new SkillGaussian(null, null, pi, tau);
     const str = factor.toString();
     const oldMessage = this.messages[str];
@@ -40,7 +40,7 @@ export class Variable extends SkillGaussian {
     pi = 0,
     tau = 0,
     value?: SkillGaussian,
-  ) {
+  ): number {
     if (!value) {
       value = new SkillGaussian(null, null, pi, tau);
     }
@@ -50,7 +50,7 @@ export class Variable extends SkillGaussian {
     return this.setVal(value);
   }
 
-  toString() {
+  toString(): string {
     const count = Object.keys(this.messages).length;
     const s = count === 1 ? '' : 's';
     const val = super.toString();
@@ -69,15 +69,15 @@ export class Factor {
     });
   }
 
-  down() {
+  down(): number {
     return 0;
   }
 
-  up() {
+  up(): number {
     return 0;
   }
 
-  get v() {
+  get v(): Variable {
     if (this.vars.length !== 1) {
       throw new Error('Too long');
     }
@@ -85,7 +85,7 @@ export class Factor {
     return this.vars[0];
   }
 
-  toString() {
+  toString(): string {
     const s = this.vars.length === 1 ? '' : 's';
     return `<Factor with ${this.vars.length} connection${s} ${this.uuid}>`;
   }
@@ -96,7 +96,7 @@ export class PriorFactor extends Factor {
     super([v]);
   }
 
-  down() {
+  down(): number {
     const sigma = Math.sqrt(Math.pow(this.val.sigma, 2) + Math.pow(this.dynamic, 2));
     const value = new SkillGaussian(this.val.mu, sigma);
     return this.v.updateValue(this, undefined, undefined, value);
@@ -112,17 +112,17 @@ export class LikelihoodFactor extends Factor {
     super([mean, value]);
   }
 
-  calcA(v: SkillGaussian) {
+  calcA(v: SkillGaussian): number {
     return 1.0 / ((this.variance * v.pi) + 1.0);
   }
 
-  down() {
+  down(): number {
     const msg = this.mean.div(this.mean.messages[this.toString()]);
     const a = this.calcA(msg);
     return this.value.updateMessage(this, a * msg.pi, a * msg.tau);
   }
 
-  up() {
+  up(): number {
     const msg = this.value.div(this.value.messages[this.toString()]);
     const a = this.calcA(msg);
     return this.mean.updateMessage(this, a * msg.pi, a * msg.tau);
@@ -138,13 +138,13 @@ export class SumFactor extends Factor {
     super([sum].concat(terms));
   }
 
-  down() {
+  down(): number {
     const k = this.toString();
     const msgs = this.terms.map(v => v.messages[k]);
     return this.update(this.sum, this.terms, msgs, this.coeffs);
   }
 
-  up(index = 0) {
+  up(index = 0): number {
     const coeff = this.coeffs[index];
     let x = 0;
     const coeffs = this.coeffs.map(c => {
@@ -173,7 +173,7 @@ export class SumFactor extends Factor {
     vals: Variable[],
     msgs: SkillGaussian[],
     coeffs: number[],
-  ) {
+  ): number {
     let piInv = 0;
     let mu = 0;
     for (let i = 0; i < vals.length; i++) {
@@ -205,7 +205,7 @@ export class TruncateFactor extends Factor {
     super([v]);
   }
 
-  up() {
+  up(): number {
     const val = this.v;
     const msg = this.v.messages[this.toString()];
     const div = val.div(msg);

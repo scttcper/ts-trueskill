@@ -13,6 +13,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 0,
     'comma-dangle': ['error', 'always-multiline'],
     'max-params': 0,
-    '@typescript-eslint/strict-boolean-expressions': 0,
+    'default-param-last': 0,
   },
 };
