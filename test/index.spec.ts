@@ -2,10 +2,8 @@ import { flatten, merge } from 'lodash';
 
 import {
   quality,
-  // eslint-disable-next-line @typescript-eslint/camelcase
   quality_1vs1,
   rate,
-  // eslint-disable-next-line @typescript-eslint/camelcase
   rate_1vs1,
   winProbability,
   Rating,

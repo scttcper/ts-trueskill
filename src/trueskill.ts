@@ -518,7 +518,6 @@ export class TrueSkill {
 /**
  * A shortcut to rate just 2 players in a head-to-head match
  */
-// eslint-disable-next-line @typescript-eslint/camelcase
 export function rate_1vs1(
   rating1: Rating,
   rating2: Rating,
@@ -535,7 +534,6 @@ export function rate_1vs1(
  * A shortcut to calculate the match quality between 2 players in
  * a head-to-head match
  */
-// eslint-disable-next-line @typescript-eslint/camelcase
 export function quality_1vs1(
   rating1: Rating,
   rating2: Rating,
