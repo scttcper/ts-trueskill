@@ -21,7 +21,7 @@ export class SkillGaussian {
         throw new Error('sigma**2 should be greater than 0');
       }
 
-      pi = Math.pow(sigma, -2);
+      pi = (sigma ** -2);
       tau = pi * mu;
     }
 

@@ -209,7 +209,7 @@ export class TrueSkill {
     const aMatrix = transpose(rotatedAMatrix);
     // Match quality further derivation
     const modifiedRotatedAMatrix = rotatedAMatrix.map(
-      (value: number, _: any, __: any) => Math.pow(this.beta, 2) * value,
+      (value: number, _: any, __: any) => (this.beta ** 2) * value,
     );
     const start = multiply(transpose(meanMatrix), aMatrix);
     const ata = multiply(modifiedRotatedAMatrix, aMatrix);
@@ -251,8 +251,8 @@ export class TrueSkill {
     const deltaMu =
       a.reduce((t, cur) => t + cur.mu, 0) - b.reduce((t, cur) => t + cur.mu, 0);
     const sumSigma =
-      a.reduce((t, n) => Math.pow(n.sigma, 2) + t, 0) +
-      b.reduce((t, n) => Math.pow(n.sigma, 2) + t, 0);
+      a.reduce((t, n) => (n.sigma ** 2) + t, 0) +
+      b.reduce((t, n) => (n.sigma ** 2) + t, 0);
     const playerCount = a.length + b.length;
     const denominator = Math.sqrt(playerCount * ((this.beta * this.beta) + sumSigma));
     return this.guassian.cdf(deltaMu / denominator);

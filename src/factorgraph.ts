@@ -97,7 +97,7 @@ export class PriorFactor extends Factor {
   }
 
   down(): number {
-    const sigma = Math.sqrt(Math.pow(this.val.sigma, 2) + Math.pow(this.dynamic, 2));
+    const sigma = Math.sqrt((this.val.sigma ** 2) + (this.dynamic ** 2));
     const value = new SkillGaussian(this.val.mu, sigma);
     return this.v.updateValue(this, undefined, undefined, value);
   }
@@ -186,7 +186,7 @@ export class SumFactor extends Factor {
         continue;
       }
 
-      piInv += Math.pow(coeff, 2) / div.pi;
+      piInv += (coeff ** 2) / div.pi;
     }
 
     const pi = 1.0 / piInv;
