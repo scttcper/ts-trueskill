@@ -336,7 +336,7 @@ export class TrueSkill {
       const newRatingGroups: Rating[][] = [];
       for (const dictRatingGroup of ratingGroups) {
         const keyGroup = Object.keys(dictRatingGroup);
-        const ratingGroup: Rating[] = keyGroup.map(n => dictRatingGroup[n]);
+        const ratingGroup: Rating[] = keyGroup.map(n => dictRatingGroup[n] as Rating);
         newRatingGroups.push(ratingGroup);
         keys.push(keyGroup);
       }
@@ -352,6 +352,7 @@ export class TrueSkill {
     weights?: number[][] | null,
   ): number[][] {
     if (!weights) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return ratingGroups.map(n => Array(n.length).fill(1));
     }
 
@@ -527,7 +528,7 @@ export function rate_1vs1(
 ): [Rating, Rating] {
   const ranks = [0, drawn ? 0 : 1];
   const teams = env.rate([[rating1], [rating2]], ranks, undefined, minDelta);
-  return [teams[0][0], teams[1][0]];
+  return [teams[0][0] as Rating, teams[1][0] as Rating];
 }
 
 /**

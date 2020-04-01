@@ -27,9 +27,9 @@
   "dependencies": {
     "@types/mathjs": "6.0.4",
     "lodash": "^4.17.15",
-    "mathjs": "^6.6.1",
-    "ts-gaussian": "^1.2.3",
-    "uuid": "^7.0.2"
+    "mathjs": "^6.6.2",
+    "ts-gaussian": "^1.2.4",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "@types/benchmark": "1.0.31",
@@ -38,20 +38,20 @@
     "@types/lodash": "4.14.149",
     "@types/node": "13.9.8",
     "@types/uuid": "7.0.2",
-    "@typescript-eslint/eslint-plugin": "2.23.0",
-    "@typescript-eslint/parser": "2.23.0",
+    "@typescript-eslint/eslint-plugin": "2.26.0",
+    "@typescript-eslint/parser": "2.26.0",
     "benchmark": "2.1.4",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
     "eslint-config-xo-space": "0.24.0",
-    "eslint-config-xo-typescript": "0.26.0",
-    "eslint-plugin-import": "2.20.1",
-    "jest": "25.1.0",
+    "eslint-config-xo-typescript": "0.27.0",
+    "eslint-plugin-import": "2.20.2",
+    "jest": "25.2.4",
     "rimraf": "3.0.2",
     "semantic-release": "17.0.4",
-    "ts-jest": "25.2.1",
-    "ts-node": "8.6.2",
-    "typedoc": "0.16.11",
+    "ts-jest": "25.3.0",
+    "ts-node": "8.8.1",
+    "typedoc": "0.17.3",
     "typescript": "3.8.3"
   },
   "jest": {
