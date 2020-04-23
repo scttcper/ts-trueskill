@@ -1,4 +1,3 @@
-import { flatten, zipObject } from 'lodash';
 import { add, det, exp, inv, matrix, multiply, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
 
@@ -132,8 +131,8 @@ export class TrueSkill {
     }
 
     // Build factor graph
-    const flattenRatings = flatten(sortedRatingGroups);
-    const flattenWeights = flatten(sortedWeights);
+    const flattenRatings = sortedRatingGroups.flat();
+    const flattenWeights = sortedWeights.flat();
     const size = flattenRatings.length;
     // Create variables
     const fill = Array.from({ length: size }, (_, i) => i);
@@ -179,7 +178,7 @@ export class TrueSkill {
     }
 
     return unsorting.map(v => {
-      return zipObject(keys[v[0]], v[1]);
+      return { [keys[v[0]][0]]: v[1][0] };
     });
   }
 
@@ -196,8 +195,8 @@ export class TrueSkill {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [newRatingGroups, _keys] = this._validateRatingGroups(ratingGroups);
     const newWeights = this._validateWeights(ratingGroups, weights);
-    const flattenRatings = flatten(ratingGroups);
-    const flattenWeights = flatten(newWeights);
+    const flattenRatings = ratingGroups.flat();
+    const flattenWeights = newWeights.flat();
     const { length } = flattenRatings;
     // A vector of all of the skill means
     const meanMatrix = matrix(flattenRatings.map(r => [r.mu]));

@@ -1,4 +1,4 @@
-import { flatten, merge } from 'lodash';
+import { merge } from 'lodash';
 
 import {
   quality,
@@ -27,7 +27,7 @@ function generateIndividual(size: number) {
 }
 
 function compareRating(result: Rating[][], expected: number[][]) {
-  const res = flatten(result);
+  const res = result.flat();
   expect(result).toBeInstanceOf(Array);
   for (let team = 0; team < res.length; team++) {
     expect(res[team].mu).toBeCloseTo(expected[team][0], 0.01);
