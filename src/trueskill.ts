@@ -1,15 +1,8 @@
-import { flatten, zipObject } from 'lodash';
 import { add, det, exp, inv, matrix, multiply, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
+import { matrix as mMatrix } from 'mathjs';
 
-import {
-  LikelihoodFactor,
-  PriorFactor,
-  SumFactor,
-  TruncateFactor,
-  Variable,
-} from './factorgraph';
-import { createRotatedAMatrix, createVarianceMatrix } from './quality-helper';
+import { LikelihoodFactor, PriorFactor, SumFactor, TruncateFactor, Variable } from './factorgraph';
 import { Rating } from './rating';
 
 /**
@@ -31,9 +24,7 @@ export function calcDrawMargin(
  */
 function _teamSizes(ratingGroups: Rating[][]) {
   const teamSizes = [0];
-  ratingGroups.map(group =>
-    teamSizes.push(group.length + teamSizes[teamSizes.length - 1]),
-  );
+  ratingGroups.map(group => teamSizes.push(group.length + teamSizes[teamSizes.length - 1]));
   teamSizes.shift();
   return teamSizes;
 }
@@ -103,9 +94,7 @@ export class TrueSkill {
       throw new Error('Wrong ranks');
     }
 
-    const newRanks = ranks ?
-      ranks :
-      Array.from({ length: groupSize }, (_, i) => i);
+    const newRanks = ranks ? ranks : Array.from({ length: groupSize }, (_, i) => i);
     // Sort rating groups by rank
     const zip: Array<[Rating[], number, number[]]> = [];
     for (let idx = 0; idx < newRatingGroups.length; idx++) {
@@ -132,17 +121,17 @@ export class TrueSkill {
     }
 
     // Build factor graph
-    const flattenRatings = flatten(sortedRatingGroups);
-    const flattenWeights = flatten(sortedWeights);
+    const flattenRatings = sortedRatingGroups.flat();
+    const flattenWeights = sortedWeights.flat();
     const size = flattenRatings.length;
     // Create variables
-    const fill = Array.from({ length: size }, (_, i) => i);
+    const fill = Array.from({ length: size });
     const ratingVars = fill.map(() => new Variable());
     const perfVars = fill.map(() => new Variable());
-    const teamPerfVars = Array.from({ length: groupSize }, (_, i) => i).map(
+    const teamPerfVars = Array.from({ length: groupSize }).map(
       () => new Variable(),
     );
-    const teamDiffVars = Array.from({ length: groupSize - 1 }, (_, i) => i).map(
+    const teamDiffVars = Array.from({ length: groupSize - 1 }).map(
       () => new Variable(),
     );
     const teamSizes = _teamSizes(sortedRatingGroups);
@@ -179,7 +168,7 @@ export class TrueSkill {
     }
 
     return unsorting.map(v => {
-      return zipObject(keys[v[0]], v[1]);
+      return { [keys[v[0]][0]]: v[1][0] };
     });
   }
 
@@ -193,11 +182,42 @@ export class TrueSkill {
    *   }
    */
   quality(ratingGroups: Rating[][], weights?: number[][]): number {
+    function createVarianceMatrix(flattenRatings: Rating[], height: number, width: number) {
+      const matrix = mMatrix().resize([height, width]);
+      const variances = flattenRatings.map(r => r.sigma ** 2);
+      for (let i = 0; i < variances.length; i++) {
+        matrix.set([i, i], variances[i]);
+      }
+
+      return matrix;
+    }
+
+    function createRotatedAMatrix(newRatingGroups: Rating[][], flattenWeights: number[]) {
+      let t = 0;
+      let r = 0;
+      const matrix = mMatrix();
+      for (let i = 0; i < newRatingGroups.length - 1; i++) {
+        const setter = Array.from({ length: newRatingGroups[i].length }, (_, n) => n + t).map(z => {
+          matrix.set([r, z], flattenWeights[z]);
+          t += 1;
+          return z;
+        });
+        const x = setter[setter.length - 1] + 1;
+        for (let d = x; d < newRatingGroups[i + 1].length + x; d++) {
+          matrix.set([r, d], -flattenWeights[d]);
+        }
+
+        r++;
+      }
+
+      return matrix;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [newRatingGroups, _keys] = this._validateRatingGroups(ratingGroups);
     const newWeights = this._validateWeights(ratingGroups, weights);
-    const flattenRatings = flatten(ratingGroups);
-    const flattenWeights = flatten(newWeights);
+    const flattenRatings = ratingGroups.flat();
+    const flattenWeights = newWeights.flat();
     const { length } = flattenRatings;
     // A vector of all of the skill means
     const meanMatrix = matrix(flattenRatings.map(r => [r.mu]));
@@ -314,9 +334,7 @@ export class TrueSkill {
    * Validates a ratingGroups argument. It should contain more than
    * 2 groups and all groups must not be empty.
    */
-  private _validateRatingGroups(
-    ratingGroups: Rating[][] | any[],
-  ): [Rating[][], string[][] | null] {
+  private _validateRatingGroups(ratingGroups: Rating[][] | any[]): [Rating[][], string[][] | null] {
     if (ratingGroups.length < 2) {
       throw new Error('Need multiple rating groups');
     }
@@ -347,10 +365,7 @@ export class TrueSkill {
     return [ratingGroups, null];
   }
 
-  private _validateWeights(
-    ratingGroups: Rating[][],
-    weights?: number[][] | null,
-  ): number[][] {
+  private _validateWeights(ratingGroups: Rating[][], weights?: number[][] | null): number[][] {
     if (!weights) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return ratingGroups.map(n => Array(n.length).fill(1));
@@ -361,16 +376,12 @@ export class TrueSkill {
 
   private _buildRatingLayer(ratingVars: Variable[], flattenRatings: Rating[]) {
     const t = this.tau;
-    return ratingVars.map(
-      (n, idx) => new PriorFactor(n, flattenRatings[idx], t),
-    );
+    return ratingVars.map((n, idx) => new PriorFactor(n, flattenRatings[idx], t));
   }
 
   private _buildPerfLayer(ratingVars: Variable[], perfVars: Variable[]) {
     const b = this.beta ** 2;
-    return ratingVars.map(
-      (n, idx) => new LikelihoodFactor(n, perfVars[idx], b),
-    );
+    return ratingVars.map((n, idx) => new LikelihoodFactor(n, perfVars[idx], b));
   }
 
   private _buildTeamPerfLayer(
@@ -392,10 +403,7 @@ export class TrueSkill {
     });
   }
 
-  private _buildTeamDiffLayer(
-    teamPerfVars: Variable[],
-    teamDiffVars: Variable[],
-  ) {
+  private _buildTeamDiffLayer(teamPerfVars: Variable[], teamDiffVars: Variable[]) {
     let team = 0;
     return teamDiffVars.map(teamDiffVar => {
       const sl = teamPerfVars.slice(team, team + 2);
@@ -464,11 +472,7 @@ export class TrueSkill {
     teamPerfLayer.map(f => f.down());
     // Arrow #1, #2, #3
     const teamDiffLayer = this._buildTeamDiffLayer(teamPerfVars, teamDiffVars);
-    const truncLayer = this._buildTruncLayer(
-      teamDiffVars,
-      sortedRanks,
-      sortedRatingGroups,
-    );
+    const truncLayer = this._buildTruncLayer(teamDiffVars, sortedRanks, sortedRatingGroups);
     const teamDiffLen = teamDiffLayer.length;
     for (let index = 0; index <= 10; index++) {
       let delta = 0;
@@ -535,11 +539,7 @@ export function rate_1vs1(
  * A shortcut to calculate the match quality between 2 players in
  * a head-to-head match
  */
-export function quality_1vs1(
-  rating1: Rating,
-  rating2: Rating,
-  env: TrueSkill = new TrueSkill(),
-) {
+export function quality_1vs1(rating1: Rating, rating2: Rating, env: TrueSkill = new TrueSkill()) {
   return env.quality([[rating1], [rating2]]);
 }
 
@@ -556,11 +556,7 @@ export function rate(
   return env.rate(ratingGroups, ranks, weights, minDelta);
 }
 
-export function winProbability(
-  a: Rating[],
-  b: Rating[],
-  env: TrueSkill = new TrueSkill(),
-) {
+export function winProbability(a: Rating[], b: Rating[], env: TrueSkill = new TrueSkill()) {
   return env.winProbability(a, b);
 }
 

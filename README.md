@@ -2,7 +2,6 @@
 > TypeScript port of the [python TrueSkill package](https://github.com/sublee/trueskill) by Heungsub Lee.  
 
 
-
 ### What's TrueSkill™
 [TrueSkill](http://research.microsoft.com/en-us/projects/trueskill) is a rating system for players of a game. It was developed, patented, and trademarked by Microsoft Research and has been used on Xbox LIVE for ranking and matchmaking service. This system quantifies players’ TRUE skill points by the Bayesian inference algorithm. It also works well with any type of match rule including N:N team game or free-for-all.
 Read about [how the trueskill model works](https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/)
@@ -12,6 +11,9 @@ Built into es5 and published with typings. Available on [npm](https://www.npmjs.
 ```bash
 npm install ts-trueskill
 ```
+
+### API
+https://trueskill.netlify.app   
 
 ### Use  
 2 vs 2 example:
@@ -42,9 +44,6 @@ const p2 = new Rating(10, 4); // 2P's skill
 const q = quality_1vs1(p1, p2); // quality will be low from large difference in scores
 const [newP1, newP2] = rate_1vs1(p1, p2); // get new ratings after p1 wins
 ```
-
-### API
-https://trueskill.netlify.com/  
 
 ### Differences from python version
 - Does not support multiple backends
