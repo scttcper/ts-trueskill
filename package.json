@@ -45,7 +45,7 @@
     "eslint-config-xo-space": "0.24.0",
     "eslint-config-xo-typescript": "0.27.0",
     "eslint-plugin-import": "2.20.2",
-    "jest": "25.4.0",
+    "jest": "25.5.3",
     "lodash": "4.17.15",
     "semantic-release": "17.0.7",
     "ts-jest": "25.4.0",
