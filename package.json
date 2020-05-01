@@ -35,7 +35,7 @@
     "@types/lodash": "4.14.150",
     "@types/mathjs": "6.0.5",
     "@types/node": "13.13.4",
-    "@types/uuid": "7.0.2",
+    "@types/uuid": "7.0.3",
     "@typescript-eslint/eslint-plugin": "2.29.0",
     "@typescript-eslint/parser": "2.29.0",
     "benchmark": "2.1.4",
