@@ -1,4 +1,5 @@
 import { merge } from 'lodash';
+import { describe, it, expect } from '@jest/globals'
 
 import {
   quality,
@@ -386,9 +387,9 @@ describe('TrueSkill', () => {
 describe('Gaussian', () => {
   it('should test valid gaussian', () => {
     const fn = () => new SkillGaussian(0);
-    expect(fn).toThrow(TypeError);
+    expect(fn).toThrowError('sigma argument is needed');
     const fn1 = () => new SkillGaussian(0, 0);
-    expect(fn1).toThrow(Error);
+    expect(fn1).toThrowError(new Error('sigma**2 should be greater than 0'));
   });
 });
 
