@@ -367,7 +367,6 @@ export class TrueSkill {
 
   private _validateWeights(ratingGroups: Rating[][], weights?: number[][] | null): number[][] {
     if (!weights) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return ratingGroups.map(n => Array(n.length).fill(1));
     }
 
