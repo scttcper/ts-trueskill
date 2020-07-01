@@ -39,7 +39,7 @@
     "@typescript-eslint/eslint-plugin": "2.33.0",
     "@typescript-eslint/parser": "2.33.0",
     "benchmark": "2.1.4",
-    "del-cli": "3.0.0",
+    "del-cli": "3.0.1",
     "eslint": "7.0.0",
     "eslint-config-prettier": "6.11.0",
     "eslint-config-xo-space": "0.24.0",
