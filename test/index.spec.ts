@@ -1,5 +1,5 @@
 import { merge } from 'lodash';
-import { describe, it, expect } from '@jest/globals'
+import { describe, it, expect } from '@jest/globals';
 
 import {
   quality,

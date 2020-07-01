@@ -11,7 +11,6 @@ import { Rating } from './rating';
 export function calcDrawMargin(
   drawProbability: number,
   size: number,
-  // tslint:disable-next-line:no-use-before-declare
   env = new TrueSkill(),
 ) {
   return (
