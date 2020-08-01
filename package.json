@@ -30,7 +30,7 @@
     "uuid": "^8.2.0"
   },
   "devDependencies": {
-    "@ctrl/eslint-config": "1.0.0",
+    "@ctrl/eslint-config": "1.0.4",
     "@jest/globals": "26.1.0",
     "@types/benchmark": "1.0.33",
     "@types/lodash": "4.14.157",
