@@ -260,7 +260,7 @@ export class TrueSkill {
    */
   expose(rating: Rating): number {
     const k = this.mu / this.sigma;
-    return (rating.mu - k) * rating.sigma;
+    return rating.mu - (k * rating.sigma);
   }
 
   /**
