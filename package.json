@@ -38,7 +38,7 @@
     "@types/uuid": "8.0.0",
     "benchmark": "2.1.4",
     "jest": "26.2.2",
-    "lodash": "4.17.19",
+    "lodash": "4.17.20",
     "ts-jest": "26.1.4",
     "typedoc": "0.17.8",
     "typescript": "3.9.7"
