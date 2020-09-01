@@ -39,7 +39,7 @@
     "benchmark": "2.1.4",
     "jest": "26.2.2",
     "lodash": "4.17.20",
-    "ts-jest": "26.1.4",
+    "ts-jest": "26.3.0",
     "typedoc": "0.17.8",
     "typescript": "3.9.7"
   },
