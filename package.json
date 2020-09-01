@@ -29,7 +29,7 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "@ctrl/eslint-config": "1.0.4",
+    "@ctrl/eslint-config": "1.0.6",
     "@jest/globals": "26.2.0",
     "@types/benchmark": "1.0.33",
     "@types/lodash": "4.14.158",
