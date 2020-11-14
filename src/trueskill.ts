@@ -103,7 +103,6 @@ export class TrueSkill {
     const sortedRatingGroups: Rating[][] = [];
     const sortedRanks: number[] = [];
     const sortedWeights: number[][] = [];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [x, [g, r, w]] of sorting) {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
@@ -202,7 +201,6 @@ export class TrueSkill {
       return matrix;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [newRatingGroups, _keys] = this._validateRatingGroups(ratingGroups);
     const newWeights = this._validateWeights(ratingGroups, weights);
     const flattenRatings = ratingGroups.flat();
@@ -306,10 +304,7 @@ export class TrueSkill {
     }
 
     const v = this._vDraw(absDiff, drawMargin);
-    return (
-      // eslint-disable-next-line no-mixed-operators
-      v ** 2 + (a * this.guassian.pdf(a) - b * this.guassian.pdf(b)) / denom
-    );
+    return v ** 2 + (a * this.guassian.pdf(a) - b * this.guassian.pdf(b)) / denom;
   }
 
   /**
