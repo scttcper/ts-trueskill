@@ -4,7 +4,7 @@ import { SkillGaussian } from './mathematics';
 import { Rating } from './rating';
 
 export class Variable extends SkillGaussian {
-  messages: { [key: string]: SkillGaussian } = {};
+  messages: Record<string, SkillGaussian> = {};
 
   setVal(val: Variable | SkillGaussian): number {
     const delta = this.delta(val);
@@ -97,23 +97,19 @@ export class PriorFactor extends Factor {
   }
 
   down(): number {
-    const sigma = Math.sqrt((this.val.sigma ** 2) + (this.dynamic ** 2));
+    const sigma = Math.sqrt(this.val.sigma ** 2 + this.dynamic ** 2);
     const value = new SkillGaussian(this.val.mu, sigma);
     return this.v.updateValue(this, undefined, undefined, value);
   }
 }
 
 export class LikelihoodFactor extends Factor {
-  constructor(
-    readonly mean: Variable,
-    readonly value: Variable,
-    readonly variance: number,
-  ) {
+  constructor(readonly mean: Variable, readonly value: Variable, readonly variance: number) {
     super([mean, value]);
   }
 
   calcA(v: SkillGaussian): number {
-    return 1.0 / ((this.variance * v.pi) + 1.0);
+    return 1.0 / (this.variance * v.pi + 1.0);
   }
 
   down(): number {
@@ -130,11 +126,7 @@ export class LikelihoodFactor extends Factor {
 }
 
 export class SumFactor extends Factor {
-  constructor(
-    readonly sum: Variable,
-    readonly terms: Variable[],
-    readonly coeffs: number[],
-  ) {
+  constructor(readonly sum: Variable, readonly terms: Variable[], readonly coeffs: number[]) {
     super([sum].concat(terms));
   }
 
@@ -168,12 +160,7 @@ export class SumFactor extends Factor {
     return this.update(this.terms[index], vals, msgs, coeffs);
   }
 
-  update(
-    v: Variable,
-    vals: Variable[],
-    msgs: SkillGaussian[],
-    coeffs: number[],
-  ): number {
+  update(v: Variable, vals: Variable[], msgs: SkillGaussian[], coeffs: number[]): number {
     let piInv = 0;
     let mu = 0;
     for (let i = 0; i < vals.length; i++) {
@@ -186,7 +173,7 @@ export class SumFactor extends Factor {
         continue;
       }
 
-      piInv += (coeff ** 2) / div.pi;
+      piInv += coeff ** 2 / div.pi;
     }
 
     const pi = 1.0 / piInv;
@@ -214,7 +201,7 @@ export class TruncateFactor extends Factor {
     const w = this.wFunc(div.tau / sqrtPi, this.drawMargin * sqrtPi);
     const denom = 1.0 - w;
     const pi = div.pi / denom;
-    const tau = (div.tau + (sqrtPi * v)) / denom;
+    const tau = (div.tau + sqrtPi * v) / denom;
     return val.updateValue(this, pi, tau);
   }
 }

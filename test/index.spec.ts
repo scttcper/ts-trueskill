@@ -1,15 +1,7 @@
 import { merge } from 'lodash';
 import { describe, it, expect } from '@jest/globals';
 
-import {
-  quality,
-  quality_1vs1,
-  rate,
-  rate_1vs1,
-  winProbability,
-  Rating,
-  TrueSkill,
-} from '../src';
+import { quality, quality_1vs1, rate, rate_1vs1, winProbability, Rating, TrueSkill } from '../src';
 import { SkillGaussian } from '../src/mathematics';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
@@ -50,16 +42,26 @@ describe('TrueSkill', () => {
   it('should rate unsorted groups', () => {
     const [t1, t2, t3] = generateTeams([1, 1, 1]);
     const rated = rate([t1, t2, t3], [2, 1, 0]);
-    compareRating(rated, [[18.325, 6.656], [25.0, 6.208], [31.675, 6.656]]);
+    compareRating(rated, [
+      [18.325, 6.656],
+      [25.0, 6.208],
+      [31.675, 6.656],
+    ]);
   });
 
   it('should test n vs n', () => {
     // 1 vs 1
     let teams = generateTeams([1, 1]);
     expect(quality(teams)).toBeCloseTo(0.447, 0.01);
-    compareRating(rate(teams), [[29.396, 7.171], [20.604, 7.171]]);
+    compareRating(rate(teams), [
+      [29.396, 7.171],
+      [20.604, 7.171],
+    ]);
     // 1 vs 1 draw
-    compareRating(rate(teams, [0, 0]), [[25.0, 6.458], [25.0, 6.458]]);
+    compareRating(rate(teams, [0, 0]), [
+      [25.0, 6.458],
+      [25.0, 6.458],
+    ]);
     // 2 vs 2
     teams = generateTeams([2, 2]);
     expect(quality(teams)).toBeCloseTo(0.447, 0.01);
@@ -213,12 +215,7 @@ describe('TrueSkill', () => {
   it('should test multiple teams', () => {
     // 2 vs 4 vs 2
     let t1 = [new Rating(40, 4), new Rating(45, 3)];
-    let t2 = [
-      new Rating(20, 7),
-      new Rating(19, 6),
-      new Rating(30, 9),
-      new Rating(10, 4),
-    ];
+    let t2 = [new Rating(20, 7), new Rating(19, 6), new Rating(30, 9), new Rating(10, 4)];
     let t3 = [new Rating(50, 5), new Rating(30, 2)];
     expect(quality([t1, t2, t3])).toBeCloseTo(0.367, 0.001);
     compareRating(rate([t1, t2, t3], [0, 1, 1]), [
@@ -243,7 +240,10 @@ describe('TrueSkill', () => {
     let t1 = [new Rating()];
     let t2 = [new Rating(50, 12.5)];
     expect(quality([t1, t2])).toBeCloseTo(0.11, 0.001);
-    compareRating(rate([t1, t2], [0, 0]), [[31.662, 7.137], [35.01, 7.91]]);
+    compareRating(rate([t1, t2], [0, 0]), [
+      [31.662, 7.137],
+      [35.01, 7.91],
+    ]);
     // 2 vs 2
     t1 = [new Rating(20, 8), new Rating(25, 6)];
     t2 = [new Rating(35, 7), new Rating(40, 5)];
@@ -329,14 +329,8 @@ describe('TrueSkill', () => {
     ]);
     // Match quality of partial play
     const t3 = [new Rating()];
-    expect(quality([t1, t2, t3], [[1], [0.25, 0.75], [1]])).toBeCloseTo(
-      0.2,
-      0.001,
-    );
-    expect(quality([t1, t2, t3], [[1], [0.8, 0.9], [1]])).toBeCloseTo(
-      0.0809,
-      0.001,
-    );
+    expect(quality([t1, t2, t3], [[1], [0.25, 0.75], [1]])).toBeCloseTo(0.2, 0.001);
+    expect(quality([t1, t2, t3], [[1], [0.8, 0.9], [1]])).toBeCloseTo(0.0809, 0.001);
   });
 
   it('should test microsoft reasearch example', () => {

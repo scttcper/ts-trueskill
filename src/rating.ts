@@ -1,10 +1,7 @@
 import { SkillGaussian } from './mathematics';
 
 export class Rating extends SkillGaussian {
-  constructor(
-    mu: number | SkillGaussian | [number, number] = 25,
-    sigma?: number,
-  ) {
+  constructor(mu: number | SkillGaussian | [number, number] = 25, sigma?: number) {
     if (Array.isArray(mu)) {
       [mu, sigma] = mu;
     } else if (mu instanceof SkillGaussian) {

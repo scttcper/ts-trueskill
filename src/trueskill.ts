@@ -1,6 +1,5 @@
-import { add, det, exp, inv, matrix, multiply, transpose } from 'mathjs';
+import { add, det, exp, inv, matrix, multiply, transpose, matrix as mMatrix } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
-import { matrix as mMatrix } from 'mathjs';
 
 import { LikelihoodFactor, PriorFactor, SumFactor, TruncateFactor, Variable } from './factorgraph';
 import { Rating } from './rating';
@@ -8,14 +7,8 @@ import { Rating } from './rating';
 /**
  * Calculates a draw-margin from the given drawProbability
  */
-export function calcDrawMargin(
-  drawProbability: number,
-  size: number,
-  env = new TrueSkill(),
-) {
-  return (
-    env.guassian.ppf((drawProbability + 1) / 2) * Math.sqrt(size) * env.beta
-  );
+export function calcDrawMargin(drawProbability: number, size: number, env = new TrueSkill()) {
+  return env.guassian.ppf((drawProbability + 1) / 2) * Math.sqrt(size) * env.beta;
 }
 
 /**
@@ -127,12 +120,8 @@ export class TrueSkill {
     const fill = Array.from({ length: size });
     const ratingVars = fill.map(() => new Variable());
     const perfVars = fill.map(() => new Variable());
-    const teamPerfVars = Array.from({ length: groupSize }).map(
-      () => new Variable(),
-    );
-    const teamDiffVars = Array.from({ length: groupSize - 1 }).map(
-      () => new Variable(),
-    );
+    const teamPerfVars = Array.from({ length: groupSize }).map(() => new Variable());
+    const teamDiffVars = Array.from({ length: groupSize - 1 }).map(() => new Variable());
     const teamSizes = _teamSizes(sortedRatingGroups);
     // Layer builders
     const layers = this._runSchedule(
@@ -196,6 +185,7 @@ export class TrueSkill {
       let r = 0;
       const matrix = mMatrix();
       for (let i = 0; i < newRatingGroups.length - 1; i++) {
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
         const setter = Array.from({ length: newRatingGroups[i].length }, (_, n) => n + t).map(z => {
           matrix.set([r, z], flattenWeights[z]);
           t += 1;
@@ -221,14 +211,11 @@ export class TrueSkill {
     // A vector of all of the skill means
     const meanMatrix = matrix(flattenRatings.map(r => [r.mu]));
     const varianceMatrix = createVarianceMatrix(flattenRatings, length, length);
-    const rotatedAMatrix = createRotatedAMatrix(
-      newRatingGroups,
-      flattenWeights,
-    );
+    const rotatedAMatrix = createRotatedAMatrix(newRatingGroups, flattenWeights);
     const aMatrix = transpose(rotatedAMatrix);
     // Match quality further derivation
     const modifiedRotatedAMatrix = rotatedAMatrix.map(
-      (value: number, _: any, __: any) => (this.beta ** 2) * value,
+      (value: number, _: any, __: any) => this.beta ** 2 * value,
     );
     const start = multiply(transpose(meanMatrix), aMatrix);
     const ata = multiply(modifiedRotatedAMatrix, aMatrix);
@@ -236,9 +223,7 @@ export class TrueSkill {
     const middle: any = add(ata, atsa);
     const end = multiply(rotatedAMatrix, meanMatrix);
     // Make result
-    const eArg = det(
-      multiply(multiply([[-0.5]], multiply(start, inv(middle))), end),
-    );
+    const eArg = det(multiply(multiply([[-0.5]], multiply(start, inv(middle))), end));
     const sArg = det(ata) / det(middle);
     return exp(eArg) * Math.sqrt(sArg);
   }
@@ -260,20 +245,18 @@ export class TrueSkill {
    */
   expose(rating: Rating): number {
     const k = this.mu / this.sigma;
-    return rating.mu - (k * rating.sigma);
+    return rating.mu - k * rating.sigma;
   }
 
   /**
    * Taken from https://github.com/sublee/trueskill/issues/1
    */
   winProbability(a: Rating[], b: Rating[]): number {
-    const deltaMu =
-      a.reduce((t, cur) => t + cur.mu, 0) - b.reduce((t, cur) => t + cur.mu, 0);
+    const deltaMu = a.reduce((t, cur) => t + cur.mu, 0) - b.reduce((t, cur) => t + cur.mu, 0);
     const sumSigma =
-      a.reduce((t, n) => (n.sigma ** 2) + t, 0) +
-      b.reduce((t, n) => (n.sigma ** 2) + t, 0);
+      a.reduce((t, n) => n.sigma ** 2 + t, 0) + b.reduce((t, n) => n.sigma ** 2 + t, 0);
     const playerCount = a.length + b.length;
-    const denominator = Math.sqrt(playerCount * ((this.beta * this.beta) + sumSigma));
+    const denominator = Math.sqrt(playerCount * (this.beta * this.beta + sumSigma));
     return this.guassian.cdf(deltaMu / denominator);
   }
 
