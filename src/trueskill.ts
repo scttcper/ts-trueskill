@@ -35,11 +35,10 @@ function _teamSizes(ratingGroups: Rating[][]) {
  * Jeff Moser](http://www.moserware.com/assets/computing-your-skill/The%20Math%20Behind%20TrueSkill.pdf).
  */
 export class TrueSkill {
-  sigma!: number;
-
-  beta!: number;
-
-  tau!: number;
+  mu: number;
+  sigma: number;
+  beta: number;
+  tau: number;
 
   /**
    * @param mu initial mean of ratings
@@ -50,24 +49,17 @@ export class TrueSkill {
    * @param guassian reuseable gaussian
    */
   constructor(
-    public mu = 25,
+    mu = 25,
     sigma?: number,
     beta?: number,
     tau?: number,
     public drawProbability = 0.1,
     public guassian = new Gaussian(0, 1),
   ) {
-    if (sigma === undefined || sigma === null) {
-      this.sigma = mu / 3;
-    }
-
-    if (beta === undefined || beta === null) {
-      this.beta = this.sigma / 2;
-    }
-
-    if (tau === undefined || tau === null) {
-      this.tau = this.sigma / 100;
-    }
+    this.mu = mu;
+    this.sigma = sigma ?? this.mu / 3;
+    this.beta = beta ?? this.sigma / 2;
+    this.tau = tau ?? this.sigma / 100;
   }
 
   /**
