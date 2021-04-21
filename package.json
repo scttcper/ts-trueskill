@@ -14,11 +14,11 @@
   "license": "MIT",
   "scripts": {
     "benchmark": "npx ts-node -P ./benchmark/tsconfig.json benchmark/index.ts",
-    "lint": "eslint --ext .js,.ts, . --format codeframe",
-    "lint:fix": "eslint --fix --ext .js,.ts, . --format codeframe",
+    "lint": "eslint --ext .js,.ts .",
+    "lint:fix": "eslint --fix --ext .js,.ts .",
     "prepare": "npm run build",
     "build": "tsc -p tsconfig.build.json && tsc -p tsconfig.module.json",
-    "build:docs": "typedoc --out docs --hideGenerator --target ES6 --mode file src && touch docs/.nojekyll",
+    "build:docs": "typedoc",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "jest --coverage --no-cache"
@@ -31,7 +31,7 @@
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "7.13.8",
     "@babel/preset-typescript": "7.13.0",
-    "@ctrl/eslint-config": "1.3.4",
+    "@ctrl/eslint-config": "2.0.4",
     "@jest/globals": "26.6.2",
     "@types/benchmark": "2.1.0",
     "@types/lodash": "4.14.168",

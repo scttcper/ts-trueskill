@@ -1,9 +1,0 @@
-{
-  "extends": [
-    "config:js-lib",
-    "schedule:monthly"
-  ],
-  "automerge": "minor",
-  "semanticCommits": true,
-  "pinVersions": false
-}

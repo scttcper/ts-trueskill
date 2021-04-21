@@ -1,4 +1,4 @@
-import { add, det, exp, inv, matrix, multiply, transpose, matrix as mMatrix } from 'mathjs';
+import { add, det, exp, inv, matrix, matrix as mMatrix, multiply, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
 
 import { LikelihoodFactor, PriorFactor, SumFactor, TruncateFactor, Variable } from './factorgraph';
