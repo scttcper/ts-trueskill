@@ -246,7 +246,7 @@ export class TrueSkill {
     const sumSigma =
       a.reduce((t, n) => n.sigma ** 2 + t, 0) + b.reduce((t, n) => n.sigma ** 2 + t, 0);
     const playerCount = a.length + b.length;
-    const denominator = Math.sqrt(playerCount * (this.beta * this.beta + sumSigma));
+    const denominator = Math.sqrt(playerCount * this.beta * this.beta + sumSigma);
     return this.guassian.cdf(deltaMu / denominator);
   }
 
