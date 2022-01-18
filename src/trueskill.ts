@@ -95,6 +95,7 @@ export class TrueSkill {
     const sortedRatingGroups: Rating[][] = [];
     const sortedRanks: number[] = [];
     const sortedWeights: number[][] = [];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const [x, [g, r, w]] of sorting) {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
@@ -193,6 +194,7 @@ export class TrueSkill {
       return matrix;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [newRatingGroups, _keys] = this._validateRatingGroups(ratingGroups);
     const newWeights = this._validateWeights(ratingGroups, weights);
     const flattenRatings = ratingGroups.flat();
