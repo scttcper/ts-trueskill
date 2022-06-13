@@ -13,9 +13,9 @@
   "sideEffects": false,
   "license": "MIT",
   "scripts": {
-    "benchmark": "npx ts-node -P ./benchmark/tsconfig.json benchmark/index.ts",
-    "lint": "eslint --ext .js,.ts .",
-    "lint:fix": "eslint --fix --ext .js,.ts .",
+    "benchmark": "npx tsm benchmark/index.ts",
+    "lint": "eslint --ext .ts .",
+    "lint:fix": "eslint --fix --ext .ts .",
     "prepare": "npm run build",
     "build": "tsc",
     "build:docs": "typedoc",
