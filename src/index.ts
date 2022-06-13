@@ -7,5 +7,5 @@ export {
   quality,
   winProbability,
   expose,
-} from './trueskill';
-export { Rating } from './rating';
+} from './trueskill.js';
+export { Rating } from './rating.js';

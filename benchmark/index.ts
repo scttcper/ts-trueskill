@@ -1,6 +1,6 @@
 import * as Benchmark from 'benchmark';
 
-import { quality, rate, Rating, TrueSkill } from '../src';
+import { quality, rate, Rating, TrueSkill } from '../src/index.js';
 
 const ts = new TrueSkill();
 
