@@ -1,4 +1,4 @@
-import { SkillGaussian } from './mathematics';
+import { SkillGaussian } from './mathematics.js';
 
 export class Rating extends SkillGaussian {
   constructor(mu: number | SkillGaussian | [number, number] = 25, sigma?: number) {
@@ -16,7 +16,7 @@ export class Rating extends SkillGaussian {
     super(mu, sigma);
   }
 
-  toString(): string {
+  override toString(): string {
     const mu = this.mu.toFixed(3);
     const sigma = this.sigma.toFixed(3);
     return `Rating(mu=${mu}, sigma=${sigma})`;

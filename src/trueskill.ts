@@ -1,8 +1,14 @@
 import { add, det, exp, inv, matrix, matrix as mMatrix, multiply, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
 
-import { LikelihoodFactor, PriorFactor, SumFactor, TruncateFactor, Variable } from './factorgraph';
-import { Rating } from './rating';
+import {
+  LikelihoodFactor,
+  PriorFactor,
+  SumFactor,
+  TruncateFactor,
+  Variable,
+} from './factorgraph.js';
+import { Rating } from './rating.js';
 
 /**
  * Calculates a draw-margin from the given drawProbability
@@ -95,8 +101,8 @@ export class TrueSkill {
     const sortedRatingGroups: Rating[][] = [];
     const sortedRanks: number[] = [];
     const sortedWeights: number[][] = [];
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const [x, [g, r, w]] of sorting) {
+
+    for (const [_x, [g, r, w]] of sorting) {
       sortedRatingGroups.push(g);
       sortedRanks.push(r);
       // Make weights to be greater than 0
@@ -194,7 +200,6 @@ export class TrueSkill {
       return matrix;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [newRatingGroups, _keys] = this._validateRatingGroups(ratingGroups);
     const newWeights = this._validateWeights(ratingGroups, weights);
     const flattenRatings = ratingGroups.flat();

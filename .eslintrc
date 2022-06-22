@@ -1,11 +1,11 @@
 {
   "root": true,
   "env": {
-    "node": true,
-    "jest": true
+    "node": true
   },
   "extends": ["@ctrl/eslint-config"],
   "rules": {
-    "max-params": 0
+    "max-params": "off",
+    "@typescript-eslint/restrict-plus-operands": "off"
   }
 }

@@ -1,8 +1,16 @@
-import { describe, expect, it } from '@jest/globals';
 import { merge } from 'lodash';
+import { describe, expect, it } from 'vitest';
 
-import { quality, quality_1vs1, rate, rate_1vs1, Rating, TrueSkill, winProbability } from '../src';
-import { SkillGaussian } from '../src/mathematics';
+import {
+  quality,
+  quality_1vs1,
+  rate,
+  rate_1vs1,
+  Rating,
+  TrueSkill,
+  winProbability,
+} from '../src/index.js';
+import { SkillGaussian } from '../src/mathematics.js';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map(size => {

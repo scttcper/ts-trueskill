@@ -1,7 +1,7 @@
 import { v1 as uuid } from 'uuid';
 
-import { SkillGaussian } from './mathematics';
-import { Rating } from './rating';
+import { SkillGaussian } from './mathematics.js';
+import { Rating } from './rating.js';
 
 export class Variable extends SkillGaussian {
   messages: Record<string, SkillGaussian> = {};
@@ -50,7 +50,7 @@ export class Variable extends SkillGaussian {
     return this.setVal(value);
   }
 
-  toString(): string {
+  override toString(): string {
     const count = Object.keys(this.messages).length;
     const s = count === 1 ? '' : 's';
     const val = super.toString();
@@ -96,7 +96,7 @@ export class PriorFactor extends Factor {
     super([v]);
   }
 
-  down(): number {
+  override down(): number {
     const sigma = Math.sqrt(this.val.sigma ** 2 + this.dynamic ** 2);
     const value = new SkillGaussian(this.val.mu, sigma);
     return this.v.updateValue(this, undefined, undefined, value);
@@ -112,13 +112,13 @@ export class LikelihoodFactor extends Factor {
     return 1.0 / (this.variance * v.pi + 1.0);
   }
 
-  down(): number {
+  override down(): number {
     const msg = this.mean.div(this.mean.messages[this.toString()]);
     const a = this.calcA(msg);
     return this.value.updateMessage(this, a * msg.pi, a * msg.tau);
   }
 
-  up(): number {
+  override up(): number {
     const msg = this.value.div(this.value.messages[this.toString()]);
     const a = this.calcA(msg);
     return this.mean.updateMessage(this, a * msg.pi, a * msg.tau);
@@ -130,13 +130,13 @@ export class SumFactor extends Factor {
     super([sum].concat(terms));
   }
 
-  down(): number {
+  override down(): number {
     const k = this.toString();
     const msgs = this.terms.map(v => v.messages[k]);
     return this.update(this.sum, this.terms, msgs, this.coeffs);
   }
 
-  up(index = 0): number {
+  override up(index = 0): number {
     const coeff = this.coeffs[index];
     let x = 0;
     const coeffs = this.coeffs.map(c => {
@@ -192,7 +192,7 @@ export class TruncateFactor extends Factor {
     super([v]);
   }
 
-  up(): number {
+  override up(): number {
     const val = this.v;
     const msg = this.v.messages[this.toString()];
     const div = val.div(msg);
