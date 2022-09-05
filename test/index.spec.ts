@@ -1,15 +1,8 @@
 import { merge } from 'lodash';
 import { describe, expect, it } from 'vitest';
 
-import {
-  quality,
-  quality_1vs1,
-  rate,
-  rate_1vs1,
-  Rating,
-  TrueSkill,
-  winProbability,
-} from '../src/index.js';
+import type { TrueSkill } from '../src/index.js';
+import { quality, quality_1vs1, rate, rate_1vs1, Rating, winProbability } from '../src/index.js';
 import { SkillGaussian } from '../src/mathematics.js';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {

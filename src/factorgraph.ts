@@ -1,7 +1,7 @@
 import { v1 as uuid } from 'uuid';
 
 import { SkillGaussian } from './mathematics.js';
-import { Rating } from './rating.js';
+import type { Rating } from './rating.js';
 
 export class Variable extends SkillGaussian {
   messages: Record<string, SkillGaussian> = {};
