@@ -162,10 +162,12 @@ export class TrueSkill {
    * Calculates the match quality of the given rating groups. Result
    * is the draw probability in the association::
    *
-   *   env = TrueSkill()
-   *   if env.quality([team1, team2, team3]) < 0.50 {
-   *     console.log('This match seems to be not so fair')
-   *   }
+   * ```ts
+   * env = TrueSkill()
+   * if (env.quality([team1, team2, team3]) < 0.50) {
+   *   console.log('This match seems to be not so fair')
+   * }
+   * ```
    */
   quality(ratingGroups: Rating[][], weights?: number[][]): number {
     function createVarianceMatrix(flattenRatings: Rating[], height: number, width: number) {
