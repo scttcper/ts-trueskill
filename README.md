@@ -7,7 +7,7 @@
 Read about [how the trueskill model works](https://www.microsoft.com/en-us/research/project/trueskill-ranking-system/)
 
 ### Install
-Built into es5 and published with typings. Available on [npm](https://www.npmjs.com/package/ts-trueskill):
+Built into es2020 w/ esm and published with typings. Available on [npm](https://www.npmjs.com/package/ts-trueskill):
 ```bash
 npm install ts-trueskill
 ```
