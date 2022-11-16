@@ -24,24 +24,24 @@
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit --outputFile=./junit.xml"
   },
   "dependencies": {
-    "mathjs": "^11.3.2",
+    "mathjs": "^11.3.3",
     "ts-gaussian": "^3.0.2",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@ctrl/eslint-config": "3.5.4",
+    "@ctrl/eslint-config": "3.5.5",
     "@sindresorhus/tsconfig": "3.0.1",
     "@types/benchmark": "2.1.2",
-    "@types/lodash": "4.14.186",
-    "@types/node": "18.11.7",
+    "@types/lodash": "4.14.189",
+    "@types/node": "18.11.9",
     "@types/uuid": "8.3.4",
-    "@vitest/coverage-c8": "0.24.3",
+    "@vitest/coverage-c8": "0.25.2",
     "benchmark": "2.1.4",
     "c8": "7.12.0",
     "lodash": "4.17.21",
-    "typedoc": "0.23.18",
-    "typescript": "4.8.4",
-    "vitest": "0.24.3"
+    "typedoc": "0.23.21",
+    "typescript": "4.9.3",
+    "vitest": "0.25.2"
   },
   "release": {
     "branches": [
