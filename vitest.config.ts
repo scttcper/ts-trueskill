@@ -5,6 +5,7 @@ export default defineConfig({
     threads: false,
     coverage: {
       reporter: ['text', 'json', 'html'],
+      provider: 'c8',
     },
   },
 });

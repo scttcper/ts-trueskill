@@ -35,3 +35,4 @@ dist
 benchmark-out
 .rpt2*
 yarn.lock
+junit.xml
