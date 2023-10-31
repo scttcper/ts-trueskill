@@ -92,7 +92,11 @@ export class Factor {
 }
 
 export class PriorFactor extends Factor {
-  constructor(v: Variable, readonly val: Rating, readonly dynamic = 0) {
+  constructor(
+    v: Variable,
+    readonly val: Rating,
+    readonly dynamic = 0,
+  ) {
     super([v]);
   }
 
@@ -104,7 +108,11 @@ export class PriorFactor extends Factor {
 }
 
 export class LikelihoodFactor extends Factor {
-  constructor(readonly mean: Variable, readonly value: Variable, readonly variance: number) {
+  constructor(
+    readonly mean: Variable,
+    readonly value: Variable,
+    readonly variance: number,
+  ) {
     super([mean, value]);
   }
 
@@ -126,7 +134,11 @@ export class LikelihoodFactor extends Factor {
 }
 
 export class SumFactor extends Factor {
-  constructor(readonly sum: Variable, readonly terms: Variable[], readonly coeffs: number[]) {
+  constructor(
+    readonly sum: Variable,
+    readonly terms: Variable[],
+    readonly coeffs: number[],
+  ) {
     super([sum].concat(terms));
   }
 
