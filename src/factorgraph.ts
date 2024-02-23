@@ -41,9 +41,7 @@ export class Variable extends SkillGaussian {
     tau = 0,
     value?: SkillGaussian,
   ): number {
-    if (!value) {
-      value = new SkillGaussian(null, null, pi, tau);
-    }
+    value ||= new SkillGaussian(null, null, pi, tau);
 
     const oldMessage = this.messages[factor.toString()];
     this.messages[factor.toString()] = value.mul(oldMessage).div(this);

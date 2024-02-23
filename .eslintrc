@@ -3,9 +3,9 @@
   "env": {
     "node": true
   },
-  "extends": ["@ctrl/eslint-config"],
+  "extends": ["@ctrl/eslint-config-biome"],
   "rules": {
     "max-params": "off",
-    "@typescript-eslint/restrict-plus-operands": "off"
+    "no-mixed-operators": "off"
   }
 }
