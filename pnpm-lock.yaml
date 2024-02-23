@@ -20,8 +20,8 @@ devDependencies:
     specifier: 1.5.3
     version: 1.5.3
   '@ctrl/eslint-config-biome':
-    specifier: 2.0.6
-    version: 2.0.6(typescript@5.3.3)
+    specifier: 2.0.7
+    version: 2.0.7(typescript@5.3.3)
   '@sindresorhus/tsconfig':
     specifier: 5.0.0
     version: 5.0.0
@@ -197,8 +197,8 @@ packages:
     dev: true
     optional: true
 
-  /@ctrl/eslint-config-biome@2.0.6(typescript@5.3.3):
-    resolution: {integrity: sha512-g1YaOKbUETar/2aIDGpR6zCC2umdnCuONSlV+3Xr19Xt3W/NdK0ku5bNmj2sAFbf4Gn53EqFuMlO2216jN+ZkQ==}
+  /@ctrl/eslint-config-biome@2.0.7(typescript@5.3.3):
+    resolution: {integrity: sha512-ZxV0Iqe0NAlpe2QPj6IA1iQGrO87CsdmQl50dAYQeyqofvJlrr14ZBV0hQ1nmc7hsMQSiddDGobOECO1UUKTZw==}
     dependencies:
       '@typescript-eslint/eslint-plugin': 7.0.2(@typescript-eslint/parser@7.0.2)(eslint@8.56.0)(typescript@5.3.3)
       '@typescript-eslint/parser': 7.0.2(eslint@8.56.0)(typescript@5.3.3)
@@ -1575,7 +1575,7 @@ packages:
     resolution: {integrity: sha512-ok6z3qlYyCDS4ZEU27HaU6x/xZa9Whf8jD4ptH5UZTQYZVYeb9bnZ3ojVhiJNLiXK1Hfc0GNbLXcmZ5plLDDBg==}
     engines: {node: '>=14'}
     dependencies:
-      mlly: 1.6.0
+      mlly: 1.6.1
       pkg-types: 1.0.3
     dev: true
 
@@ -1690,8 +1690,8 @@ packages:
       brace-expansion: 2.0.1
     dev: true
 
-  /mlly@1.6.0:
-    resolution: {integrity: sha512-YOvg9hfYQmnaB56Yb+KrJE2u0Yzz5zR+sLejEvF4fzwzV1Al6hkf2vyHTwqCRyv0hCi9rVCqVoXpyYevQIRwLQ==}
+  /mlly@1.6.1:
+    resolution: {integrity: sha512-vLgaHvaeunuOXHSmEbZ9izxPx3USsk8KCQ8iC+aTlp5sKRSoZvwhHh5L9VbKSaVC6sJDqbyohIS76E2VmHIPAA==}
     dependencies:
       acorn: 8.11.3
       pathe: 1.1.2
@@ -1819,7 +1819,7 @@ packages:
     resolution: {integrity: sha512-nN7pYi0AQqJnoLPC9eHFQ8AcyaixBUOwvqc5TDnIKCMEE6I0y8P7OKA7fPexsXGCGxQDl/cmrLAp26LhcwxZ4A==}
     dependencies:
       jsonc-parser: 3.2.1
-      mlly: 1.6.0
+      mlly: 1.6.1
       pathe: 1.1.2
     dev: true
 
