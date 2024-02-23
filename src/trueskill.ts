@@ -153,9 +153,7 @@ export class TrueSkill {
       return unsorting.map(k => k[1]);
     }
 
-    return unsorting.map(v => {
-      return { [keys[v[0]][0]]: v[1][0] };
-    });
+    return unsorting.map(v => ({ [keys[v[0]][0]]: v[1][0] }));
   }
 
   /**

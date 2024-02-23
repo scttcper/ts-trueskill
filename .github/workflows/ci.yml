@@ -11,17 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-      - run: npm ci
+          cache: "pnpm"
+
+      - name: install
+        run: pnpm install
+
       - name: lint
-        run: npm run lint
+        run: pnpm run lint
+
       - name: test
-        run: npm run test:ci
+        run: pnpm run test:ci
+
       - name: coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -38,11 +48,19 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
-      - run: npm ci
+          cache: "pnpm"
+
+      - name: install
+        run: pnpm install
+
       - name: release
         run: npx semantic-release
         env:
