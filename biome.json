@@ -2,7 +2,7 @@
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
     "ignoreUnknown": true,
-    "ignore": ["dist/*"]
+    "ignore": ["dist/*", "package.json"]
   },
-  "extends": ["./node_modules/@ctrl/eslint-config-biome/biome.json"]
+  "extends": ["@ctrl/eslint-config-biome/biome"]
 }
