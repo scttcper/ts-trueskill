@@ -28,24 +28,24 @@
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit --outputFile=./junit.xml"
   },
   "dependencies": {
-    "mathjs": "^12.4.1",
+    "mathjs": "^12.4.2",
     "ts-gaussian": "^3.0.4",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.6.4",
-    "@ctrl/eslint-config-biome": "2.4.1",
+    "@biomejs/biome": "1.7.2",
+    "@ctrl/eslint-config-biome": "2.6.7",
     "@sindresorhus/tsconfig": "5.0.0",
     "@types/benchmark": "2.1.5",
     "@types/lodash": "4.17.0",
-    "@types/node": "20.12.6",
+    "@types/node": "20.12.7",
     "@types/uuid": "9.0.8",
-    "@vitest/coverage-v8": "1.4.0",
+    "@vitest/coverage-v8": "1.5.3",
     "benchmark": "2.1.4",
     "lodash": "4.17.21",
     "typedoc": "0.25.13",
-    "typescript": "5.4.4",
-    "vitest": "1.4.0"
+    "typescript": "5.4.5",
+    "vitest": "1.5.3"
   },
   "publishConfig": {
     "access": "public",
