@@ -1,3 +1,4 @@
+/* eslint-disable max-params */
 import { add, det, exp, inv, matrix, matrix as mMatrix, multiply, transpose } from 'mathjs';
 import { Gaussian } from 'ts-gaussian';
 
@@ -343,7 +344,7 @@ export class TrueSkill {
 
   private _validateWeights(ratingGroups: Rating[][], weights?: number[][] | null): number[][] {
     if (!weights) {
-      return ratingGroups.map(n => Array(n.length).fill(1));
+      return ratingGroups.map(n => new Array(n.length).fill(1));
     }
 
     return weights;

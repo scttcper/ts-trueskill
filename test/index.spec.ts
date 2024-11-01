@@ -7,7 +7,7 @@ import { SkillGaussian } from '../src/mathematics.js';
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map(size => {
-    const r = Array(size).fill(0);
+    const r = new Array(size).fill(0);
     if (env) {
       return r.map(() => env.createRating());
     }
@@ -17,14 +17,17 @@ function generateTeams(sizes: number[], env?: TrueSkill) {
 }
 
 function generateIndividual(size: number) {
-  return generateTeams(Array(size).fill(1));
+  return generateTeams(new Array(size).fill(1));
 }
 
 function compareRating(result: Rating[][], expected: number[][]) {
   const res = result.flat();
+  // biome-ignore lint/suspicious/noMisplacedAssertion: <explanation>
   expect(result).toBeInstanceOf(Array);
   for (let team = 0; team < res.length; team++) {
+    // biome-ignore lint/suspicious/noMisplacedAssertion: <explanation>
     expect(res[team].mu).toBeCloseTo(expected[team][0], 0.01);
+    // biome-ignore lint/suspicious/noMisplacedAssertion: <explanation>
     expect(res[team].sigma).toBeCloseTo(expected[team][1], 0.01);
   }
 }
@@ -154,7 +157,7 @@ describe('TrueSkill', () => {
       [25.0, 6.208],
       [18.325, 6.656],
     ]);
-    compareRating(rate(players, Array(players.length).fill(0)), [
+    compareRating(rate(players, new Array(players.length).fill(0)), [
       [25.0, 5.698],
       [25.0, 5.695],
       [25.0, 5.698],
@@ -181,7 +184,7 @@ describe('TrueSkill', () => {
     // 8 players draw
     players = generateIndividual(8);
     expect(quality(players)).toBeCloseTo(0.004, 0.001);
-    compareRating(rate(players, Array(players.length).fill(0)), [
+    compareRating(rate(players, new Array(players.length).fill(0)), [
       [25.0, 4.592],
       [25.0, 4.583],
       [25.0, 4.576],

@@ -2,16 +2,14 @@
  * A model for the normal distribution.
  */
 export class SkillGaussian {
+  public pi: number;
+  public tau: number;
+
   /**
    * @param pi - Precision, the inverse of the variance.
    * @param tau - Precision adjusted mean, the precision multiplied by the mean
    */
-  constructor(
-    mu: number | null = null,
-    sigma: number | null = null,
-    public pi = 0,
-    public tau = 0,
-  ) {
+  constructor(mu: number | null = null, sigma: number | null = null, pi = 0, tau = 0) {
     if (mu !== null) {
       if (sigma === null) {
         throw new TypeError('sigma argument is needed');

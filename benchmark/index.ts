@@ -6,7 +6,7 @@ const ts = new TrueSkill();
 
 function generateTeams(sizes: number[], env?: TrueSkill) {
   return sizes.map(size => {
-    const r = Array(size).fill(0);
+    const r = new Array(size).fill(0);
     if (env) {
       return r.map(() => env.createRating());
     }

@@ -16,9 +16,9 @@
     "benchmark": "npx tsm benchmark/index.ts",
     "lint": "pnpm run '/^(lint:biome|lint:eslint)$/'",
     "lint:biome": "biome check .",
-    "lint:eslint": "eslint --ext .ts,.tsx .",
+    "lint:eslint": "eslint .",
     "lint:fix": "pnpm run '/^(lint:biome|lint:eslint):fix$/'",
-    "lint:eslint:fix": "eslint --ext .ts,.tsx . --fix",
+    "lint:eslint:fix": "eslint . --fix",
     "lint:biome:fix": "biome check . --apply",
     "prepare": "npm run build",
     "build": "tsc",
@@ -28,24 +28,24 @@
     "test:ci": "vitest run --coverage --reporter=default --reporter=junit --outputFile=./junit.xml"
   },
   "dependencies": {
-    "mathjs": "^12.4.2",
+    "mathjs": "^13.2.0",
     "ts-gaussian": "^3.0.4",
-    "uuid": "^9.0.1"
+    "uuid": "^11.0.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.7.2",
-    "@ctrl/eslint-config-biome": "2.6.7",
-    "@sindresorhus/tsconfig": "5.0.0",
+    "@biomejs/biome": "1.9.4",
+    "@ctrl/eslint-config-biome": "4.2.10",
+    "@sindresorhus/tsconfig": "6.0.0",
     "@types/benchmark": "2.1.5",
-    "@types/lodash": "4.17.0",
-    "@types/node": "20.12.7",
-    "@types/uuid": "9.0.8",
-    "@vitest/coverage-v8": "1.5.3",
+    "@types/lodash": "4.17.13",
+    "@types/node": "22.8.6",
+    "@types/uuid": "10.0.0",
+    "@vitest/coverage-v8": "2.1.4",
     "benchmark": "2.1.4",
     "lodash": "4.17.21",
-    "typedoc": "0.25.13",
-    "typescript": "5.4.5",
-    "vitest": "1.5.3"
+    "typedoc": "0.26.10",
+    "typescript": "5.6.3",
+    "vitest": "2.1.4"
   },
   "publishConfig": {
     "access": "public",
